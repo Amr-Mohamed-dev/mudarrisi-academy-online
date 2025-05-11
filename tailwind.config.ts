@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,7 +62,23 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				}
+				},
+        // Custom colors for our platform
+        blue: {
+          light: '#4DB7FE',
+          DEFAULT: '#0088CC',
+          dark: '#004D73',
+        },
+        teal: {
+          light: '#4DDED0', 
+          DEFAULT: '#26A69A',
+          dark: '#00796B',
+        },
+        amber: {
+          light: '#FFCA28',
+          DEFAULT: '#F9A825',
+          dark: '#EF6C00',
+        }
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -84,13 +101,21 @@ export default {
 					to: {
 						height: '0'
 					}
-				}
+				},
+        'fade-in': {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        }
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
-			}
+				'accordion-up': 'accordion-up 0.2s ease-out',
+        'fade-in': 'fade-in 0.5s ease-out'
+			},
+      fontFamily: {
+        cairo: ['Cairo', 'sans-serif'],
+      },
 		}
 	},
-	plugins: [require("tailwindcss-animate")],
+	plugins: [require("tailwindcss-animate"), require("tailwindcss-flip")],
 } satisfies Config;
