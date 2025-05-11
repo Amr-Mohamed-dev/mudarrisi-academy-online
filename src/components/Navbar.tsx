@@ -1,21 +1,29 @@
 
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Menu, X, User, Search } from 'lucide-react';
+import { Menu, X, User, Search, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
 
-interface NavbarProps {
-  isLoggedIn?: boolean;
-  isAdmin?: boolean;
-}
-
-const Navbar = ({ isLoggedIn = false, isAdmin = false }: NavbarProps) => {
+const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const isMobile = useIsMobile();
+  const { user, isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
   
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+  
+  const handleLogout = () => {
+    logout();
+    toast.success('تم تسجيل الخروج بنجاح');
+    navigate('/');
+    setIsMenuOpen(false);
+  };
+  
+  const isAdmin = user?.role === 'admin';
   
   return (
     <nav className="bg-white shadow-md sticky top-0 z-50 w-full">
@@ -56,7 +64,7 @@ const Navbar = ({ isLoggedIn = false, isAdmin = false }: NavbarProps) => {
                 من نحن
               </Link>
               
-              {isLoggedIn ? (
+              {isAuthenticated ? (
                 <div className="flex items-center space-x-4 space-x-reverse mr-4">
                   {isAdmin && (
                     <Link to="/admin">
@@ -68,6 +76,10 @@ const Navbar = ({ isLoggedIn = false, isAdmin = false }: NavbarProps) => {
                       <User className="h-5 w-5 text-blue" />
                     </Button>
                   </Link>
+                  <Button variant="outline" size="sm" onClick={handleLogout}>
+                    <LogOut className="h-4 w-4 ml-1" />
+                    تسجيل الخروج
+                  </Button>
                 </div>
               ) : (
                 <div className="flex items-center space-x-2 space-x-reverse mr-4">
@@ -129,7 +141,7 @@ const Navbar = ({ isLoggedIn = false, isAdmin = false }: NavbarProps) => {
                 </Link>
               </div>
               
-              {isLoggedIn ? (
+              {isAuthenticated ? (
                 <div className="pt-4 flex flex-col space-y-3">
                   <Link to="/profile" className="w-full">
                     <Button variant="outline" className="w-full justify-start">
@@ -143,7 +155,14 @@ const Navbar = ({ isLoggedIn = false, isAdmin = false }: NavbarProps) => {
                       </Button>
                     </Link>
                   )}
-                  <Button variant="default" className="w-full">تسجيل الخروج</Button>
+                  <Button 
+                    variant="default" 
+                    className="w-full"
+                    onClick={handleLogout}
+                  >
+                    <LogOut className="h-4 w-4 ml-2" />
+                    تسجيل الخروج
+                  </Button>
                 </div>
               ) : (
                 <div className="pt-4 flex flex-col space-y-3">

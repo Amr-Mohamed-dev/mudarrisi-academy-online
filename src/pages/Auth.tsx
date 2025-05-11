@@ -1,6 +1,6 @@
 
-import React, { useState } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -8,16 +8,28 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Checkbox } from '@/components/ui/checkbox';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import { toast } from 'sonner';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Auth = () => {
   const [searchParams] = useSearchParams();
   const defaultTab = searchParams.get('type') === 'register' ? 'register' : 'login';
   const [activeTab, setActiveTab] = useState(defaultTab);
+  const navigate = useNavigate();
+  const { login, register, isAuthenticated } = useAuth();
+  
+  // إعادة التوجيه إذا كان المستخدم مسجل الدخول بالفعل
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/');
+    }
+  }, [isAuthenticated, navigate]);
   
   // Login form state
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
+  const [isLoginLoading, setIsLoginLoading] = useState(false);
   
   // Register form state
   const [name, setName] = useState('');
@@ -27,17 +39,64 @@ const Auth = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [userType, setUserType] = useState('student');
+  const [isRegisterLoading, setIsRegisterLoading] = useState(false);
   
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real app, this would call an API endpoint to authenticate the user
-    console.log('Login with:', { loginEmail, loginPassword, rememberMe });
+    
+    if (!loginEmail || !loginPassword) {
+      toast.error('يرجى إدخال البريد الإلكتروني وكلمة المرور');
+      return;
+    }
+    
+    setIsLoginLoading(true);
+    const success = await login(loginEmail, loginPassword);
+    setIsLoginLoading(false);
+    
+    if (success) {
+      toast.success('تم تسجيل الدخول بنجاح');
+      navigate('/');
+    } else {
+      toast.error('البريد الإلكتروني أو كلمة المرور غير صحيحة');
+    }
   };
   
-  const handleRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real app, this would call an API endpoint to register the user
-    console.log('Register with:', { name, email, phone, password, userType, termsAccepted });
+    
+    // التحقق من البيانات المدخلة
+    if (!name || !email || !password) {
+      toast.error('يرجى إكمال جميع الحقول المطلوبة');
+      return;
+    }
+    
+    if (password !== confirmPassword) {
+      toast.error('كلمات المرور غير متطابقة');
+      return;
+    }
+    
+    if (!termsAccepted) {
+      toast.error('يرجى الموافقة على الشروط والأحكام');
+      return;
+    }
+    
+    setIsRegisterLoading(true);
+    const userData = {
+      name,
+      email,
+      phone,
+      role: userType as 'student' | 'teacher',
+    };
+    
+    const success = await register(userData, password);
+    setIsRegisterLoading(false);
+    
+    if (success) {
+      toast.success('تم إنشاء الحساب بنجاح!');
+      navigate('/');
+    } else {
+      toast.error('البريد الإلكتروني مستخدم بالفعل أو حدث خطأ');
+    }
   };
   
   return (
@@ -93,6 +152,7 @@ const Auth = () => {
                       value={loginEmail}
                       onChange={(e) => setLoginEmail(e.target.value)}
                       required
+                      disabled={isLoginLoading}
                     />
                   </div>
                   
@@ -110,6 +170,7 @@ const Auth = () => {
                       value={loginPassword}
                       onChange={(e) => setLoginPassword(e.target.value)}
                       required
+                      disabled={isLoginLoading}
                     />
                   </div>
                   
@@ -118,14 +179,19 @@ const Auth = () => {
                       id="remember-me"
                       checked={rememberMe}
                       onCheckedChange={(checked) => setRememberMe(!!checked)}
+                      disabled={isLoginLoading}
                     />
                     <Label htmlFor="remember-me" className="mr-2">
                       تذكرني
                     </Label>
                   </div>
                   
-                  <Button type="submit" className="w-full">
-                    تسجيل الدخول
+                  <Button 
+                    type="submit" 
+                    className="w-full" 
+                    disabled={isLoginLoading}
+                  >
+                    {isLoginLoading ? 'جاري تسجيل الدخول...' : 'تسجيل الدخول'}
                   </Button>
                 </form>
               </TabsContent>
@@ -140,6 +206,7 @@ const Auth = () => {
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       required
+                      disabled={isRegisterLoading}
                     />
                   </div>
                   
@@ -152,6 +219,7 @@ const Auth = () => {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
+                      disabled={isRegisterLoading}
                     />
                   </div>
                   
@@ -164,6 +232,7 @@ const Auth = () => {
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       required
+                      disabled={isRegisterLoading}
                     />
                   </div>
                   
@@ -177,6 +246,7 @@ const Auth = () => {
                       onChange={(e) => setPassword(e.target.value)}
                       required
                       minLength={8}
+                      disabled={isRegisterLoading}
                     />
                   </div>
                   
@@ -190,6 +260,7 @@ const Auth = () => {
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       required
                       minLength={8}
+                      disabled={isRegisterLoading}
                     />
                   </div>
                   
@@ -205,6 +276,7 @@ const Auth = () => {
                           checked={userType === 'student'}
                           onChange={() => setUserType('student')}
                           className="ml-2 h-4 w-4 text-blue border-gray-300"
+                          disabled={isRegisterLoading}
                         />
                         <Label htmlFor="student">طالب</Label>
                       </div>
@@ -217,6 +289,7 @@ const Auth = () => {
                           checked={userType === 'teacher'}
                           onChange={() => setUserType('teacher')}
                           className="ml-2 h-4 w-4 text-blue border-gray-300"
+                          disabled={isRegisterLoading}
                         />
                         <Label htmlFor="teacher">مدرس</Label>
                       </div>
@@ -229,6 +302,7 @@ const Auth = () => {
                       checked={termsAccepted}
                       onCheckedChange={(checked) => setTermsAccepted(!!checked)}
                       required
+                      disabled={isRegisterLoading}
                     />
                     <Label htmlFor="terms" className="mr-2">
                       أوافق على{' '}
@@ -242,8 +316,12 @@ const Auth = () => {
                     </Label>
                   </div>
                   
-                  <Button type="submit" className="w-full">
-                    إنشاء الحساب
+                  <Button 
+                    type="submit" 
+                    className="w-full" 
+                    disabled={isRegisterLoading}
+                  >
+                    {isRegisterLoading ? 'جاري إنشاء الحساب...' : 'إنشاء الحساب'}
                   </Button>
                 </form>
               </TabsContent>
