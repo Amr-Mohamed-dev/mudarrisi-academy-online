@@ -11,6 +11,9 @@ import AdminDashboard from "./pages/AdminDashboard";
 import TeachersManagement from "./pages/admin/TeachersManagement";
 import StudentsManagement from "./pages/admin/StudentsManagement";
 import BookingsManagement from "./pages/admin/BookingsManagement";
+import Teachers from "./pages/Teachers";
+import Subjects from "./pages/Subjects";
+import About from "./pages/About";
 import NotFound from "./pages/NotFound";
 import AuthProvider from "./contexts/AuthContext";
 
@@ -25,7 +28,10 @@ const App = () => (
           <Sonner />
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/teachers" element={<Teachers />} />
             <Route path="/teachers/:id" element={<TeacherProfile />} />
+            <Route path="/subjects" element={<Subjects />} />
+            <Route path="/about" element={<About />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/teachers" element={<TeachersManagement />} />
