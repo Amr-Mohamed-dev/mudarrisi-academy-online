@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import {
   Table,
@@ -64,8 +63,30 @@ const BookingsManagement = () => {
   // استرجاع الحجوزات والمدرسين والطلاب من التخزين المحلي
   useEffect(() => {
     const storedBookings = JSON.parse(localStorage.getItem('bookings') || '[]');
-    setBookings(storedBookings);
     
+    // Ensure all bookings have correct status type
+    const typedBookings: Booking[] = storedBookings.map((booking: any) => {
+      // Validate and convert status to ensure it matches our type
+      let status: 'pending' | 'approved' | 'rejected' | 'completed' = 'pending';
+      
+      if (
+        booking.status === 'pending' || 
+        booking.status === 'approved' || 
+        booking.status === 'rejected' || 
+        booking.status === 'completed'
+      ) {
+        status = booking.status;
+      }
+      
+      return {
+        ...booking,
+        status
+      };
+    });
+    
+    setBookings(typedBookings);
+    
+    // ... keep existing code (loading teachers and students)
     const users = JSON.parse(localStorage.getItem('users') || '[]');
     
     // إنشاء خرائط للمدرسين والطلاب للوصول السريع
@@ -84,7 +105,7 @@ const BookingsManagement = () => {
     setStudentMap(students);
   }, []);
   
-  // تصفية الحجوزات حسب علامة التبويب والبحث
+  // ... keep existing code (filtering bookings)
   useEffect(() => {
     let filtered = [...bookings];
     
@@ -127,7 +148,7 @@ const BookingsManagement = () => {
   
   const handleApproveBooking = (booking: Booking) => {
     const updatedBookings = bookings.map(b => 
-      b.id === booking.id ? { ...b, status: 'approved' } : b
+      b.id === booking.id ? { ...b, status: 'approved' as const } : b
     );
     
     localStorage.setItem('bookings', JSON.stringify(updatedBookings));
@@ -138,7 +159,7 @@ const BookingsManagement = () => {
   
   const handleRejectBooking = (booking: Booking) => {
     const updatedBookings = bookings.map(b => 
-      b.id === booking.id ? { ...b, status: 'rejected' } : b
+      b.id === booking.id ? { ...b, status: 'rejected' as const } : b
     );
     
     localStorage.setItem('bookings', JSON.stringify(updatedBookings));
@@ -147,6 +168,7 @@ const BookingsManagement = () => {
     toast.success('تم رفض الحجز بنجاح');
   };
   
+  // ... keep existing code (pagination and other functions)
   // التقسيم إلى صفحات
   const totalPages = Math.ceil(filteredBookings.length / itemsPerPage);
   const currentBookings = filteredBookings.slice(
