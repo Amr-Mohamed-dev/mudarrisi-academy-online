@@ -13,6 +13,7 @@ export interface User {
   role: UserRole;
   avatar?: string;
   createdAt: string;
+  isActive?: boolean;
 }
 
 // تعريف نموذج بيانات سياق المصادقة
@@ -54,6 +55,30 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
     }
     setIsLoading(false);
+    
+    // إنشاء حساب مسؤول افتراضي إذا لم يكن موجودًا
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+    const adminExists = users.some((u: any) => u.role === 'admin');
+    
+    if (!adminExists) {
+      const adminUser = {
+        id: 'admin_' + Date.now(),
+        name: 'مسؤول النظام',
+        email: 'admin@example.com',
+        role: 'admin',
+        isActive: true,
+        createdAt: new Date().toISOString(),
+        password: 'admin123' // في الواقع يجب تشفير كلمات المرور
+      };
+      
+      localStorage.setItem('users', JSON.stringify([...users, adminUser]));
+      console.log('تم إنشاء حساب المسؤول الافتراضي');
+    }
+    
+    // إنشاء مصفوفة للحجوزات إذا لم تكن موجودة
+    if (!localStorage.getItem('bookings')) {
+      localStorage.setItem('bookings', JSON.stringify([]));
+    }
   }, []);
 
   // وظيفة تسجيل الدخول
@@ -70,6 +95,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const foundUser = users.find((u: any) => u.email === email && u.password === password);
       
       if (foundUser) {
+        // التحقق من أن المستخدم نشط
+        if (foundUser.isActive === false) {
+          setIsLoading(false);
+          return false; // المستخدم تم إيقافه
+        }
+        
         const { password: _, ...userWithoutPassword } = foundUser;
         setUser(userWithoutPassword);
         localStorage.setItem('user', JSON.stringify(userWithoutPassword));
@@ -111,6 +142,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         role: userData.role || 'student',
         createdAt: new Date().toISOString(),
         avatar: userData.avatar,
+        isActive: true, // المستخدم نشط افتراضيًا
       };
       
       // حفظ المستخدم مع كلمة المرور في التخزين المحلي

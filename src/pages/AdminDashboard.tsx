@@ -1,18 +1,92 @@
 
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { User, Book, Calendar, Settings, MessageSquare, Home, Search, Menu, X } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { User, Book, Calendar, Settings, MessageSquare, Home, Search, Menu, X, Users, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useAuth } from '@/contexts/AuthContext';
 import Footer from '@/components/Footer';
 
 const AdminDashboard = () => {
-  const [sidebarOpen, setSidebarOpen] = React.useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const isMobile = useIsMobile();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [stats, setStats] = useState({
+    users: 0,
+    teachers: 0,
+    students: 0,
+    bookings: 0,
+    pending: 0,
+    approved: 0
+  });
+  const [activities, setActivities] = useState<any[]>([]);
+  
+  useEffect(() => {
+    if (!user || user.role !== 'admin') {
+      navigate('/auth?type=login');
+      return;
+    }
+    
+    // جلب الإحصائيات
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+    const bookings = JSON.parse(localStorage.getItem('bookings') || '[]');
+    
+    const teachers = users.filter((u: any) => u.role === 'teacher').length;
+    const students = users.filter((u: any) => u.role === 'student').length;
+    const totalBookings = bookings.length;
+    const pendingBookings = bookings.filter((b: any) => b.status === 'pending').length;
+    const approvedBookings = bookings.filter((b: any) => b.status === 'approved').length;
+    
+    setStats({
+      users: users.length,
+      teachers,
+      students,
+      bookings: totalBookings,
+      pending: pendingBookings,
+      approved: approvedBookings
+    });
+    
+    // محاكاة البيانات للنشاطات الأخيرة
+    const recentActivities = [
+      { 
+        user: 'أحمد محمد', 
+        action: 'حجز درس جديد', 
+        time: 'منذ 10 دقائق', 
+        image: '/placeholder.svg' 
+      },
+      { 
+        user: 'سارة أحمد', 
+        action: 'أضافت تقييمًا للمدرس خالد العمري', 
+        time: 'منذ 25 دقيقة', 
+        image: '/placeholder.svg' 
+      },
+      { 
+        user: 'محمد علي', 
+        action: 'سجل حساب جديد', 
+        time: 'منذ 45 دقيقة', 
+        image: '/placeholder.svg' 
+      },
+      { 
+        user: 'نورة عبدالله', 
+        action: 'أكملت درسًا', 
+        time: 'منذ ساعة واحدة', 
+        image: '/placeholder.svg' 
+      },
+      { 
+        user: 'فهد سلطان', 
+        action: 'أرسل رسالة للدعم الفني', 
+        time: 'منذ 3 ساعات', 
+        image: '/placeholder.svg' 
+      }
+    ];
+    
+    setActivities(recentActivities);
+  }, [user, navigate]);
   
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
@@ -52,8 +126,8 @@ const AdminDashboard = () => {
               
               <div className="ml-4">
                 <Avatar className="h-8 w-8 bg-blue-light">
-                  <AvatarImage src="/placeholder.svg" alt="المدير" />
-                  <AvatarFallback>م</AvatarFallback>
+                  <AvatarImage src={user?.avatar || "/placeholder.svg"} alt="المدير" />
+                  <AvatarFallback>{user?.name?.[0] || 'م'}</AvatarFallback>
                 </Avatar>
               </div>
             </div>
@@ -88,21 +162,15 @@ const AdminDashboard = () => {
                   >
                     <User className="ml-3 h-5 w-5" />
                     <span>المدرسين</span>
+                    <Badge variant="outline" className="mr-2">{stats.teachers}</Badge>
                   </Link>
                   <Link
                     to="/admin/students"
                     className="flex items-center px-4 py-2 text-gray-600 rounded-md hover:bg-gray-100 hover:text-blue"
                   >
-                    <User className="ml-3 h-5 w-5" />
+                    <Users className="ml-3 h-5 w-5" />
                     <span>الطلاب</span>
-                    <Badge variant="outline" className="mr-2">325</Badge>
-                  </Link>
-                  <Link
-                    to="/admin/subjects"
-                    className="flex items-center px-4 py-2 text-gray-600 rounded-md hover:bg-gray-100 hover:text-blue"
-                  >
-                    <Book className="ml-3 h-5 w-5" />
-                    <span>المواد الدراسية</span>
+                    <Badge variant="outline" className="mr-2">{stats.students}</Badge>
                   </Link>
                   <Link
                     to="/admin/bookings"
@@ -110,7 +178,9 @@ const AdminDashboard = () => {
                   >
                     <Calendar className="ml-3 h-5 w-5" />
                     <span>الحجوزات</span>
-                    <Badge variant="outline" className="mr-2">18</Badge>
+                    {stats.pending > 0 && (
+                      <Badge variant="default" className="mr-2">{stats.pending}</Badge>
+                    )}
                   </Link>
                 </div>
               </div>
@@ -160,8 +230,8 @@ const AdminDashboard = () => {
                   <CardTitle className="text-lg">المستخدمون</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold">523</div>
-                  <p className="text-sm text-gray-500">+12 هذا الأسبوع</p>
+                  <div className="text-3xl font-bold">{stats.users}</div>
+                  <p className="text-sm text-gray-500">إجمالي المستخدمين</p>
                 </CardContent>
               </Card>
               
@@ -170,28 +240,53 @@ const AdminDashboard = () => {
                   <CardTitle className="text-lg">المدرسون</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold">48</div>
-                  <p className="text-sm text-gray-500">+3 هذا الأسبوع</p>
+                  <div className="text-3xl font-bold">{stats.teachers}</div>
+                  <Link to="/admin/teachers">
+                    <Button variant="link" className="px-0 h-auto text-sm text-blue">
+                      عرض جميع المدرسين
+                    </Button>
+                  </Link>
                 </CardContent>
               </Card>
               
               <Card>
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-lg">الدروس</CardTitle>
+                  <CardTitle className="text-lg">الطلاب</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold">1,204</div>
-                  <p className="text-sm text-gray-500">+89 هذا الشهر</p>
+                  <div className="text-3xl font-bold">{stats.students}</div>
+                  <Link to="/admin/students">
+                    <Button variant="link" className="px-0 h-auto text-sm text-blue">
+                      عرض جميع الطلاب
+                    </Button>
+                  </Link>
                 </CardContent>
               </Card>
               
               <Card>
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-lg">الإيرادات</CardTitle>
+                  <CardTitle className="text-lg">الحجوزات</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold">24,500 ر.س</div>
-                  <p className="text-sm text-green-500">+8% عن الشهر السابق</p>
+                  <div className="text-3xl font-bold">{stats.bookings}</div>
+                  <div className="flex items-center mt-2">
+                    <div className="flex-1">
+                      <div className="flex items-center">
+                        <span className="text-xs text-amber-500 ml-1">قيد الانتظار:</span>
+                        <span className="text-xs font-semibold">{stats.pending}</span>
+                      </div>
+                      <div className="flex items-center">
+                        <span className="text-xs text-green-500 ml-1">تمت الموافقة:</span>
+                        <span className="text-xs font-semibold">{stats.approved}</span>
+                      </div>
+                    </div>
+                    <Link to="/admin/bookings">
+                      <Button variant="outline" size="sm" className="h-8">
+                        <CheckCircle className="ml-1 h-4 w-4" />
+                        موافقة
+                      </Button>
+                    </Link>
+                  </div>
                 </CardContent>
               </Card>
             </div>
@@ -205,38 +300,7 @@ const AdminDashboard = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {[
-                      { 
-                        user: 'أحمد محمد', 
-                        action: 'حجز درس جديد', 
-                        time: 'منذ 10 دقائق', 
-                        image: '/placeholder.svg' 
-                      },
-                      { 
-                        user: 'سارة أحمد', 
-                        action: 'أضافت تقييمًا للمدرس خالد العمري', 
-                        time: 'منذ 25 دقيقة', 
-                        image: '/placeholder.svg' 
-                      },
-                      { 
-                        user: 'محمد علي', 
-                        action: 'سجل حساب جديد', 
-                        time: 'منذ 45 دقيقة', 
-                        image: '/placeholder.svg' 
-                      },
-                      { 
-                        user: 'نورة عبدالله', 
-                        action: 'أكملت درسًا', 
-                        time: 'منذ ساعة واحدة', 
-                        image: '/placeholder.svg' 
-                      },
-                      { 
-                        user: 'فهد سلطان', 
-                        action: 'أرسل رسالة للدعم الفني', 
-                        time: 'منذ 3 ساعات', 
-                        image: '/placeholder.svg' 
-                      }
-                    ].map((activity, i) => (
+                    {activities.map((activity, i) => (
                       <div key={i} className="flex">
                         <Avatar className="ml-3">
                           <AvatarImage src={activity.image} alt={activity.user} />

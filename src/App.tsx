@@ -8,6 +8,9 @@ import Index from "./pages/Index";
 import TeacherProfile from "./pages/TeacherProfile";
 import Auth from "./pages/Auth";
 import AdminDashboard from "./pages/AdminDashboard";
+import TeachersManagement from "./pages/admin/TeachersManagement";
+import StudentsManagement from "./pages/admin/StudentsManagement";
+import BookingsManagement from "./pages/admin/BookingsManagement";
 import NotFound from "./pages/NotFound";
 import AuthProvider from "./contexts/AuthContext";
 
@@ -25,6 +28,9 @@ const App = () => (
             <Route path="/teachers/:id" element={<TeacherProfile />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin/teachers" element={<TeachersManagement />} />
+            <Route path="/admin/students" element={<StudentsManagement />} />
+            <Route path="/admin/bookings" element={<BookingsManagement />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
