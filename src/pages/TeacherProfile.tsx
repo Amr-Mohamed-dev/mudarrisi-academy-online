@@ -1,15 +1,17 @@
 
-import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { Star, MapPin, Award, Book, MessageSquare, Calendar, User, ArrowRight } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { MessageSquare, Calendar, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import CalendarComponent from '@/components/Calendar';
+import ProfileHeader from '@/components/profile/ProfileHeader';
+import EducationExperience from '@/components/profile/EducationExperience';
+import ReviewsSection from '@/components/profile/ReviewsSection';
+import SubjectsSection from '@/components/profile/SubjectsSection';
+import { useToast } from '@/components/ui/use-toast';
 
 // Mock teacher data
 const teacherData = {
@@ -91,18 +93,57 @@ const teacherData = {
       date: "2 فبراير 2023",
       comment: "مدرس محترف وصبور. ساعدني في تحسين درجاتي في الرياضيات بشكل كبير."
     }
-  ]
+  ],
+  available: true,
 };
 
 const TeacherProfile = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const [selectedDateTime, setSelectedDateTime] = useState<{ date: Date; timeSlot: string } | null>(null);
+  const [teacher, setTeacher] = useState(teacherData);
   
   // In a real app, we would fetch the teacher data based on the ID
-  const teacher = teacherData;
+  useEffect(() => {
+    if (id) {
+      // Get teacher data from localStorage or fallback to mock data
+      const users = JSON.parse(localStorage.getItem('users') || '[]');
+      const foundTeacher = users.find((user: any) => user.id === id && user.role === 'teacher');
+      
+      if (foundTeacher) {
+        const teacherWithExtras = {
+          ...teacherData,
+          id: foundTeacher.id,
+          name: foundTeacher.name || teacherData.name,
+          image: foundTeacher.avatar || teacherData.image,
+          price: foundTeacher.price || teacherData.price,
+          available: foundTeacher.available !== false,
+        };
+        setTeacher(teacherWithExtras);
+      }
+    }
+  }, [id]);
   
   const handleTimeSelected = (date: Date, timeSlot: string) => {
     setSelectedDateTime({ date, timeSlot });
+    toast({
+      title: "تم اختيار الموعد",
+      description: `${date.toLocaleDateString('ar-SA')} - ${timeSlot}`,
+    });
+  };
+
+  const handleBooking = () => {
+    if (!selectedDateTime) {
+      toast({
+        title: "لم يتم اختيار موعد",
+        description: "يرجى اختيار موعد أولاً",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    navigate(`/booking/${id}`);
   };
   
   return (
@@ -117,59 +158,18 @@ const TeacherProfile = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2">
-            {/* Teacher Header */}
-            <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-              <div className="flex flex-col md:flex-row">
-                <div className="mb-4 md:mb-0 md:ml-6">
-                  <Avatar className="h-24 w-24 md:h-32 md:w-32">
-                    <AvatarImage src={teacher.image} alt={teacher.name} />
-                    <AvatarFallback>{teacher.name.split(' ').map(part => part[0]).join('')}</AvatarFallback>
-                  </Avatar>
-                </div>
-                
-                <div className="flex-1">
-                  <div className="flex flex-wrap items-start justify-between">
-                    <div>
-                      <h1 className="text-3xl font-bold">{teacher.name}</h1>
-                      <p className="text-gray-600 mb-2">{teacher.title}</p>
-                      
-                      <div className="flex items-center mb-2">
-                        <div className="flex">
-                          {[1, 2, 3, 4, 5].map(star => (
-                            <Star
-                              key={star}
-                              size={18}
-                              className={`fill-current ${star <= Math.floor(teacher.rating) ? "text-amber" : "text-gray-300"}`}
-                            />
-                          ))}
-                        </div>
-                        <span className="font-bold mx-2">{teacher.rating}</span>
-                        <span className="text-gray-600">({teacher.reviewCount} تقييم)</span>
-                      </div>
-                      
-                      <div className="flex flex-wrap items-center text-gray-600 mb-2">
-                        <MapPin size={16} className="ml-1" />
-                        <span>{teacher.location}</span>
-                      </div>
-                      
-                      <div className="flex flex-wrap items-center text-gray-600">
-                        <User size={16} className="ml-1" />
-                        <span>{teacher.studentCount} طالب</span>
-                      </div>
-                    </div>
-                    
-                    <div className="mt-4 md:mt-0">
-                      <div className="text-left md:text-right">
-                        <p className="text-sm text-gray-500">السعر بالساعة</p>
-                        <p className="text-2xl font-bold text-blue">{teacher.price} ريال</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <ProfileHeader
+              name={teacher.name}
+              title={teacher.title}
+              location={teacher.location}
+              image={teacher.image}
+              rating={teacher.rating}
+              reviewCount={teacher.reviewCount}
+              price={teacher.price}
+              studentCount={teacher.studentCount}
+              isAvailable={teacher.available}
+            />
             
-            {/* Tabs */}
             <Tabs defaultValue="about" className="bg-white rounded-lg shadow-md">
               <TabsList className="w-full border-b">
                 <TabsTrigger value="about" className="flex-1 py-3">نبذة عن المدرس</TabsTrigger>
@@ -185,136 +185,27 @@ const TeacherProfile = () => {
                   </div>
                 </div>
                 
-                <div className="mb-8">
-                  <h3 className="text-xl font-bold mb-4">التعليم</h3>
-                  <div className="space-y-4">
-                    {teacher.education.map((edu, i) => (
-                      <div key={i} className="flex">
-                        <div className="ml-4 text-blue">
-                          <Book size={20} />
-                        </div>
-                        <div>
-                          <p className="font-bold">{edu.degree}</p>
-                          <p className="text-gray-600">{edu.school}</p>
-                          <p className="text-gray-500 text-sm">{edu.years}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                
-                <div className="mb-8">
-                  <h3 className="text-xl font-bold mb-4">الخبرة</h3>
-                  <div className="space-y-4">
-                    {teacher.experience.map((exp, i) => (
-                      <div key={i} className="flex">
-                        <div className="ml-4 text-teal">
-                          <Award size={20} />
-                        </div>
-                        <div>
-                          <p className="font-bold">{exp.position}</p>
-                          <p className="text-gray-600">{exp.organization}</p>
-                          <p className="text-gray-500 text-sm">{exp.years}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                
-                <div>
-                  <h3 className="text-xl font-bold mb-4">الشهادات</h3>
-                  <div className="space-y-2">
-                    {teacher.certifications.map((cert, i) => (
-                      <div key={i} className="flex items-center">
-                        <div className="ml-2 text-blue">
-                          <Award size={16} />
-                        </div>
-                        <p>{cert}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                <EducationExperience 
+                  education={teacher.education}
+                  experience={teacher.experience}
+                  certifications={teacher.certifications}
+                />
               </TabsContent>
               
               <TabsContent value="subjects" className="p-6 focus:outline-none">
-                <div className="space-y-6">
-                  {teacher.subjects.map((subject, i) => (
-                    <div key={i} className="border-b border-gray-200 pb-6 last:border-0 last:pb-0">
-                      <h3 className="text-lg font-bold mb-2">{subject.name}</h3>
-                      <p className="text-gray-600 mb-3">المستويات: {subject.level}</p>
-                      <div className="flex flex-wrap gap-2">
-                        <Badge>المفاهيم الأساسية</Badge>
-                        <Badge>التطبيقات العملية</Badge>
-                        <Badge>التحضير للاختبارات</Badge>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                
-                <div className="mt-8">
-                  <h3 className="text-xl font-bold mb-4">اللغات</h3>
-                  <div className="flex flex-wrap gap-3">
-                    {teacher.languages.map((lang, i) => (
-                      <Badge key={i} variant="outline" className="text-gray-700">
-                        {lang}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
+                <SubjectsSection 
+                  subjects={teacher.subjects}
+                  languages={teacher.languages}
+                />
               </TabsContent>
               
               <TabsContent value="reviews" className="p-6 focus:outline-none">
-                <div className="mb-8 flex flex-col md:flex-row items-center gap-8">
-                  <div className="text-center mb-4 md:mb-0">
-                    <div className="text-4xl font-bold text-blue mb-1">{teacher.rating}</div>
-                    <div className="flex mb-1 justify-center">
-                      {[1, 2, 3, 4, 5].map(star => (
-                        <Star
-                          key={star}
-                          size={18}
-                          className={`fill-current ${star <= Math.floor(teacher.rating) ? "text-amber" : "text-gray-300"}`}
-                        />
-                      ))}
-                    </div>
-                    <div className="text-gray-600">{teacher.reviewCount} تقييم</div>
-                  </div>
-                  
-                  <div className="flex-1 w-full md:w-auto">
-                    {[5, 4, 3, 2, 1].map(rating => (
-                      <div key={rating} className="flex items-center mb-2">
-                        <div className="w-8 text-sm text-gray-600">{rating}</div>
-                        <div className="mx-2 flex-1">
-                          <Progress value={teacher.ratingDetails[rating]} className="h-2" />
-                        </div>
-                        <div className="w-8 text-sm text-gray-600">{teacher.ratingDetails[rating]}%</div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                
-                <div>
-                  <h3 className="text-xl font-bold mb-4">آراء الطلاب</h3>
-                  <div className="space-y-6">
-                    {teacher.reviews.map(review => (
-                      <div key={review.id} className="border-b border-gray-200 pb-6 last:border-0 last:pb-0">
-                        <div className="flex justify-between mb-2">
-                          <div className="font-bold">{review.user}</div>
-                          <div className="text-gray-500 text-sm">{review.date}</div>
-                        </div>
-                        <div className="flex mb-2">
-                          {[1, 2, 3, 4, 5].map(star => (
-                            <Star
-                              key={star}
-                              size={16}
-                              className={`fill-current ${star <= review.rating ? "text-amber" : "text-gray-300"}`}
-                            />
-                          ))}
-                        </div>
-                        <p className="text-gray-700">{review.comment}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                <ReviewsSection
+                  rating={teacher.rating}
+                  reviewCount={teacher.reviewCount}
+                  ratingDetails={teacher.ratingDetails}
+                  reviews={teacher.reviews}
+                />
               </TabsContent>
             </Tabs>
           </div>
@@ -329,6 +220,16 @@ const TeacherProfile = () => {
                 </div>
                 
                 <CalendarComponent onTimeSelected={handleTimeSelected} />
+                
+                <div className="p-6">
+                  <Button 
+                    className="w-full"
+                    onClick={handleBooking}
+                    disabled={!selectedDateTime}
+                  >
+                    تأكيد الحجز
+                  </Button>
+                </div>
               </div>
               
               <div className="bg-white rounded-lg shadow-md p-6">
