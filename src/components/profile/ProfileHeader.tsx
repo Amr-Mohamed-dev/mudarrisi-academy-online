@@ -50,7 +50,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                       <Star
                         key={star}
                         size={18}
-                        className={`fill-current ${star <= Math.floor(rating) ? "text-amber" : "text-gray-300"}`}
+                        className={`fill-current ${star <= Math.floor(rating) ? "text-amber-400" : "text-gray-300"}`}
                       />
                     ))}
                   </div>
@@ -86,7 +86,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
               <div className="mt-4 md:mt-0">
                 <div className="text-left md:text-right">
                   <p className="text-sm text-gray-500">السعر بالساعة</p>
-                  <p className="text-2xl font-bold text-blue">{price} ريال</p>
+                  <p className="text-2xl font-bold text-blue-600">{price} ريال</p>
                 </div>
               </div>
             )}

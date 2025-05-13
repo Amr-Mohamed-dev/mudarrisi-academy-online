@@ -9,6 +9,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import ProfileHeader from '@/components/profile/ProfileHeader';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
+import { useToast } from '@/hooks/use-toast';
 
 interface Booking {
   id: string;
@@ -26,11 +27,22 @@ interface Booking {
 const StudentProfile = () => {
   const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [bookings, setBookings] = useState<Booking[]>([]);
   
   useEffect(() => {
-    if (!isAuthenticated || user?.role !== 'student') {
+    if (!isAuthenticated) {
       navigate('/auth');
+      return;
+    }
+    
+    if (user?.role !== 'student') {
+      toast({
+        title: "غير مصرح",
+        description: "هذه الصفحة مخصصة للطلاب فقط",
+        variant: "destructive",
+      });
+      navigate('/');
       return;
     }
     
@@ -38,7 +50,27 @@ const StudentProfile = () => {
     const allBookings = JSON.parse(localStorage.getItem('bookings') || '[]');
     const studentBookings = allBookings.filter((booking: Booking) => booking.studentId === user?.id);
     setBookings(studentBookings);
-  }, [isAuthenticated, user, navigate]);
+  }, [isAuthenticated, user, navigate, toast]);
+  
+  const handleCancelBooking = (bookingId: string) => {
+    const allBookings = JSON.parse(localStorage.getItem('bookings') || '[]');
+    const updatedBookings = allBookings.map((booking: Booking) => {
+      if (booking.id === bookingId) {
+        return { ...booking, status: 'cancelled' };
+      }
+      return booking;
+    });
+    
+    localStorage.setItem('bookings', JSON.stringify(updatedBookings));
+    
+    // Update the local state
+    setBookings(updatedBookings.filter((booking: Booking) => booking.studentId === user?.id));
+    
+    toast({
+      title: "تم إلغاء الحجز",
+      description: "تم إلغاء الحجز بنجاح",
+    });
+  };
   
   if (!isAuthenticated || !user) {
     return null; // Redirecting in useEffect
@@ -97,11 +129,27 @@ const StudentProfile = () => {
                           </div>
                         </CardContent>
                         <CardFooter className="pt-0">
-                          <Button variant="outline" className="w-full" disabled={booking.status === 'cancelled' || booking.status === 'completed'}>
-                            {booking.status === 'pending' ? 'إلغاء الحجز' : 
-                             booking.status === 'confirmed' ? 'تأكيد الحضور' :
-                             booking.status === 'completed' ? 'تم الحضور' : 'تم الإلغاء'}
-                          </Button>
+                          {booking.status === 'pending' && (
+                            <Button 
+                              variant="outline" 
+                              className="w-full text-red-600 hover:bg-red-50" 
+                              onClick={() => handleCancelBooking(booking.id)}
+                            >
+                              إلغاء الحجز
+                            </Button>
+                          )}
+                          
+                          {booking.status === 'confirmed' && (
+                            <Button variant="outline" className="w-full">تأكيد الحضور</Button>
+                          )}
+                          
+                          {booking.status === 'completed' && (
+                            <Button disabled variant="outline" className="w-full">تم الحضور</Button>
+                          )}
+                          
+                          {booking.status === 'cancelled' && (
+                            <Button disabled variant="outline" className="w-full">تم الإلغاء</Button>
+                          )}
                         </CardFooter>
                       </Card>
                     ))}
@@ -119,7 +167,6 @@ const StudentProfile = () => {
               <TabsContent value="settings" className="p-6 focus:outline-none">
                 <div className="space-y-4">
                   <h3 className="text-xl font-bold mb-4">إعدادات الحساب</h3>
-                  {/* إعدادات الحساب هنا */}
                   <p className="text-gray-600 mb-4">يمكنك تعديل بيانات حسابك من هنا.</p>
                   <Button variant="outline">تعديل البيانات الشخصية</Button>
                 </div>
