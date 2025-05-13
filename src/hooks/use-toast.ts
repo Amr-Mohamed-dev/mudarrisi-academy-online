@@ -1,7 +1,4 @@
 
-// This is a wrapper to ensure the hooks are available
-// Most of the implementation is already in the existing files that are read-only
-
 import * as React from "react"
 
 type ToastProps = {
@@ -11,8 +8,17 @@ type ToastProps = {
   variant?: "default" | "destructive"
 }
 
+type Toast = {
+  id: string
+  title?: string
+  description?: string
+  action?: React.ReactNode
+  variant?: "default" | "destructive"
+  dismiss: () => void
+}
+
 const toastContextDefaultValue = {
-  toasts: [] as any[],
+  toasts: [] as Toast[],
 }
 
 const ToastContext = React.createContext(toastContextDefaultValue)
@@ -48,4 +54,15 @@ export function useToast() {
   }
 }
 
-export { toast } from "./use-toast"
+// Create a standalone toast function that can be imported directly
+export const toast = (props: ToastProps) => {
+  console.log("Toast triggered from standalone function:", props)
+  
+  return {
+    id: Date.now().toString(),
+    ...props,
+    dismiss: () => {
+      // No op for now
+    }
+  }
+}
