@@ -1,3 +1,4 @@
+
 import * as React from "react"
 
 type ToastProps = {
@@ -152,6 +153,7 @@ function toast({ ...props }: ToastProps) {
       ...props,
       id,
       open: true,
+      dismiss, // Add the dismiss function here to satisfy the Toast interface
       onOpenChange: (open) => {
         if (!open) dismiss()
       },
