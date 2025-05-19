@@ -35,13 +35,13 @@ const ReviewsSection: React.FC<ReviewsSectionProps> = ({
     <div>
       <div className="mb-8 flex flex-col md:flex-row items-center gap-8">
         <div className="text-center mb-4 md:mb-0">
-          <div className="text-4xl font-bold text-blue mb-1">{rating}</div>
+          <div className="text-4xl font-bold text-blue-600 mb-1">{rating}</div>
           <div className="flex mb-1 justify-center">
             {[1, 2, 3, 4, 5].map(star => (
               <Star
                 key={star}
                 size={18}
-                className={`fill-current ${star <= Math.floor(rating) ? "text-amber" : "text-gray-300"}`}
+                className={`fill-current ${star <= Math.floor(rating) ? "text-amber-400" : "text-gray-300"}`}
               />
             ))}
           </div>
@@ -75,7 +75,7 @@ const ReviewsSection: React.FC<ReviewsSectionProps> = ({
                   <Star
                     key={star}
                     size={16}
-                    className={`fill-current ${star <= review.rating ? "text-amber" : "text-gray-300"}`}
+                    className={`fill-current ${star <= review.rating ? "text-amber-400" : "text-gray-300"}`}
                   />
                 ))}
               </div>
