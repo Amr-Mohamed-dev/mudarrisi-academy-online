@@ -21,6 +21,10 @@ export interface User {
   isActive?: boolean;
 }
 
+// بيانات المسؤول الثابتة
+const ADMIN_EMAIL = "admin@admin.com";
+const ADMIN_PASSWORD = "admin123456";
+
 // تعريف نموذج بيانات سياق المصادقة
 interface AuthContextType {
   user: User | null;
@@ -95,7 +99,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     try {
       // محاكاة تأخير الاتصال بالخادم
       await new Promise((resolve) => setTimeout(resolve, 1000));
-
       // في تطبيق حقيقي، هنا سيتم الاتصال بـ API للتحقق من بيانات المستخدم
       // هذا مجرد تطبيق مؤقت للاختبار
       const users = JSON.parse(localStorage.getItem("users") || "[]");
