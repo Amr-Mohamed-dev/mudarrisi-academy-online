@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -18,6 +17,7 @@ import Subjects from "./pages/Subjects";
 import About from "./pages/About";
 import NotFound from "./pages/NotFound";
 import AuthProvider from "./contexts/AuthContext";
+import ScrollToTop from "./components/ScrollToTop";
 
 const queryClient = new QueryClient();
 
@@ -45,6 +45,7 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
           </Routes>
         </TooltipProvider>
+        <ScrollToTop />
       </BrowserRouter>
     </AuthProvider>
   </QueryClientProvider>

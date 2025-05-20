@@ -34,7 +34,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Search, UserX, UserCheck, Eye, CheckCircle } from "lucide-react";
 import { toast } from "sonner";
 import { User } from "@/contexts/AuthContext";
-import ScrollToTop from "@/components/ScrollToTop";
 
 const TeachersManagement = () => {
   const [teachers, setTeachers] = useState<User[]>([]);
@@ -59,7 +58,7 @@ const TeachersManagement = () => {
 
   useEffect(() => {
     let filtered = teachers;
-    
+
     // تطبيق البحث النصي
     if (searchQuery) {
       filtered = filtered.filter(
@@ -68,20 +67,24 @@ const TeachersManagement = () => {
           teacher.email.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
-    
+
     // تطبيق فلتر الحالة
     if (statusFilter !== "all") {
       if (statusFilter === "pending") {
-        filtered = filtered.filter(teacher => teacher.isApproved === false);
+        filtered = filtered.filter((teacher) => teacher.isApproved === false);
       } else if (statusFilter === "approved") {
-        filtered = filtered.filter(teacher => teacher.isApproved === true);
+        filtered = filtered.filter((teacher) => teacher.isApproved === true);
       } else if (statusFilter === "active") {
-        filtered = filtered.filter(teacher => teacher.isActive === true && teacher.isApproved === true);
+        filtered = filtered.filter(
+          (teacher) => teacher.isActive === true && teacher.isApproved === true
+        );
       } else if (statusFilter === "inactive") {
-        filtered = filtered.filter(teacher => teacher.isActive === false && teacher.isApproved === true);
+        filtered = filtered.filter(
+          (teacher) => teacher.isActive === false && teacher.isApproved === true
+        );
       }
     }
-    
+
     setFilteredTeachers(filtered);
     setCurrentPage(1);
   }, [searchQuery, teachers, statusFilter]);
@@ -188,10 +191,14 @@ const TeachersManagement = () => {
   };
 
   // الإحصائيات
-  const pendingTeachers = teachers.filter(t => t.isApproved === false).length;
-  const activeTeachers = teachers.filter(t => t.isActive === true && t.isApproved === true).length;
-  const inactiveTeachers = teachers.filter(t => t.isActive === false && t.isApproved === true).length;
-  const approvedTeachers = teachers.filter(t => t.isApproved === true).length;
+  const pendingTeachers = teachers.filter((t) => t.isApproved === false).length;
+  const activeTeachers = teachers.filter(
+    (t) => t.isActive === true && t.isApproved === true
+  ).length;
+  const inactiveTeachers = teachers.filter(
+    (t) => t.isActive === false && t.isApproved === true
+  ).length;
+  const approvedTeachers = teachers.filter((t) => t.isApproved === true).length;
 
   // التقسيم إلى صفحات
   const totalPages = Math.ceil(filteredTeachers.length / itemsPerPage);
@@ -295,19 +302,29 @@ const TeachersManagement = () => {
             <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
               <div className="bg-blue/10 p-4 rounded-lg text-center">
                 <p className="text-sm text-muted-foreground">إجمالي المدرسين</p>
-                <p className="text-2xl font-bold text-blue">{teachers.length}</p>
+                <p className="text-2xl font-bold text-blue">
+                  {teachers.length}
+                </p>
               </div>
               <div className="bg-amber/10 p-4 rounded-lg text-center">
-                <p className="text-sm text-muted-foreground">بانتظار الموافقة</p>
-                <p className="text-2xl font-bold text-amber">{pendingTeachers}</p>
+                <p className="text-sm text-muted-foreground">
+                  بانتظار الموافقة
+                </p>
+                <p className="text-2xl font-bold text-amber">
+                  {pendingTeachers}
+                </p>
               </div>
               <div className="bg-green/10 p-4 rounded-lg text-center">
                 <p className="text-sm text-muted-foreground">مدرسون نشطون</p>
-                <p className="text-2xl font-bold text-green">{activeTeachers}</p>
+                <p className="text-2xl font-bold text-green">
+                  {activeTeachers}
+                </p>
               </div>
               <div className="bg-red/10 p-4 rounded-lg text-center">
                 <p className="text-sm text-muted-foreground">مدرسون متوقفون</p>
-                <p className="text-2xl font-bold text-red">{inactiveTeachers}</p>
+                <p className="text-2xl font-bold text-red">
+                  {inactiveTeachers}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -315,28 +332,28 @@ const TeachersManagement = () => {
 
         {/* فلتر حالة المدرس */}
         <div className="flex flex-wrap gap-2 mb-4">
-          <Button 
-            variant={statusFilter === "all" ? "default" : "outline"} 
+          <Button
+            variant={statusFilter === "all" ? "default" : "outline"}
             onClick={() => setStatusFilter("all")}>
             الجميع ({teachers.length})
           </Button>
-          <Button 
-            variant={statusFilter === "pending" ? "default" : "outline"} 
+          <Button
+            variant={statusFilter === "pending" ? "default" : "outline"}
             onClick={() => setStatusFilter("pending")}>
             بانتظار الموافقة ({pendingTeachers})
           </Button>
-          <Button 
-            variant={statusFilter === "approved" ? "default" : "outline"} 
+          <Button
+            variant={statusFilter === "approved" ? "default" : "outline"}
             onClick={() => setStatusFilter("approved")}>
             تمت الموافقة ({approvedTeachers})
           </Button>
-          <Button 
-            variant={statusFilter === "active" ? "default" : "outline"} 
+          <Button
+            variant={statusFilter === "active" ? "default" : "outline"}
             onClick={() => setStatusFilter("active")}>
             نشطون ({activeTeachers})
           </Button>
-          <Button 
-            variant={statusFilter === "inactive" ? "default" : "outline"} 
+          <Button
+            variant={statusFilter === "inactive" ? "default" : "outline"}
             onClick={() => setStatusFilter("inactive")}>
             متوقفون ({inactiveTeachers})
           </Button>
@@ -369,13 +386,17 @@ const TeachersManagement = () => {
                     {teacher.name}
                   </TableCell>
                   <TableCell>{teacher.email}</TableCell>
-                  <TableCell dir="ltr">{teacher.phone || "غير متوفر"}</TableCell>
+                  <TableCell dir="ltr">
+                    {teacher.phone || "غير متوفر"}
+                  </TableCell>
                   <TableCell>
                     {new Date(teacher.createdAt).toLocaleDateString("ar-EG")}
                   </TableCell>
                   <TableCell>
                     {teacher.isApproved === false ? (
-                      <Badge variant="outline" className="bg-amber text-white">بانتظار الموافقة</Badge>
+                      <Badge variant="outline" className="bg-amber text-white">
+                        بانتظار الموافقة
+                      </Badge>
                     ) : teacher.isActive === false ? (
                       <Badge variant="destructive">متوقف</Badge>
                     ) : (
@@ -510,8 +531,8 @@ const TeachersManagement = () => {
                           <DialogHeader>
                             <DialogTitle>تأكيد حذف المدرس</DialogTitle>
                             <DialogDescription>
-                              هل أنت متأكد من حذف المدرس {selectedTeacher?.name}؟
-                              هذا الإجراء لا يمكن التراجع عنه.
+                              هل أنت متأكد من حذف المدرس {selectedTeacher?.name}
+                              ؟ هذا الإجراء لا يمكن التراجع عنه.
                             </DialogDescription>
                           </DialogHeader>
                           <DialogFooter>
@@ -549,7 +570,9 @@ const TeachersManagement = () => {
             <PaginationContent>
               <PaginationItem>
                 <PaginationPrevious
-                  onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.max(prev - 1, 1))
+                  }
                   aria-disabled={currentPage === 1}
                   className={
                     currentPage === 1 ? "pointer-events-none opacity-50" : ""
@@ -576,7 +599,6 @@ const TeachersManagement = () => {
           </Pagination>
         )}
       </div>
-      <ScrollToTop />
     </>
   );
 };

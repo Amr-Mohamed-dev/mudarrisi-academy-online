@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import {
@@ -22,7 +21,6 @@ import { Progress } from "@/components/ui/progress";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useAuth } from "@/contexts/AuthContext";
 import Footer from "@/components/Footer";
-import ScrollToTop from "@/components/ScrollToTop";
 
 const AdminDashboard = () => {
   // Store sidebar state in localStorage to persist across page navigation
@@ -34,12 +32,12 @@ const AdminDashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  
+
   // Save sidebar state to localStorage whenever it changes
   useEffect(() => {
     localStorage.setItem("adminSidebarOpen", JSON.stringify(sidebarOpen));
   }, [sidebarOpen]);
-  
+
   const [stats, setStats] = useState({
     users: 0,
     teachers: 0,
@@ -194,9 +192,11 @@ const AdminDashboard = () => {
                         ? "text-gray-900 bg-blue/10"
                         : "text-gray-600 hover:bg-gray-100 hover:text-blue"
                     }`}>
-                    <Home className={`ml-3 h-5 w-5 ${
-                      isActive("/admin") ? "text-blue" : ""
-                    }`} />
+                    <Home
+                      className={`ml-3 h-5 w-5 ${
+                        isActive("/admin") ? "text-blue" : ""
+                      }`}
+                    />
                     <span>لوحة التحكم</span>
                   </Link>
                   <Link
@@ -206,9 +206,11 @@ const AdminDashboard = () => {
                         ? "text-gray-900 bg-blue/10"
                         : "text-gray-600 hover:bg-gray-100 hover:text-blue"
                     }`}>
-                    <User className={`ml-3 h-5 w-5 ${
-                      isActive("/admin/teachers") ? "text-blue" : ""
-                    }`} />
+                    <User
+                      className={`ml-3 h-5 w-5 ${
+                        isActive("/admin/teachers") ? "text-blue" : ""
+                      }`}
+                    />
                     <span>المدرسين</span>
                     <Badge variant="outline" className="mr-2">
                       {stats.teachers}
@@ -221,9 +223,11 @@ const AdminDashboard = () => {
                         ? "text-gray-900 bg-blue/10"
                         : "text-gray-600 hover:bg-gray-100 hover:text-blue"
                     }`}>
-                    <Users className={`ml-3 h-5 w-5 ${
-                      isActive("/admin/students") ? "text-blue" : ""
-                    }`} />
+                    <Users
+                      className={`ml-3 h-5 w-5 ${
+                        isActive("/admin/students") ? "text-blue" : ""
+                      }`}
+                    />
                     <span>الطلاب</span>
                     <Badge variant="outline" className="mr-2">
                       {stats.students}
@@ -236,9 +240,11 @@ const AdminDashboard = () => {
                         ? "text-gray-900 bg-blue/10"
                         : "text-gray-600 hover:bg-gray-100 hover:text-blue"
                     }`}>
-                    <Calendar className={`ml-3 h-5 w-5 ${
-                      isActive("/admin/bookings") ? "text-blue" : ""
-                    }`} />
+                    <Calendar
+                      className={`ml-3 h-5 w-5 ${
+                        isActive("/admin/bookings") ? "text-blue" : ""
+                      }`}
+                    />
                     <span>الحجوزات</span>
                     {stats.pending > 0 && (
                       <Badge variant="default" className="mr-2">
@@ -261,9 +267,11 @@ const AdminDashboard = () => {
                         ? "text-gray-900 bg-blue/10"
                         : "text-gray-600 hover:bg-gray-100 hover:text-blue"
                     }`}>
-                    <MessageSquare className={`ml-3 h-5 w-5 ${
-                      isActive("/admin/messages") ? "text-blue" : ""
-                    }`} />
+                    <MessageSquare
+                      className={`ml-3 h-5 w-5 ${
+                        isActive("/admin/messages") ? "text-blue" : ""
+                      }`}
+                    />
                     <span>الرسائل</span>
                     <Badge variant="outline" className="mr-2">
                       5
@@ -276,9 +284,11 @@ const AdminDashboard = () => {
                         ? "text-gray-900 bg-blue/10"
                         : "text-gray-600 hover:bg-gray-100 hover:text-blue"
                     }`}>
-                    <MessageSquare className={`ml-3 h-5 w-5 ${
-                      isActive("/admin/reviews") ? "text-blue" : ""
-                    }`} />
+                    <MessageSquare
+                      className={`ml-3 h-5 w-5 ${
+                        isActive("/admin/reviews") ? "text-blue" : ""
+                      }`}
+                    />
                     <span>التقييمات</span>
                   </Link>
                   <Link
@@ -288,9 +298,11 @@ const AdminDashboard = () => {
                         ? "text-gray-900 bg-blue/10"
                         : "text-gray-600 hover:bg-gray-100 hover:text-blue"
                     }`}>
-                    <Settings className={`ml-3 h-5 w-5 ${
-                      isActive("/admin/settings") ? "text-blue" : ""
-                    }`} />
+                    <Settings
+                      className={`ml-3 h-5 w-5 ${
+                        isActive("/admin/settings") ? "text-blue" : ""
+                      }`}
+                    />
                     <span>الإعدادات</span>
                   </Link>
                 </div>
@@ -540,8 +552,6 @@ const AdminDashboard = () => {
         </main>
       </div>
 
-      {/* Scroll to Top Button */}
-      <ScrollToTop />
       <Footer />
     </div>
   );
