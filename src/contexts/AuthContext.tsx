@@ -16,6 +16,10 @@ export interface User {
   isActive?: boolean;
 }
 
+// بيانات المسؤول الثابتة
+const ADMIN_EMAIL = "admin@admin.com";
+const ADMIN_PASSWORD = "admin123456";
+
 // تعريف نموذج بيانات سياق المصادقة
 interface AuthContextType {
   user: User | null;
@@ -56,23 +60,23 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
     setIsLoading(false);
     
-    // إنشاء حساب مسؤول افتراضي إذا لم يكن موجودًا
+    // إنشاء حساب مسؤول ثابت إذا لم يكن موجودًا
     const users = JSON.parse(localStorage.getItem('users') || '[]');
-    const adminExists = users.some((u: any) => u.role === 'admin');
+    const adminExists = users.some((u: any) => u.email === ADMIN_EMAIL);
     
     if (!adminExists) {
       const adminUser = {
-        id: 'admin_' + Date.now(),
+        id: 'admin_fixed',
         name: 'مسؤول النظام',
-        email: 'admin@example.com',
+        email: ADMIN_EMAIL,
         role: 'admin',
         isActive: true,
         createdAt: new Date().toISOString(),
-        password: 'admin123' // في الواقع يجب تشفير كلمات المرور
+        password: ADMIN_PASSWORD // في الواقع يجب تشفير كلمات المرور
       };
       
       localStorage.setItem('users', JSON.stringify([...users, adminUser]));
-      console.log('تم إنشاء حساب المسؤول الافتراضي');
+      console.log('تم إنشاء حساب المسؤول الثابت');
     }
     
     // إنشاء مصفوفة للحجوزات إذا لم تكن موجودة
@@ -88,6 +92,23 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     try {
       // محاكاة تأخير الاتصال بالخادم
       await new Promise((resolve) => setTimeout(resolve, 1000));
+      
+      // التحقق من حساب المسؤول الثابت أولاً
+      if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+        const adminUser: User = {
+          id: 'admin_fixed',
+          name: 'مسؤول النظام',
+          email: ADMIN_EMAIL,
+          role: 'admin',
+          createdAt: new Date().toISOString(),
+          isActive: true,
+        };
+        
+        setUser(adminUser);
+        localStorage.setItem('user', JSON.stringify(adminUser));
+        setIsLoading(false);
+        return true;
+      }
       
       // في تطبيق حقيقي، هنا سيتم الاتصال بـ API للتحقق من بيانات المستخدم
       // هذا مجرد تطبيق مؤقت للاختبار
