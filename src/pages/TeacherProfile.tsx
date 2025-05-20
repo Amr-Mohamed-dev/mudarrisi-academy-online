@@ -1,17 +1,16 @@
-
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { MessageSquare, Calendar, ArrowRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
-import CalendarComponent from '@/components/Calendar';
-import ProfileHeader from '@/components/profile/ProfileHeader';
-import EducationExperience from '@/components/profile/EducationExperience';
-import ReviewsSection from '@/components/profile/ReviewsSection';
-import SubjectsSection from '@/components/profile/SubjectsSection';
-import { useToast } from '@/components/ui/use-toast';
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { MessageSquare, Calendar, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import CalendarComponent from "@/components/Calendar";
+import ProfileHeader from "@/components/profile/ProfileHeader";
+import EducationExperience from "@/components/profile/EducationExperience";
+import ReviewsSection from "@/components/profile/ReviewsSection";
+import SubjectsSection from "@/components/profile/SubjectsSection";
+import { useToast } from "@/components/ui/use-toast";
 
 // Mock teacher data
 const teacherData = {
@@ -34,42 +33,42 @@ const teacherData = {
     {
       degree: "ماجستير في الرياضيات التطبيقية",
       school: "جامعة الملك سعود",
-      years: "2012 - 2014"
+      years: "2012 - 2014",
     },
     {
       degree: "بكالوريوس في الرياضيات",
       school: "جامعة الملك فهد للبترول والمعادن",
-      years: "2008 - 2012"
-    }
+      years: "2008 - 2012",
+    },
   ],
   experience: [
     {
       position: "أستاذ الرياضيات",
       organization: "مدرسة الأندلس الثانوية",
-      years: "2018 - الآن"
+      years: "2018 - الآن",
     },
     {
       position: "مدرس مساعد",
       organization: "جامعة الملك سعود",
-      years: "2014 - 2018"
-    }
+      years: "2014 - 2018",
+    },
   ],
   subjects: [
     { name: "الجبر", level: "متوسط، ثانوي، جامعي" },
     { name: "الهندسة", level: "متوسط، ثانوي" },
     { name: "حساب التفاضل والتكامل", level: "ثانوي، جامعي" },
-    { name: "الإحصاء", level: "ثانوي، جامعي" }
+    { name: "الإحصاء", level: "ثانوي، جامعي" },
   ],
   certifications: [
     "شهادة تدريس الرياضيات المتقدمة",
-    "شهادة تدريب المعلمين في طرق التدريس الحديثة"
+    "شهادة تدريب المعلمين في طرق التدريس الحديثة",
   ],
   ratingDetails: {
     5: 80,
     4: 15,
     3: 3,
     2: 1,
-    1: 1
+    1: 1,
   },
   reviews: [
     {
@@ -77,22 +76,25 @@ const teacherData = {
       user: "سارة أحمد",
       rating: 5,
       date: "20 أبريل 2023",
-      comment: "أستاذ ممتاز! شرحه واضح جدًا وسهل الفهم. ساعدني كثيرًا في فهم حساب التفاضل والتكامل."
+      comment:
+        "أستاذ ممتاز! شرحه واضح جدًا وسهل الفهم. ساعدني كثيرًا في فهم حساب التفاضل والتكامل.",
     },
     {
       id: "2",
       user: "محمد عبدالله",
       rating: 5,
       date: "15 مارس 2023",
-      comment: "يقدم شرحًا مفصلاً ويتأكد من فهم الطالب قبل الانتقال للنقطة التالية. أوصي به بشدة."
+      comment:
+        "يقدم شرحًا مفصلاً ويتأكد من فهم الطالب قبل الانتقال للنقطة التالية. أوصي به بشدة.",
     },
     {
       id: "3",
       user: "خالد العمر",
       rating: 4,
       date: "2 فبراير 2023",
-      comment: "مدرس محترف وصبور. ساعدني في تحسين درجاتي في الرياضيات بشكل كبير."
-    }
+      comment:
+        "مدرس محترف وصبور. ساعدني في تحسين درجاتي في الرياضيات بشكل كبير.",
+    },
   ],
   available: true,
 };
@@ -101,16 +103,22 @@ const TeacherProfile = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [selectedDateTime, setSelectedDateTime] = useState<{ date: Date; timeSlot: string } | null>(null);
+  const [selectedDateTime, setSelectedDateTime] = useState<{
+    date: Date;
+    timeSlot: string;
+  } | null>(null);
   const [teacher, setTeacher] = useState(teacherData);
-  
+
   // In a real app, we would fetch the teacher data based on the ID
   useEffect(() => {
     if (id) {
       // Get teacher data from localStorage or fallback to mock data
-      const users = JSON.parse(localStorage.getItem('users') || '[]');
-      const foundTeacher = users.find((user: any) => user.id === id && user.role === 'teacher');
-      
+      const users = JSON.parse(localStorage.getItem("users") || "[]");
+      const foundTeacher = users.find(
+        (user: { id: string; role: string }) =>
+          user.id === id && user.role === "teacher"
+      );
+
       if (foundTeacher) {
         const teacherWithExtras = {
           ...teacherData,
@@ -124,12 +132,12 @@ const TeacherProfile = () => {
       }
     }
   }, [id]);
-  
+
   const handleTimeSelected = (date: Date, timeSlot: string) => {
     setSelectedDateTime({ date, timeSlot });
     toast({
       title: "تم اختيار الموعد",
-      description: `${date.toLocaleDateString('ar-SA')} - ${timeSlot}`,
+      description: `${date.toLocaleDateString("ar-SA")} - ${timeSlot}`,
     });
   };
 
@@ -142,19 +150,22 @@ const TeacherProfile = () => {
       });
       return;
     }
-    
+
     navigate(`/booking/${id}`);
   };
-  
+
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
-      
+
       <div className="container mx-auto px-4 py-8">
-        <Button variant="outline" className="mb-6" onClick={() => window.history.back()}>
+        <Button
+          variant="outline"
+          className="mb-6"
+          onClick={() => window.history.back()}>
           <ArrowRight className="ml-2 h-4 w-4" /> العودة
         </Button>
-        
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2">
@@ -169,14 +180,22 @@ const TeacherProfile = () => {
               studentCount={teacher.studentCount}
               isAvailable={teacher.available}
             />
-            
-            <Tabs defaultValue="about" className="bg-white rounded-lg shadow-md">
+
+            <Tabs
+              defaultValue="about"
+              className="bg-white rounded-lg shadow-md">
               <TabsList className="w-full border-b">
-                <TabsTrigger value="about" className="flex-1 py-3">نبذة عن المدرس</TabsTrigger>
-                <TabsTrigger value="subjects" className="flex-1 py-3">المواد</TabsTrigger>
-                <TabsTrigger value="reviews" className="flex-1 py-3">التقييمات</TabsTrigger>
+                <TabsTrigger value="about" className="flex-1 py-3">
+                  نبذة عن المدرس
+                </TabsTrigger>
+                <TabsTrigger value="subjects" className="flex-1 py-3">
+                  المواد
+                </TabsTrigger>
+                <TabsTrigger value="reviews" className="flex-1 py-3">
+                  التقييمات
+                </TabsTrigger>
               </TabsList>
-              
+
               <TabsContent value="about" className="p-6 focus:outline-none">
                 <div className="mb-8">
                   <h3 className="text-xl font-bold mb-4">نبذة</h3>
@@ -184,21 +203,21 @@ const TeacherProfile = () => {
                     {teacher.about}
                   </div>
                 </div>
-                
-                <EducationExperience 
+
+                <EducationExperience
                   education={teacher.education}
                   experience={teacher.experience}
                   certifications={teacher.certifications}
                 />
               </TabsContent>
-              
+
               <TabsContent value="subjects" className="p-6 focus:outline-none">
-                <SubjectsSection 
+                <SubjectsSection
                   subjects={teacher.subjects}
                   languages={teacher.languages}
                 />
               </TabsContent>
-              
+
               <TabsContent value="reviews" className="p-6 focus:outline-none">
                 <ReviewsSection
                   rating={teacher.rating}
@@ -209,7 +228,7 @@ const TeacherProfile = () => {
               </TabsContent>
             </Tabs>
           </div>
-          
+
           {/* Sidebar */}
           <div>
             <div className="sticky top-24">
@@ -218,26 +237,29 @@ const TeacherProfile = () => {
                   <h3 className="text-xl font-bold mb-2">احجز موعدًا</h3>
                   <p className="text-gray-600">اختر الوقت المناسب لك</p>
                 </div>
-                
+
                 <CalendarComponent onTimeSelected={handleTimeSelected} />
-                
+
                 <div className="p-6">
-                  <Button 
+                  <Button
                     className="w-full"
                     onClick={handleBooking}
-                    disabled={!selectedDateTime}
-                  >
+                    disabled={!selectedDateTime}>
                     تأكيد الحجز
                   </Button>
                 </div>
               </div>
-              
+
               <div className="bg-white rounded-lg shadow-md p-6">
                 <h3 className="text-xl font-bold mb-4">تواصل مع المدرس</h3>
-                <Button className="w-full flex items-center justify-center mb-3" variant="outline">
+                <Button
+                  className="w-full flex items-center justify-center mb-3"
+                  variant="outline">
                   <MessageSquare className="ml-2 h-5 w-5" /> مراسلة
                 </Button>
-                <Button className="w-full flex items-center justify-center" variant="outline">
+                <Button
+                  className="w-full flex items-center justify-center"
+                  variant="outline">
                   <Calendar className="ml-2 h-5 w-5" /> طلب موعد
                 </Button>
               </div>
@@ -245,7 +267,7 @@ const TeacherProfile = () => {
           </div>
         </div>
       </div>
-      
+
       <div className="mt-auto">
         <Footer />
       </div>
