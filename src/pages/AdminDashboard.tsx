@@ -1,5 +1,6 @@
+
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import {
   User,
   Book,
@@ -21,12 +22,15 @@ import { Progress } from "@/components/ui/progress";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useAuth } from "@/contexts/AuthContext";
 import Footer from "@/components/Footer";
+import ScrollToTop from "@/components/ScrollToTop";
 
 const AdminDashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const isMobile = useIsMobile();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  
   const [stats, setStats] = useState({
     users: 0,
     teachers: 0,
@@ -36,6 +40,11 @@ const AdminDashboard = () => {
     approved: 0,
   });
   const [activities, setActivities] = useState([]);
+
+  // Check if current route matches the given path
+  const isActive = (path) => {
+    return location.pathname === path;
+  };
 
   useEffect(() => {
     if (!user || user.role !== "admin") {
@@ -157,10 +166,10 @@ const AdminDashboard = () => {
       </header>
 
       <div className="flex flex-1">
-        {/* Sidebar */}
+        {/* Sidebar - Now always visible on desktop and toggled on mobile */}
         <aside
           className={`bg-white shadow-md fixed inset-y-0 right-0 pt-16 z-40 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-auto lg:z-auto w-64 ${
-            sidebarOpen ? "translate-x-0" : "translate-x-full"
+            sidebarOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"
           }`}>
           <div className="h-full overflow-y-auto p-4">
             <nav className="space-y-8">
@@ -171,14 +180,26 @@ const AdminDashboard = () => {
                 <div className="space-y-1">
                   <Link
                     to="/admin"
-                    className="flex items-center px-4 py-2 text-gray-900 rounded-md bg-blue/10 font-medium">
-                    <Home className="ml-3 h-5 w-5 text-blue" />
+                    className={`flex items-center px-4 py-2 rounded-md font-medium ${
+                      isActive("/admin")
+                        ? "text-gray-900 bg-blue/10"
+                        : "text-gray-600 hover:bg-gray-100 hover:text-blue"
+                    }`}>
+                    <Home className={`ml-3 h-5 w-5 ${
+                      isActive("/admin") ? "text-blue" : ""
+                    }`} />
                     <span>لوحة التحكم</span>
                   </Link>
                   <Link
                     to="/admin/teachers"
-                    className="flex items-center px-4 py-2 text-gray-600 rounded-md hover:bg-gray-100 hover:text-blue">
-                    <User className="ml-3 h-5 w-5" />
+                    className={`flex items-center px-4 py-2 rounded-md font-medium ${
+                      isActive("/admin/teachers")
+                        ? "text-gray-900 bg-blue/10"
+                        : "text-gray-600 hover:bg-gray-100 hover:text-blue"
+                    }`}>
+                    <User className={`ml-3 h-5 w-5 ${
+                      isActive("/admin/teachers") ? "text-blue" : ""
+                    }`} />
                     <span>المدرسين</span>
                     <Badge variant="outline" className="mr-2">
                       {stats.teachers}
@@ -186,8 +207,14 @@ const AdminDashboard = () => {
                   </Link>
                   <Link
                     to="/admin/students"
-                    className="flex items-center px-4 py-2 text-gray-600 rounded-md hover:bg-gray-100 hover:text-blue">
-                    <Users className="ml-3 h-5 w-5" />
+                    className={`flex items-center px-4 py-2 rounded-md font-medium ${
+                      isActive("/admin/students")
+                        ? "text-gray-900 bg-blue/10"
+                        : "text-gray-600 hover:bg-gray-100 hover:text-blue"
+                    }`}>
+                    <Users className={`ml-3 h-5 w-5 ${
+                      isActive("/admin/students") ? "text-blue" : ""
+                    }`} />
                     <span>الطلاب</span>
                     <Badge variant="outline" className="mr-2">
                       {stats.students}
@@ -195,8 +222,14 @@ const AdminDashboard = () => {
                   </Link>
                   <Link
                     to="/admin/bookings"
-                    className="flex items-center px-4 py-2 text-gray-600 rounded-md hover:bg-gray-100 hover:text-blue">
-                    <Calendar className="ml-3 h-5 w-5" />
+                    className={`flex items-center px-4 py-2 rounded-md font-medium ${
+                      isActive("/admin/bookings")
+                        ? "text-gray-900 bg-blue/10"
+                        : "text-gray-600 hover:bg-gray-100 hover:text-blue"
+                    }`}>
+                    <Calendar className={`ml-3 h-5 w-5 ${
+                      isActive("/admin/bookings") ? "text-blue" : ""
+                    }`} />
                     <span>الحجوزات</span>
                     {stats.pending > 0 && (
                       <Badge variant="default" className="mr-2">
@@ -214,8 +247,14 @@ const AdminDashboard = () => {
                 <div className="space-y-1">
                   <Link
                     to="/admin/messages"
-                    className="flex items-center px-4 py-2 text-gray-600 rounded-md hover:bg-gray-100 hover:text-blue">
-                    <MessageSquare className="ml-3 h-5 w-5" />
+                    className={`flex items-center px-4 py-2 rounded-md font-medium ${
+                      isActive("/admin/messages")
+                        ? "text-gray-900 bg-blue/10"
+                        : "text-gray-600 hover:bg-gray-100 hover:text-blue"
+                    }`}>
+                    <MessageSquare className={`ml-3 h-5 w-5 ${
+                      isActive("/admin/messages") ? "text-blue" : ""
+                    }`} />
                     <span>الرسائل</span>
                     <Badge variant="outline" className="mr-2">
                       5
@@ -223,14 +262,26 @@ const AdminDashboard = () => {
                   </Link>
                   <Link
                     to="/admin/reviews"
-                    className="flex items-center px-4 py-2 text-gray-600 rounded-md hover:bg-gray-100 hover:text-blue">
-                    <MessageSquare className="ml-3 h-5 w-5" />
+                    className={`flex items-center px-4 py-2 rounded-md font-medium ${
+                      isActive("/admin/reviews")
+                        ? "text-gray-900 bg-blue/10"
+                        : "text-gray-600 hover:bg-gray-100 hover:text-blue"
+                    }`}>
+                    <MessageSquare className={`ml-3 h-5 w-5 ${
+                      isActive("/admin/reviews") ? "text-blue" : ""
+                    }`} />
                     <span>التقييمات</span>
                   </Link>
                   <Link
                     to="/admin/settings"
-                    className="flex items-center px-4 py-2 text-gray-600 rounded-md hover:bg-gray-100 hover:text-blue">
-                    <Settings className="ml-3 h-5 w-5" />
+                    className={`flex items-center px-4 py-2 rounded-md font-medium ${
+                      isActive("/admin/settings")
+                        ? "text-gray-900 bg-blue/10"
+                        : "text-gray-600 hover:bg-gray-100 hover:text-blue"
+                    }`}>
+                    <Settings className={`ml-3 h-5 w-5 ${
+                      isActive("/admin/settings") ? "text-blue" : ""
+                    }`} />
                     <span>الإعدادات</span>
                   </Link>
                 </div>
@@ -480,6 +531,8 @@ const AdminDashboard = () => {
         </main>
       </div>
 
+      {/* Scroll to Top Button */}
+      <ScrollToTop />
       <Footer />
     </div>
   );
