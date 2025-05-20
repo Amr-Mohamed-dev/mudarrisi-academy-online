@@ -31,7 +31,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Search, UserX, UserCheck, Eye } from "lucide-react";
+import { Search, UserX, UserCheck, Eye, CheckCircle } from "lucide-react";
 import { toast } from "sonner";
 import { User } from "@/contexts/AuthContext";
 
@@ -43,6 +43,7 @@ const TeachersManagement = () => {
   const [selectedTeacher, setSelectedTeacher] = useState<User | null>(null);
   const [teacherStudents, setTeacherStudents] = useState<User[]>([]);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [statusFilter, setStatusFilter] = useState<string>("all");
   const navigate = useNavigate();
 
   const itemsPerPage = 5;
@@ -56,18 +57,33 @@ const TeachersManagement = () => {
   }, []);
 
   useEffect(() => {
+    let filtered = teachers;
+    
+    // تطبيق البحث النصي
     if (searchQuery) {
-      const filtered = teachers.filter(
+      filtered = filtered.filter(
         (teacher) =>
           teacher.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
           teacher.email.toLowerCase().includes(searchQuery.toLowerCase())
       );
-      setFilteredTeachers(filtered);
-      setCurrentPage(1);
-    } else {
-      setFilteredTeachers(teachers);
     }
-  }, [searchQuery, teachers]);
+    
+    // تطبيق فلتر الحالة
+    if (statusFilter !== "all") {
+      if (statusFilter === "pending") {
+        filtered = filtered.filter(teacher => teacher.isApproved === false);
+      } else if (statusFilter === "approved") {
+        filtered = filtered.filter(teacher => teacher.isApproved === true);
+      } else if (statusFilter === "active") {
+        filtered = filtered.filter(teacher => teacher.isActive === true && teacher.isApproved === true);
+      } else if (statusFilter === "inactive") {
+        filtered = filtered.filter(teacher => teacher.isActive === false && teacher.isApproved === true);
+      }
+    }
+    
+    setFilteredTeachers(filtered);
+    setCurrentPage(1);
+  }, [searchQuery, teachers, statusFilter]);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
@@ -124,6 +140,28 @@ const TeachersManagement = () => {
     toast.success(`تم ${teacher.isActive ? "إيقاف" : "تنشيط"} المدرس بنجاح`);
   };
 
+  const handleApproveTeacher = (teacher: User) => {
+    if (!teacher) return;
+
+    const users = JSON.parse(localStorage.getItem("users") || "[]");
+    const updatedUsers = users.map((user: User) =>
+      user.id === teacher.id ? { ...user, isApproved: true } : user
+    );
+
+    localStorage.setItem("users", JSON.stringify(updatedUsers));
+
+    // تحديث القائمة المحلية
+    const updatedTeacher = { ...teacher, isApproved: true };
+    setTeachers((prevTeachers) =>
+      prevTeachers.map((t) => (t.id === teacher.id ? updatedTeacher : t))
+    );
+    setFilteredTeachers((prevFiltered) =>
+      prevFiltered.map((t) => (t.id === teacher.id ? updatedTeacher : t))
+    );
+
+    toast.success(`تمت الموافقة على المدرس ${teacher.name} بنجاح`);
+  };
+
   const handleDeleteTeacher = () => {
     if (!selectedTeacher) return;
 
@@ -147,6 +185,12 @@ const TeachersManagement = () => {
 
     toast.success("تم حذف المدرس بنجاح");
   };
+
+  // الإحصائيات
+  const pendingTeachers = teachers.filter(t => t.isApproved === false).length;
+  const activeTeachers = teachers.filter(t => t.isActive === true && t.isApproved === true).length;
+  const inactiveTeachers = teachers.filter(t => t.isActive === false && t.isApproved === true).length;
+  const approvedTeachers = teachers.filter(t => t.isApproved === true).length;
 
   // التقسيم إلى صفحات
   const totalPages = Math.ceil(filteredTeachers.length / itemsPerPage);
@@ -246,26 +290,55 @@ const TeachersManagement = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
             <div className="bg-blue/10 p-4 rounded-lg text-center">
               <p className="text-sm text-muted-foreground">إجمالي المدرسين</p>
               <p className="text-2xl font-bold text-blue">{teachers.length}</p>
             </div>
+            <div className="bg-amber/10 p-4 rounded-lg text-center">
+              <p className="text-sm text-muted-foreground">بانتظار الموافقة</p>
+              <p className="text-2xl font-bold text-amber">{pendingTeachers}</p>
+            </div>
             <div className="bg-green/10 p-4 rounded-lg text-center">
               <p className="text-sm text-muted-foreground">مدرسون نشطون</p>
-              <p className="text-2xl font-bold text-green">
-                {teachers.filter((t) => t.isActive !== false).length}
-              </p>
+              <p className="text-2xl font-bold text-green">{activeTeachers}</p>
             </div>
             <div className="bg-red/10 p-4 rounded-lg text-center">
               <p className="text-sm text-muted-foreground">مدرسون متوقفون</p>
-              <p className="text-2xl font-bold text-red">
-                {teachers.filter((t) => t.isActive === false).length}
-              </p>
+              <p className="text-2xl font-bold text-red">{inactiveTeachers}</p>
             </div>
           </div>
         </CardContent>
       </Card>
+
+      {/* فلتر حالة المدرس */}
+      <div className="flex flex-wrap gap-2 mb-4">
+        <Button 
+          variant={statusFilter === "all" ? "default" : "outline"} 
+          onClick={() => setStatusFilter("all")}>
+          الجميع ({teachers.length})
+        </Button>
+        <Button 
+          variant={statusFilter === "pending" ? "default" : "outline"} 
+          onClick={() => setStatusFilter("pending")}>
+          بانتظار الموافقة ({pendingTeachers})
+        </Button>
+        <Button 
+          variant={statusFilter === "approved" ? "default" : "outline"} 
+          onClick={() => setStatusFilter("approved")}>
+          تمت الموافقة ({approvedTeachers})
+        </Button>
+        <Button 
+          variant={statusFilter === "active" ? "default" : "outline"} 
+          onClick={() => setStatusFilter("active")}>
+          نشطون ({activeTeachers})
+        </Button>
+        <Button 
+          variant={statusFilter === "inactive" ? "default" : "outline"} 
+          onClick={() => setStatusFilter("inactive")}>
+          متوقفون ({inactiveTeachers})
+        </Button>
+      </div>
 
       <Table className="border">
         <TableHeader>
@@ -299,12 +372,13 @@ const TeachersManagement = () => {
                   {new Date(teacher.createdAt).toLocaleDateString("ar-EG")}
                 </TableCell>
                 <TableCell>
-                  <Badge
-                    variant={
-                      teacher.isActive === false ? "destructive" : "default"
-                    }>
-                    {teacher.isActive === false ? "متوقف" : "نشط"}
-                  </Badge>
+                  {teacher.isApproved === false ? (
+                    <Badge variant="warning" className="bg-amber text-white">بانتظار الموافقة</Badge>
+                  ) : teacher.isActive === false ? (
+                    <Badge variant="destructive">متوقف</Badge>
+                  ) : (
+                    <Badge variant="default">نشط</Badge>
+                  )}
                 </TableCell>
                 <TableCell>
                   <Dialog>
@@ -333,6 +407,7 @@ const TeachersManagement = () => {
                                 <TableHead>الطالب</TableHead>
                                 <TableHead>البريد الإلكتروني</TableHead>
                                 <TableHead>رقم الهاتف</TableHead>
+                                <TableHead>المرحلة الدراسية</TableHead>
                                 <TableHead>تاريخ الانضمام</TableHead>
                               </TableRow>
                             </TableHeader>
@@ -356,6 +431,9 @@ const TeachersManagement = () => {
                                   <TableCell>{student.email}</TableCell>
                                   <TableCell dir="ltr">
                                     {student.phone || "غير متوفر"}
+                                  </TableCell>
+                                  <TableCell>
+                                    {student.educationalStage || "غير محدد"}
                                   </TableCell>
                                   <TableCell>
                                     {new Date(
@@ -385,24 +463,35 @@ const TeachersManagement = () => {
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2">
-                    <Button
-                      variant={
-                        teacher.isActive === false ? "default" : "outline"
-                      }
-                      size="sm"
-                      onClick={() => handleToggleStatus(teacher)}>
-                      {teacher.isActive === false ? (
-                        <>
-                          <UserCheck className="ml-1 h-4 w-4" />
-                          تنشيط
-                        </>
-                      ) : (
-                        <>
-                          <UserX className="ml-1 h-4 w-4" />
-                          إيقاف
-                        </>
-                      )}
-                    </Button>
+                    {teacher.isApproved === false ? (
+                      <Button
+                        variant="default"
+                        size="sm"
+                        className="bg-green"
+                        onClick={() => handleApproveTeacher(teacher)}>
+                        <CheckCircle className="ml-1 h-4 w-4" />
+                        موافقة
+                      </Button>
+                    ) : (
+                      <Button
+                        variant={
+                          teacher.isActive === false ? "default" : "outline"
+                        }
+                        size="sm"
+                        onClick={() => handleToggleStatus(teacher)}>
+                        {teacher.isActive === false ? (
+                          <>
+                            <UserCheck className="ml-1 h-4 w-4" />
+                            تنشيط
+                          </>
+                        ) : (
+                          <>
+                            <UserX className="ml-1 h-4 w-4" />
+                            إيقاف
+                          </>
+                        )}
+                      </Button>
+                    )}
 
                     <Dialog
                       open={isDeleteDialogOpen}

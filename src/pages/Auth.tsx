@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useSearchParams, Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -5,10 +6,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { toast } from "sonner";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth, EducationalStage } from "@/contexts/AuthContext";
 
 const Auth = () => {
   const [searchParams] = useSearchParams();
@@ -39,7 +47,16 @@ const Auth = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [userType, setUserType] = useState("student");
+  const [educationalStage, setEducationalStage] = useState<EducationalStage | "">("");
   const [isRegisterLoading, setIsRegisterLoading] = useState(false);
+
+  // المراحل الدراسية المتاحة
+  const educationalStages: EducationalStage[] = [
+    "أولى ابتدائي", "ثانية ابتدائي", "ثالثة ابتدائي", 
+    "رابعة ابتدائي", "خامسة ابتدائي", "سادسة ابتدائي",
+    "أولى إعدادي", "ثانية إعدادي", "ثالثة إعدادي",
+    "أولى ثانوي", "ثانية ثانوي", "ثالثة ثانوي"
+  ];
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,7 +74,7 @@ const Auth = () => {
       toast.success("تم تسجيل الدخول بنجاح");
       navigate("/");
     } else {
-      toast.error("البريد الإلكتروني أو كلمة المرور غير صحيحة");
+      toast.error("البريد الإلكتروني أو كلمة المرور غير صحيحة أو الحساب غير نشط");
     }
   };
 
@@ -79,6 +96,12 @@ const Auth = () => {
       toast.error("يرجى الموافقة على الشروط والأحكام");
       return;
     }
+    
+    // التحقق من اختيار المرحلة الدراسية للطلاب
+    if (userType === "student" && !educationalStage) {
+      toast.error("يرجى تحديد المرحلة الدراسية");
+      return;
+    }
 
     setIsRegisterLoading(true);
     const userData = {
@@ -86,14 +109,20 @@ const Auth = () => {
       email,
       phone,
       role: userType as "student" | "teacher",
+      educationalStage: userType === "student" ? educationalStage as EducationalStage : undefined,
     };
 
     const success = await register(userData, password);
     setIsRegisterLoading(false);
 
     if (success) {
-      toast.success("تم إنشاء الحساب بنجاح!");
-      navigate("/");
+      if (userType === "teacher") {
+        toast.success("تم إنشاء الحساب بنجاح! بانتظار موافقة المدير.");
+        setActiveTab("login");
+      } else {
+        toast.success("تم إنشاء الحساب بنجاح!");
+        navigate("/");
+      }
     } else {
       toast.error("البريد الإلكتروني مستخدم بالفعل أو حدث خطأ");
     }
@@ -239,34 +268,6 @@ const Auth = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="password">كلمة المرور</Label>
-                    <Input
-                      id="password"
-                      type="password"
-                      placeholder="كلمة المرور (8 أحرف على الأقل)"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                      minLength={8}
-                      disabled={isRegisterLoading}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="confirm-password">تأكيد كلمة المرور</Label>
-                    <Input
-                      id="confirm-password"
-                      type="password"
-                      placeholder="تأكيد كلمة المرور"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      required
-                      minLength={8}
-                      disabled={isRegisterLoading}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
                     <Label>نوع الحساب</Label>
                     <div className="flex space-x-4 space-x-reverse">
                       <div className="flex items-center">
@@ -296,6 +297,74 @@ const Auth = () => {
                         <Label htmlFor="teacher">مدرس</Label>
                       </div>
                     </div>
+                  </div>
+
+                  {userType === "student" && (
+                    <div className="space-y-2">
+                      <Label htmlFor="educational-stage">المرحلة الدراسية</Label>
+                      <Select
+                        value={educationalStage}
+                        onValueChange={setEducationalStage}
+                        disabled={isRegisterLoading}>
+                        <SelectTrigger id="educational-stage">
+                          <SelectValue placeholder="اختر المرحلة الدراسية" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <div className="grid grid-cols-2 gap-2">
+                            <div>
+                              <h4 className="font-bold mb-1 px-2">المرحلة الابتدائية</h4>
+                              {educationalStages.slice(0, 6).map((stage) => (
+                                <SelectItem key={stage} value={stage}>
+                                  {stage}
+                                </SelectItem>
+                              ))}
+                            </div>
+                            <div>
+                              <h4 className="font-bold mb-1 px-2">المرحلة الإعدادية</h4>
+                              {educationalStages.slice(6, 9).map((stage) => (
+                                <SelectItem key={stage} value={stage}>
+                                  {stage}
+                                </SelectItem>
+                              ))}
+                              <h4 className="font-bold mb-1 mt-2 px-2">المرحلة الثانوية</h4>
+                              {educationalStages.slice(9, 12).map((stage) => (
+                                <SelectItem key={stage} value={stage}>
+                                  {stage}
+                                </SelectItem>
+                              ))}
+                            </div>
+                          </div>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+
+                  <div className="space-y-2">
+                    <Label htmlFor="password">كلمة المرور</Label>
+                    <Input
+                      id="password"
+                      type="password"
+                      placeholder="كلمة المرور (8 أحرف على الأقل)"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      minLength={8}
+                      disabled={isRegisterLoading}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="confirm-password">تأكيد كلمة المرور</Label>
+                    <Input
+                      id="confirm-password"
+                      type="password"
+                      placeholder="تأكيد كلمة المرور"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      required
+                      minLength={8}
+                      disabled={isRegisterLoading}
+                    />
                   </div>
 
                   <div className="flex items-center">
@@ -330,6 +399,12 @@ const Auth = () => {
                       ? "جاري إنشاء الحساب..."
                       : "إنشاء الحساب"}
                   </Button>
+
+                  {userType === "teacher" && (
+                    <div className="mt-4 text-center text-sm text-amber">
+                      <p>ملاحظة: حسابات المدرسين تتطلب موافقة الإدارة قبل التفعيل</p>
+                    </div>
+                  )}
                 </form>
               </TabsContent>
             </Tabs>

@@ -2,11 +2,12 @@
 import React, { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search, Filter } from 'lucide-react';
+import { Search } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import TeacherCard from '@/components/TeacherCard';
 import SubjectFilter from '@/components/SubjectFilter';
+import { User } from '@/contexts/AuthContext';
 
 interface Teacher {
   id: string;
@@ -17,7 +18,8 @@ interface Teacher {
   image: string;
   subjects: string[];
   available: boolean;
-  status?: 'active' | 'inactive';
+  isActive?: boolean;
+  isApproved?: boolean;
 }
 
 const Teachers = () => {
@@ -30,8 +32,11 @@ const Teachers = () => {
   // استرجاع بيانات المدرسين من التخزين المحلي
   useEffect(() => {
     const users = JSON.parse(localStorage.getItem('users') || '[]');
-    const teachersData = users.filter((user: any) => 
-      user.role === 'teacher' && user.status !== 'inactive'
+    // فلترة المدرسين: فقط المعتمدين والنشطين
+    const teachersData = users.filter((user: User) => 
+      user.role === 'teacher' && 
+      user.isActive !== false && 
+      user.isApproved === true
     );
     
     // إعداد البيانات للعرض
@@ -44,7 +49,8 @@ const Teachers = () => {
       image: teacher.image || '/placeholder.svg',
       subjects: teacher.subjects || ['الرياضيات', 'الفيزياء'],
       available: teacher.available !== false,
-      status: teacher.status
+      isActive: teacher.isActive,
+      isApproved: teacher.isApproved
     }));
     
     setTeachers(formattedTeachers);
@@ -66,9 +72,9 @@ const Teachers = () => {
     // تطبيق البحث النصي
     if (searchTerm) {
       filtered = filtered.filter(teacher => 
-        teacher.name.includes(searchTerm) || 
-        teacher.subject.includes(searchTerm) ||
-        teacher.subjects.some(subj => subj.includes(searchTerm))
+        teacher.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+        teacher.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        teacher.subjects.some(subj => subj.toLowerCase().includes(searchTerm.toLowerCase()))
       );
     }
     
@@ -103,7 +109,9 @@ const Teachers = () => {
           price: 150,
           image: '/placeholder.svg',
           subjects: ['الجبر', 'الهندسة', 'التفاضل'],
-          available: true
+          available: true,
+          isActive: true,
+          isApproved: true
         },
         {
           id: '2',
@@ -113,7 +121,9 @@ const Teachers = () => {
           price: 170,
           image: '/placeholder.svg',
           subjects: ['القواعد', 'المحادثة', 'الكتابة'],
-          available: false
+          available: false,
+          isActive: true,
+          isApproved: true
         },
         {
           id: '3',
@@ -123,7 +133,9 @@ const Teachers = () => {
           price: 160,
           image: '/placeholder.svg',
           subjects: ['الميكانيكا', 'الكهرباء', 'الديناميكا'],
-          available: true
+          available: true,
+          isActive: true,
+          isApproved: true
         },
         {
           id: '4',
@@ -133,7 +145,9 @@ const Teachers = () => {
           price: 155,
           image: '/placeholder.svg',
           subjects: ['العضوية', 'غير العضوية', 'التحليلية'],
-          available: true
+          available: true,
+          isActive: true,
+          isApproved: true
         }
       ];
       

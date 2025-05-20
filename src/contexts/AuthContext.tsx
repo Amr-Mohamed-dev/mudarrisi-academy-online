@@ -1,3 +1,4 @@
+
 import React, {
   createContext,
   useContext,
@@ -9,6 +10,21 @@ import React, {
 // تعريف أنواع المستخدمين
 export type UserRole = "student" | "teacher" | "admin";
 
+// تعريف المراحل الدراسية للطلاب
+export type EducationalStage = 
+  | "أولى ابتدائي"
+  | "ثانية ابتدائي"
+  | "ثالثة ابتدائي"
+  | "رابعة ابتدائي"
+  | "خامسة ابتدائي"
+  | "سادسة ابتدائي"
+  | "أولى إعدادي"
+  | "ثانية إعدادي"
+  | "ثالثة إعدادي"
+  | "أولى ثانوي"
+  | "ثانية ثانوي"
+  | "ثالثة ثانوي";
+
 // تعريف نموذج بيانات المستخدم
 export interface User {
   id: string;
@@ -19,6 +35,8 @@ export interface User {
   avatar?: string;
   createdAt: string;
   isActive?: boolean;
+  isApproved?: boolean; // للمدرسين: تم الموافقة عليه أم لا
+  educationalStage?: EducationalStage; // المرحلة الدراسية للطلاب
 }
 
 // بيانات المسؤول الثابتة
@@ -69,17 +87,18 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
     // إنشاء حساب مسؤول افتراضي إذا لم يكن موجودًا
     const users = JSON.parse(localStorage.getItem("users") || "[]");
-    const adminExists = users.some((u: { role: string }) => u.role === "admin");
+    const adminExists = users.some((u: { email: string }) => u.email === ADMIN_EMAIL);
 
     if (!adminExists) {
       const adminUser = {
         id: "admin_" + Date.now(),
         name: "مسؤول النظام",
-        email: "admin@example.com",
+        email: ADMIN_EMAIL,
         role: "admin",
         isActive: true,
+        isApproved: true,
         createdAt: new Date().toISOString(),
-        password: "admin123", // في الواقع يجب تشفير كلمات المرور
+        password: ADMIN_PASSWORD, // في الواقع يجب تشفير كلمات المرور
       };
 
       localStorage.setItem("users", JSON.stringify([...users, adminUser]));
@@ -99,9 +118,23 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     try {
       // محاكاة تأخير الاتصال بالخادم
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      // في تطبيق حقيقي، هنا سيتم الاتصال بـ API للتحقق من بيانات المستخدم
-      // هذا مجرد تطبيق مؤقت للاختبار
+      
+      // التحقق من بيانات المستخدم
       const users = JSON.parse(localStorage.getItem("users") || "[]");
+      
+      // للمدير - التحقق من الإيميل والباسورد الثابتين
+      if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+        const adminUser = users.find((u: { email: string }) => u.email === ADMIN_EMAIL);
+        if (adminUser) {
+          const { password: _, ...userWithoutPassword } = adminUser;
+          setUser(userWithoutPassword);
+          localStorage.setItem("user", JSON.stringify(userWithoutPassword));
+          setIsLoading(false);
+          return true;
+        }
+      }
+      
+      // للمستخدمين الآخرين
       const foundUser = users.find(
         (u: { email: string; password: string }) =>
           u.email === email && u.password === password
@@ -112,6 +145,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         if (foundUser.isActive === false) {
           setIsLoading(false);
           return false; // المستخدم تم إيقافه
+        }
+        
+        // التحقق من الموافقة للمدرسين
+        if (foundUser.role === "teacher" && foundUser.isApproved === false) {
+          setIsLoading(false);
+          return false; // المدرس لم تتم الموافقة عليه بعد
         }
 
         const { password: _, ...userWithoutPassword } = foundUser;
@@ -159,15 +198,20 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         createdAt: new Date().toISOString(),
         avatar: userData.avatar,
         isActive: true, // المستخدم نشط افتراضيًا
+        isApproved: userData.role === "teacher" ? false : true, // المدرسون يحتاجون للموافقة، بينما الطلاب لا يحتاجون
+        educationalStage: userData.educationalStage, // إضافة المرحلة الدراسية للطلاب
       };
 
       // حفظ المستخدم مع كلمة المرور في التخزين المحلي
       users.push({ ...newUser, password });
       localStorage.setItem("users", JSON.stringify(users));
 
-      // تسجيل الدخول تلقائياً بعد التسجيل
-      setUser(newUser);
-      localStorage.setItem("user", JSON.stringify(newUser));
+      // للطلاب والمسؤول: تسجيل الدخول تلقائيًا بعد التسجيل
+      // للمدرسين: لا يتم تسجيل الدخول حتى تتم الموافقة
+      if (newUser.role !== "teacher") {
+        setUser(newUser);
+        localStorage.setItem("user", JSON.stringify(newUser));
+      }
 
       setIsLoading(false);
       return true;
