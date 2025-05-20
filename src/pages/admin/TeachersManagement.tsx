@@ -373,7 +373,7 @@ const TeachersManagement = () => {
                 </TableCell>
                 <TableCell>
                   {teacher.isApproved === false ? (
-                    <Badge variant="warning" className="bg-amber text-white">بانتظار الموافقة</Badge>
+                    <Badge variant="outline" className="bg-amber text-white">بانتظار الموافقة</Badge>
                   ) : teacher.isActive === false ? (
                     <Badge variant="destructive">متوقف</Badge>
                   ) : (

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useSearchParams, Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -304,7 +303,7 @@ const Auth = () => {
                       <Label htmlFor="educational-stage">المرحلة الدراسية</Label>
                       <Select
                         value={educationalStage}
-                        onValueChange={setEducationalStage}
+                        onValueChange={(value: EducationalStage | "") => setEducationalStage(value)}
                         disabled={isRegisterLoading}>
                         <SelectTrigger id="educational-stage">
                           <SelectValue placeholder="اختر المرحلة الدراسية" />
