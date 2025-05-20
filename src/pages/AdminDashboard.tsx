@@ -25,11 +25,20 @@ import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 
 const AdminDashboard = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  // Store sidebar state in localStorage to persist across page navigation
+  const [sidebarOpen, setSidebarOpen] = useState(() => {
+    const savedState = localStorage.getItem("adminSidebarOpen");
+    return savedState !== null ? JSON.parse(savedState) : true;
+  });
   const isMobile = useIsMobile();
   const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  
+  // Save sidebar state to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem("adminSidebarOpen", JSON.stringify(sidebarOpen));
+  }, [sidebarOpen]);
   
   const [stats, setStats] = useState({
     users: 0,
@@ -166,7 +175,7 @@ const AdminDashboard = () => {
       </header>
 
       <div className="flex flex-1">
-        {/* Sidebar - Now always visible on desktop and toggled on mobile */}
+        {/* Sidebar - Now using localStorage to persist state across page navigation */}
         <aside
           className={`bg-white shadow-md fixed inset-y-0 right-0 pt-16 z-40 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-auto lg:z-auto w-64 ${
             sidebarOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"

@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowUp } from "lucide-react";
+import { ChevronUp } from "lucide-react";
 
 const ScrollToTop = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -34,9 +34,9 @@ const ScrollToTop = () => {
       {isVisible && (
         <Button
           onClick={scrollToTop}
-          className="fixed bottom-8 left-8 z-50 rounded-full size-12 p-0 shadow-lg bg-blue hover:bg-blue/80"
+          className="fixed bottom-8 right-8 z-50 rounded-full size-12 p-0 shadow-lg bg-blue hover:bg-blue/80"
           aria-label="العودة إلى الأعلى">
-          <ArrowUp className="h-5 w-5" />
+          <ChevronUp className="h-5 w-5" />
         </Button>
       )}
     </>
