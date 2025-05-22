@@ -36,7 +36,7 @@ const Navbar = () => {
           
           {/* Search Bar - Hide on mobile, move to dropdown */}
           {!isMobile && (
-            <div className="relative mx-4 flex-1 max-w-md">
+            <div className="relative mx-4 flex-1 max-w-md justify-between items-center ">
               <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400">
                 <Search className="h-4 w-4" />
               </div>
