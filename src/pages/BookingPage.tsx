@@ -6,7 +6,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Bell } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const BookingPage = () => {
@@ -53,17 +53,33 @@ const BookingPage = () => {
       studentName: user?.name,
       date: new Date().toLocaleDateString('ar-SA'),
       time: '10:00 صباحًا',
+      startTime: '10:00 صباحًا',
+      endTime: '11:00 صباحًا',
       subject: 'الرياضيات',
-      status: 'pending',
+      status: 'pending', // حالة الحجز معلقة حتى يوافق المدير
       createdAt: new Date().toISOString(),
+      price: teacher.price || 150, // إضافة سعر المدرس للحجز
     };
     
     bookings.push(newBooking);
     localStorage.setItem('bookings', JSON.stringify(bookings));
     
+    // إنشاء إشعار للطالب بإنشاء الحجز
+    const notifications = JSON.parse(localStorage.getItem('notifications') || '[]');
+    const newNotification = {
+      id: `notification_${Date.now()}`,
+      userId: user?.id,
+      title: 'تم إنشاء حجز جديد',
+      message: `تم إرسال طلب حجز مع المدرس ${teacher.name}. سيتم إعلامك عند الموافقة أو رفض الطلب.`,
+      read: false,
+      createdAt: new Date().toISOString(),
+    };
+    notifications.push(newNotification);
+    localStorage.setItem('notifications', JSON.stringify(notifications));
+    
     toast({
-      title: "تم الحجز بنجاح",
-      description: "تم إرسال طلب الحجز بنجاح وسيتم التواصل معك قريبًا",
+      title: "تم إرسال طلب الحجز",
+      description: "سيتم مراجعة طلبك من قبل الإدارة وسيتم إخطارك بالنتيجة",
     });
     
     navigate('/student/profile');
@@ -80,6 +96,9 @@ const BookingPage = () => {
       </div>
     );
   }
+  
+  // استخدام سعر المدرس المخزن إذا كان موجودًا
+  const teacherPrice = teacher?.price || 150;
   
   return (
     <div className="flex flex-col min-h-screen">
@@ -100,7 +119,7 @@ const BookingPage = () => {
             <CardContent>
               <p className="font-bold text-lg">{teacher?.name}</p>
               <p className="text-gray-600">الرياضيات</p>
-              <p className="text-gray-600">السعر: 150 ريال / ساعة</p>
+              <p className="text-gray-600 font-bold">السعر: {teacherPrice} ريال / ساعة</p>
             </CardContent>
           </Card>
           
@@ -111,12 +130,19 @@ const BookingPage = () => {
             <CardContent>
               <div className="space-y-2">
                 <p><span className="font-bold">التاريخ:</span> {new Date().toLocaleDateString('ar-SA')}</p>
-                <p><span className="font-bold">الوقت:</span> 10:00 صباحًا</p>
+                <p><span className="font-bold">الوقت:</span> 10:00 صباحًا - 11:00 صباحًا</p>
                 <p><span className="font-bold">المادة:</span> الرياضيات</p>
+                <p><span className="font-bold">السعر:</span> {teacherPrice} ريال</p>
+                <div className="flex items-center gap-2 mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
+                  <Bell className="h-5 w-5 text-blue-500" />
+                  <p className="text-blue-700 font-medium">
+                    سيتم إشعارك عند الموافقة أو رفض الحجز من قبل الإدارة
+                  </p>
+                </div>
               </div>
             </CardContent>
             <CardFooter>
-              <Button onClick={handleBooking} className="w-full">تأكيد الحجز</Button>
+              <Button onClick={handleBooking} className="w-full">تأكيد طلب الحجز</Button>
             </CardFooter>
           </Card>
         </div>
