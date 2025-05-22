@@ -20,7 +20,7 @@ export interface TeacherProps {
 
 const TeacherCard = ({ id, name, subject, rating, price, image, subjects, available }: TeacherProps) => {
   return (
-    <div className="card hover:border-blue-light border-2 border-transparent">
+    <div className="card hover:border-blue-light border-2 border-transparent shadow-md rounded-lg p-5">
       <div className="flex flex-col h-full">
         <div className="flex items-start mb-4">
           <Avatar className="h-16 w-16">
@@ -37,7 +37,7 @@ const TeacherCard = ({ id, name, subject, rating, price, image, subjects, availa
                   size={16}
                   className={cn(
                     "fill-current",
-                    i < Math.floor(rating) ? "text-amber" : "text-gray-300"
+                    i < Math.floor(rating) ? "text-amber-400" : "text-gray-300"
                   )}
                 />
               ))}
@@ -47,7 +47,7 @@ const TeacherCard = ({ id, name, subject, rating, price, image, subjects, availa
           <div className="text-left">
             <div className="flex flex-col items-end">
               <span className="text-sm text-gray-500">السعر بالساعة</span>
-              <span className="text-lg font-bold text-blue">{price} ريال</span>
+              <span className="text-lg font-bold text-blue-600">{price} ريال</span>
               <Badge variant={available ? "default" : "outline"} className={cn(
                 "mt-2",
                 available ? "bg-green-500 hover:bg-green-600" : "text-gray-500"

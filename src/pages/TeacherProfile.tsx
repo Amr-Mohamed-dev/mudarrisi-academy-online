@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { MessageSquare, Calendar, ArrowRight } from "lucide-react";
@@ -236,6 +237,12 @@ const TeacherProfile = () => {
                 <div className="p-6 border-b">
                   <h3 className="text-xl font-bold mb-2">احجز موعدًا</h3>
                   <p className="text-gray-600">اختر الوقت المناسب لك</p>
+                  <p className="font-bold text-lg text-blue-600 mt-2">
+                    {teacher.price} ريال / ساعة
+                  </p>
+                  <p className="text-yellow-600 text-sm mt-1">
+                    * جميع الحجوزات تخضع لموافقة إدارة المنصة
+                  </p>
                 </div>
 
                 <CalendarComponent onTimeSelected={handleTimeSelected} />
