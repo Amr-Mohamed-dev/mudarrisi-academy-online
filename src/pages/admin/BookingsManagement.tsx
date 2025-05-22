@@ -47,6 +47,15 @@ interface Booking {
   createdAt: string;
 }
 
+interface Notification {
+  id: string;
+  userId: string;
+  title: string;
+  message: string;
+  read: boolean;
+  createdAt: string;
+}
+
 const BookingsManagement = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [filteredBookings, setFilteredBookings] = useState<Booking[]>([]);
@@ -136,6 +145,28 @@ const BookingsManagement = () => {
     setCurrentPage(1);
   }, [bookings, currentTab, searchQuery, teacherMap, studentMap]);
 
+  // وظيفة إرسال إشعار للطالب
+  const sendNotification = (studentId: string, title: string, message: string) => {
+    // جلب الإشعارات الحالية
+    const notifications = JSON.parse(localStorage.getItem("notifications") || "[]");
+    
+    // إنشاء إشعار جديد
+    const newNotification: Notification = {
+      id: `notification_${Date.now()}`,
+      userId: studentId,
+      title,
+      message,
+      read: false,
+      createdAt: new Date().toISOString()
+    };
+    
+    // إضافة الإشعار الجديد
+    notifications.push(newNotification);
+    
+    // حفظ الإشعارات المحدثة
+    localStorage.setItem("notifications", JSON.stringify(notifications));
+  };
+
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
   };
@@ -157,6 +188,14 @@ const BookingsManagement = () => {
     localStorage.setItem("bookings", JSON.stringify(updatedBookings));
     setBookings(updatedBookings);
 
+    // إرسال إشعار للطالب بقبول الحجز
+    const teacherName = teacherMap[booking.teacherId]?.name || "المدرس";
+    sendNotification(
+      booking.studentId,
+      "تم الموافقة على حجزك",
+      `تم الموافقة على حجزك مع ${teacherName} في تاريخ ${booking.date} الوقت: ${booking.startTime} - ${booking.endTime}`
+    );
+
     toast.success("تم الموافقة على الحجز بنجاح");
   };
 
@@ -167,6 +206,14 @@ const BookingsManagement = () => {
 
     localStorage.setItem("bookings", JSON.stringify(updatedBookings));
     setBookings(updatedBookings);
+
+    // إرسال إشعار للطالب برفض الحجز
+    const teacherName = teacherMap[booking.teacherId]?.name || "المدرس";
+    sendNotification(
+      booking.studentId,
+      "تم رفض حجزك",
+      `نأسف، تم رفض حجزك مع ${teacherName} في تاريخ ${booking.date}. يرجى محاولة حجز موعد آخر أو التواصل مع الدعم للمزيد من المعلومات.`
+    );
 
     toast.success("تم رفض الحجز بنجاح");
   };

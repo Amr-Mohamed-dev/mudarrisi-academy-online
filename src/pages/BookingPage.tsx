@@ -6,7 +6,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Bell } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const BookingPage = () => {
@@ -64,9 +64,22 @@ const BookingPage = () => {
     bookings.push(newBooking);
     localStorage.setItem('bookings', JSON.stringify(bookings));
     
+    // إنشاء إشعار للطالب بإنشاء الحجز
+    const notifications = JSON.parse(localStorage.getItem('notifications') || '[]');
+    const newNotification = {
+      id: `notification_${Date.now()}`,
+      userId: user?.id,
+      title: 'تم إنشاء حجز جديد',
+      message: `تم إرسال طلب حجز مع المدرس ${teacher.name}. سيتم إعلامك عند الموافقة أو رفض الطلب.`,
+      read: false,
+      createdAt: new Date().toISOString(),
+    };
+    notifications.push(newNotification);
+    localStorage.setItem('notifications', JSON.stringify(notifications));
+    
     toast({
       title: "تم إرسال طلب الحجز",
-      description: "سيتم مراجعة طلبك من قبل الإدارة والرد عليك قريبًا",
+      description: "سيتم مراجعة طلبك من قبل الإدارة وسيتم إخطارك بالنتيجة",
     });
     
     navigate('/student/profile');
@@ -120,9 +133,12 @@ const BookingPage = () => {
                 <p><span className="font-bold">الوقت:</span> 10:00 صباحًا - 11:00 صباحًا</p>
                 <p><span className="font-bold">المادة:</span> الرياضيات</p>
                 <p><span className="font-bold">السعر:</span> {teacherPrice} ريال</p>
-                <p className="text-yellow-600 mt-4 font-medium">
-                  * سيتم مراجعة الحجز والموافقة عليه من قبل إدارة المنصة
-                </p>
+                <div className="flex items-center gap-2 mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
+                  <Bell className="h-5 w-5 text-blue-500" />
+                  <p className="text-blue-700 font-medium">
+                    سيتم إشعارك عند الموافقة أو رفض الحجز من قبل الإدارة
+                  </p>
+                </div>
               </div>
             </CardContent>
             <CardFooter>
