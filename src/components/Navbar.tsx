@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Menu, X, User, Search, LogOut } from 'lucide-react';
+import { Menu, X, User, Search, LogOut, Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useAuth } from '@/contexts/AuthContext';
@@ -24,6 +24,7 @@ const Navbar = () => {
   };
   
   const isAdmin = user?.role === 'admin';
+  const isTeacher = user?.role === 'teacher';
   
   return (
     <nav className="bg-white shadow-md sticky top-0 z-50 w-full">
@@ -71,7 +72,17 @@ const Navbar = () => {
                       <Button variant="outline" size="sm">لوحة التحكم</Button>
                     </Link>
                   )}
-                  <Link to="/profile">
+                  
+                  {isTeacher && (
+                    <Link to="/teacher/ratings">
+                      <Button variant="outline" size="sm" className="flex items-center">
+                        <Star className="h-4 w-4 ml-1" />
+                        تقييم الطلاب
+                      </Button>
+                    </Link>
+                  )}
+                  
+                  <Link to={isTeacher ? "/teachers/" + user.id : "/student/profile"}>
                     <Button variant="ghost" size="icon" className="rounded-full bg-blue/10">
                       <User className="h-5 w-5 text-blue" />
                     </Button>
@@ -139,11 +150,17 @@ const Navbar = () => {
                 <Link to="/about" className="text-gray-700 hover:text-blue px-3 py-2 border-b">
                   من نحن
                 </Link>
+                
+                {isTeacher && (
+                  <Link to="/teacher/ratings" className="text-gray-700 hover:text-blue px-3 py-2 border-b">
+                    تقييم الطلاب
+                  </Link>
+                )}
               </div>
               
               {isAuthenticated ? (
                 <div className="pt-4 flex flex-col space-y-3">
-                  <Link to="/profile" className="w-full">
+                  <Link to={isTeacher ? "/teachers/" + user.id : "/student/profile"} className="w-full">
                     <Button variant="outline" className="w-full justify-start">
                       <User className="h-4 w-4 ml-2" /> الملف الشخصي
                     </Button>
