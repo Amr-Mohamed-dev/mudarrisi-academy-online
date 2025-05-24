@@ -1,759 +1,357 @@
-import React, { useState, useEffect } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, CheckCircle, XCircle, Calendar } from "lucide-react";
-import { toast } from "sonner";
-import { User } from "@/contexts/AuthContext";
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { ArrowRight, CheckCircle, XCircle, Calendar, Clock } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import BookingFilters from '@/components/admin/BookingFilters';
+import BookingActions from '@/components/admin/BookingActions';
 
 interface Booking {
   id: string;
   teacherId: string;
+  teacherName: string;
   studentId: string;
+  studentName: string;
   date: string;
-  startTime: string;
-  endTime: string;
+  time: string;
   subject: string;
-  status: "pending" | "approved" | "rejected" | "completed";
-  createdAt: string;
-}
-
-interface Notification {
-  id: string;
-  userId: string;
-  title: string;
-  message: string;
-  read: boolean;
+  status: 'pending' | 'approved' | 'rejected' | 'completed' | 'cancelled';
+  attended?: boolean;
+  price: number;
   createdAt: string;
 }
 
 const BookingsManagement = () => {
+  const { user, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [filteredBookings, setFilteredBookings] = useState<Booking[]>([]);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [currentTab, setCurrentTab] = useState<string>("all");
-  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
-  const [teacherMap, setTeacherMap] = useState<Record<string, User>>({});
-  const [studentMap, setStudentMap] = useState<Record<string, User>>({});
-  const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
-
-  const itemsPerPage = 5;
-
-  // استرجاع الحجوزات والمدرسين والطلاب من التخزين المحلي
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  
   useEffect(() => {
-    const storedBookings = JSON.parse(localStorage.getItem("bookings") || "[]");
-
-    // Ensure all bookings have correct status type
-    const typedBookings: Booking[] = storedBookings.map(
-      (booking: { status: string }) => {
-        // Validate and convert status to ensure it matches our type
-        let status: "pending" | "approved" | "rejected" | "completed" =
-          "pending";
-
-        if (
-          booking.status === "pending" ||
-          booking.status === "approved" ||
-          booking.status === "rejected" ||
-          booking.status === "completed"
-        ) {
-          status = booking.status;
-        }
-
-        return {
-          ...booking,
-          status,
-        };
-      }
-    );
-
-    setBookings(typedBookings);
-
-    // ... keep existing code (loading teachers and students)
-    const users = JSON.parse(localStorage.getItem("users") || "[]");
-
-    // إنشاء خرائط للمدرسين والطلاب للوصول السريع
-    const teachers: Record<string, User> = {};
-    const students: Record<string, User> = {};
-
-    users.forEach((user: User) => {
-      if (user.role === "teacher") {
-        teachers[user.id] = user;
-      } else if (user.role === "student") {
-        students[user.id] = user;
-      }
-    });
-
-    setTeacherMap(teachers);
-    setStudentMap(students);
-  }, []);
-
-  // ... keep existing code (filtering bookings)
-  useEffect(() => {
-    let filtered = [...bookings];
-
-    // تصفية حسب علامة التبويب
-    if (currentTab !== "all") {
-      filtered = filtered.filter((booking) => booking.status === currentTab);
+    if (!isAuthenticated || user?.role !== 'admin') {
+      navigate('/auth');
+      return;
     }
-
-    // تصفية حسب البحث
-    if (searchQuery) {
-      const lowerSearch = searchQuery.toLowerCase();
-      filtered = filtered.filter((booking) => {
-        const teacher = teacherMap[booking.teacherId];
-        const student = studentMap[booking.studentId];
-
-        return (
-          (teacher && teacher.name.toLowerCase().includes(lowerSearch)) ||
-          (student && student.name.toLowerCase().includes(lowerSearch)) ||
-          booking.subject.toLowerCase().includes(lowerSearch)
-        );
-      });
-    }
-
-    setFilteredBookings(filtered);
-    setCurrentPage(1);
-  }, [bookings, currentTab, searchQuery, teacherMap, studentMap]);
-
-  // وظيفة إرسال إشعار للطالب
-  const sendNotification = (studentId: string, title: string, message: string) => {
-    // جلب الإشعارات الحالية
-    const notifications = JSON.parse(localStorage.getItem("notifications") || "[]");
     
-    // إنشاء إشعار جديد
-    const newNotification: Notification = {
-      id: `notification_${Date.now()}`,
-      userId: studentId,
-      title,
-      message,
-      read: false,
-      createdAt: new Date().toISOString()
+    loadBookings();
+  }, [isAuthenticated, user, navigate]);
+  
+  useEffect(() => {
+    filterBookings();
+  }, [bookings, statusFilter]);
+  
+  const loadBookings = () => {
+    const allBookings = JSON.parse(localStorage.getItem('bookings') || '[]');
+    setBookings(allBookings);
+  };
+  
+  const filterBookings = () => {
+    if (statusFilter === 'all') {
+      setFilteredBookings(bookings);
+    } else {
+      setFilteredBookings(bookings.filter(booking => booking.status === statusFilter));
+    }
+  };
+  
+  const handleApproveBooking = (bookingId: string) => {
+    const updatedBookings = bookings.map(booking => {
+      if (booking.id === bookingId) {
+        return { ...booking, status: 'approved' as const };
+      }
+      return booking;
+    });
+    
+    setBookings(updatedBookings);
+    localStorage.setItem('bookings', JSON.stringify(updatedBookings));
+    
+    // إرسال إشعار للطالب والمدرس
+    const booking = updatedBookings.find(b => b.id === bookingId);
+    if (booking) {
+      const notifications = JSON.parse(localStorage.getItem('notifications') || '[]');
+      
+      // إشعار للطالب
+      notifications.push({
+        id: `notification_${Date.now()}_student`,
+        userId: booking.studentId,
+        title: 'تم قبول حجزك',
+        message: `تم قبول حجزك مع المدرس ${booking.teacherName} في ${booking.date} الساعة ${booking.time}`,
+        read: false,
+        createdAt: new Date().toISOString()
+      });
+      
+      // إشعار للمدرس
+      notifications.push({
+        id: `notification_${Date.now()}_teacher`,
+        userId: booking.teacherId,
+        title: 'حجز جديد تم قبوله',
+        message: `تم قبول حجز الطالب ${booking.studentName} معك في ${booking.date} الساعة ${booking.time}`,
+        read: false,
+        createdAt: new Date().toISOString()
+      });
+      
+      localStorage.setItem('notifications', JSON.stringify(notifications));
+    }
+    
+    toast({
+      title: "تم قبول الحجز",
+      description: "تم قبول الحجز وإرسال إشعارات للطالب والمدرس",
+    });
+  };
+  
+  const handleRejectBooking = (bookingId: string) => {
+    const updatedBookings = bookings.map(booking => {
+      if (booking.id === bookingId) {
+        return { ...booking, status: 'rejected' as const };
+      }
+      return booking;
+    });
+    
+    setBookings(updatedBookings);
+    localStorage.setItem('bookings', JSON.stringify(updatedBookings));
+    
+    // إرسال إشعار للطالب
+    const booking = updatedBookings.find(b => b.id === bookingId);
+    if (booking) {
+      const notifications = JSON.parse(localStorage.getItem('notifications') || '[]');
+      
+      notifications.push({
+        id: `notification_${Date.now()}`,
+        userId: booking.studentId,
+        title: 'تم رفض حجزك',
+        message: `نأسف، تم رفض حجزك مع المدرس ${booking.teacherName}. يمكنك المحاولة مع مدرس آخر.`,
+        read: false,
+        createdAt: new Date().toISOString()
+      });
+      
+      localStorage.setItem('notifications', JSON.stringify(notifications));
+    }
+    
+    toast({
+      title: "تم رفض الحجز",
+      description: "تم رفض الحجز وإرسال إشعار للطالب",
+    });
+  };
+  
+  const getStatusBadge = (status: string) => {
+    const statusConfig = {
+      pending: { label: 'قيد الانتظار', variant: 'secondary' as const },
+      approved: { label: 'مقبول', variant: 'default' as const },
+      rejected: { label: 'مرفوض', variant: 'destructive' as const },
+      completed: { label: 'مكتمل', variant: 'default' as const },
+      cancelled: { label: 'ملغي', variant: 'outline' as const }
     };
     
-    // إضافة الإشعار الجديد
-    notifications.push(newNotification);
-    
-    // حفظ الإشعارات المحدثة
-    localStorage.setItem("notifications", JSON.stringify(notifications));
+    const config = statusConfig[status as keyof typeof statusConfig];
+    return <Badge variant={config.variant}>{config.label}</Badge>;
   };
-
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
-  };
-
-  const handleTabChange = (value: string) => {
-    setCurrentTab(value);
-  };
-
-  const handleViewBookingDetails = (booking: Booking) => {
-    setSelectedBooking(booking);
-    setIsDetailsDialogOpen(true);
-  };
-
-  const handleApproveBooking = (booking: Booking) => {
-    const updatedBookings = bookings.map((b) =>
-      b.id === booking.id ? { ...b, status: "approved" as const } : b
-    );
-
-    localStorage.setItem("bookings", JSON.stringify(updatedBookings));
-    setBookings(updatedBookings);
-
-    // إرسال إشعار للطالب بقبول الحجز
-    const teacherName = teacherMap[booking.teacherId]?.name || "المدرس";
-    sendNotification(
-      booking.studentId,
-      "تم الموافقة على حجزك",
-      `تم الموافقة على حجزك مع ${teacherName} في تاريخ ${booking.date} الوقت: ${booking.startTime} - ${booking.endTime}`
-    );
-
-    toast.success("تم الموافقة على الحجز بنجاح");
-  };
-
-  const handleRejectBooking = (booking: Booking) => {
-    const updatedBookings = bookings.map((b) =>
-      b.id === booking.id ? { ...b, status: "rejected" as const } : b
-    );
-
-    localStorage.setItem("bookings", JSON.stringify(updatedBookings));
-    setBookings(updatedBookings);
-
-    // إرسال إشعار للطالب برفض الحجز
-    const teacherName = teacherMap[booking.teacherId]?.name || "المدرس";
-    sendNotification(
-      booking.studentId,
-      "تم رفض حجزك",
-      `نأسف، تم رفض حجزك مع ${teacherName} في تاريخ ${booking.date}. يرجى محاولة حجز موعد آخر أو التواصل مع الدعم للمزيد من المعلومات.`
-    );
-
-    toast.success("تم رفض الحجز بنجاح");
-  };
-
-  // ... keep existing code (pagination and other functions)
-  // التقسيم إلى صفحات
-  const totalPages = Math.ceil(filteredBookings.length / itemsPerPage);
-  const currentBookings = filteredBookings.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-
-  const renderPagination = () => {
-    const pages = [];
-
-    // الصفحة الأولى دائمًا
-    pages.push(
-      <PaginationItem key="first">
-        <PaginationLink
-          onClick={() => setCurrentPage(1)}
-          isActive={currentPage === 1}>
-          1
-        </PaginationLink>
-      </PaginationItem>
-    );
-
-    // إضافة علامة القطع إذا كانت الصفحة الحالية > 3
-    if (currentPage > 3) {
-      pages.push(
-        <PaginationItem key="ellipsis1">
-          <PaginationEllipsis />
-        </PaginationItem>
-      );
-    }
-
-    // الصفحات القريبة من الصفحة الحالية
-    for (
-      let i = Math.max(2, currentPage - 1);
-      i <= Math.min(totalPages - 1, currentPage + 1);
-      i++
-    ) {
-      pages.push(
-        <PaginationItem key={i}>
-          <PaginationLink
-            onClick={() => setCurrentPage(i)}
-            isActive={currentPage === i}>
-            {i}
-          </PaginationLink>
-        </PaginationItem>
-      );
-    }
-
-    // إضافة علامة القطع إذا كانت الصفحة الحالية < totalPages - 2
-    if (currentPage < totalPages - 2 && totalPages > 3) {
-      pages.push(
-        <PaginationItem key="ellipsis2">
-          <PaginationEllipsis />
-        </PaginationItem>
-      );
-    }
-
-    // الصفحة الأخيرة دائمًا إذا كان هناك أكثر من صفحة واحدة
-    if (totalPages > 1) {
-      pages.push(
-        <PaginationItem key="last">
-          <PaginationLink
-            onClick={() => setCurrentPage(totalPages)}
-            isActive={currentPage === totalPages}>
-            {totalPages}
-          </PaginationLink>
-        </PaginationItem>
-      );
-    }
-
-    return pages;
-  };
-
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case "pending":
-        return (
-          <Badge
-            variant="outline"
-            className="bg-yellow-100 text-yellow-800 border-yellow-300">
-            قيد الانتظار
-          </Badge>
-        );
-      case "approved":
-        return (
-          <Badge
-            variant="outline"
-            className="bg-green-100 text-green-800 border-green-300">
-            تمت الموافقة
-          </Badge>
-        );
-      case "rejected":
-        return (
-          <Badge
-            variant="outline"
-            className="bg-red-100 text-red-800 border-red-300">
-            مرفوض
-          </Badge>
-        );
-      case "completed":
-        return (
-          <Badge
-            variant="outline"
-            className="bg-blue-100 text-blue-800 border-blue-300">
-            مكتمل
-          </Badge>
-        );
-      default:
-        return <Badge variant="outline">غير معروف</Badge>;
-    }
-  };
-
-  // حساب الإحصائيات
-  const totalBookings = bookings.length;
-  const pendingBookings = bookings.filter((b) => b.status === "pending").length;
-  const approvedBookings = bookings.filter(
-    (b) => b.status === "approved"
-  ).length;
-  const rejectedBookings = bookings.filter(
-    (b) => b.status === "rejected"
-  ).length;
-  const completedBookings = bookings.filter(
-    (b) => b.status === "completed"
-  ).length;
-
+  
   return (
-    <>
-      <div className="container mx-auto py-6">
-        <div className="flex justify-between items-center mb-6">
+    <div className="container mx-auto px-4 py-8">
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center">
+          <Button variant="outline" onClick={() => navigate('/admin')} className="ml-4">
+            <ArrowRight className="h-4 w-4 ml-2" />
+            العودة
+          </Button>
           <h1 className="text-2xl font-bold">إدارة الحجوزات</h1>
-
-          <div className="relative">
-            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400">
-              <Search className="h-4 w-4" />
-            </div>
-            <input
-              type="text"
-              placeholder="بحث في الحجوزات..."
-              value={searchQuery}
-              onChange={handleSearch}
-              className="w-64 py-2 pr-10 pl-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue"
-            />
-          </div>
         </div>
-
-        <Card className="mb-6">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg">إحصائيات الحجوزات</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 sm:grid-cols-5 gap-4">
-              <div className="bg-gray-100 p-4 rounded-lg text-center">
-                <p className="text-sm text-muted-foreground">إجمالي الحجوزات</p>
-                <p className="text-2xl font-bold">{totalBookings}</p>
-              </div>
-              <div className="bg-yellow-50 p-4 rounded-lg text-center">
-                <p className="text-sm text-yellow-700">قيد الانتظار</p>
-                <p className="text-2xl font-bold text-yellow-600">
-                  {pendingBookings}
-                </p>
-              </div>
-              <div className="bg-green-50 p-4 rounded-lg text-center">
-                <p className="text-sm text-green-700">تمت الموافقة</p>
-                <p className="text-2xl font-bold text-green-600">
-                  {approvedBookings}
-                </p>
-              </div>
-              <div className="bg-red-50 p-4 rounded-lg text-center">
-                <p className="text-sm text-red-700">مرفوضة</p>
-                <p className="text-2xl font-bold text-red-600">
-                  {rejectedBookings}
-                </p>
-              </div>
-              <div className="bg-blue-50 p-4 rounded-lg text-center">
-                <p className="text-sm text-blue-700">مكتملة</p>
-                <p className="text-2xl font-bold text-blue-600">
-                  {completedBookings}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Tabs
-          defaultValue="all"
-          value={currentTab}
-          onValueChange={handleTabChange}>
-          <TabsList className="mb-6">
-            <TabsTrigger value="all">جميع الحجوزات</TabsTrigger>
-            <TabsTrigger value="pending">قيد الانتظار</TabsTrigger>
-            <TabsTrigger value="approved">تمت الموافقة</TabsTrigger>
-            <TabsTrigger value="rejected">مرفوضة</TabsTrigger>
-            <TabsTrigger value="completed">مكتملة</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value={currentTab}>
-            <Table className="border">
-              <TableHeader>
-                <TableRow>
-                  <TableHead>رقم الحجز</TableHead>
-                  <TableHead>المدرس</TableHead>
-                  <TableHead>الطالب</TableHead>
-                  <TableHead>المادة</TableHead>
-                  <TableHead>التاريخ</TableHead>
-                  <TableHead>الوقت</TableHead>
-                  <TableHead>الحالة</TableHead>
-                  <TableHead>الإجراءات</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {currentBookings.length > 0 ? (
-                  currentBookings.map((booking) => {
-                    const teacher = teacherMap[booking.teacherId];
-                    const student = studentMap[booking.studentId];
-
-                    return (
-                      <TableRow key={booking.id}>
-                        <TableCell className="font-medium">
-                          {booking.id.slice(-6)}
-                        </TableCell>
-                        <TableCell>
-                          {teacher ? (
-                            <div className="flex items-center gap-2">
-                              <Avatar className="h-8 w-8">
-                                <AvatarImage
-                                  src={teacher.avatar || "/placeholder.svg"}
-                                  alt={teacher.name}
-                                />
-                                <AvatarFallback>
-                                  {teacher.name[0]}
-                                </AvatarFallback>
-                              </Avatar>
-                              {teacher.name}
-                            </div>
-                          ) : (
-                            "مدرس غير موجود"
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          {student ? (
-                            <div className="flex items-center gap-2">
-                              <Avatar className="h-8 w-8">
-                                <AvatarImage
-                                  src={student.avatar || "/placeholder.svg"}
-                                  alt={student.name}
-                                />
-                                <AvatarFallback>
-                                  {student.name[0]}
-                                </AvatarFallback>
-                              </Avatar>
-                              {student.name}
-                            </div>
-                          ) : (
-                            "طالب غير موجود"
-                          )}
-                        </TableCell>
-                        <TableCell>{booking.subject}</TableCell>
-                        <TableCell dir="ltr">
-                          {new Date(booking.date).toLocaleDateString("ar-EG")}
-                        </TableCell>
-                        <TableCell dir="ltr">
-                          {booking.startTime} - {booking.endTime}
-                        </TableCell>
-                        <TableCell>{getStatusBadge(booking.status)}</TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleViewBookingDetails(booking)}>
-                              <Calendar className="ml-1 h-4 w-4" />
-                              تفاصيل
-                            </Button>
-
-                            {booking.status === "pending" && (
-                              <>
-                                <Button
-                                  variant="default"
-                                  size="sm"
-                                  onClick={() => handleApproveBooking(booking)}>
-                                  <CheckCircle className="ml-1 h-4 w-4" />
-                                  قبول
-                                </Button>
-                                <Button
-                                  variant="destructive"
-                                  size="sm"
-                                  onClick={() => handleRejectBooking(booking)}>
-                                  <XCircle className="ml-1 h-4 w-4" />
-                                  رفض
-                                </Button>
-                              </>
-                            )}
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={8} className="text-center py-10">
-                      {searchQuery
-                        ? "لا توجد نتائج مطابقة للبحث"
-                        : "لا توجد حجوزات متاحة"}
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </TabsContent>
-        </Tabs>
-
-        {filteredBookings.length > itemsPerPage && (
-          <Pagination className="mt-4">
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious
-                  onClick={() =>
-                    setCurrentPage((prev) => Math.max(prev - 1, 1))
-                  }
-                  aria-disabled={currentPage === 1}
-                  className={
-                    currentPage === 1 ? "pointer-events-none opacity-50" : ""
-                  }
-                />
-              </PaginationItem>
-
-              {renderPagination()}
-
-              <PaginationItem>
-                <PaginationNext
-                  onClick={() =>
-                    setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                  }
-                  aria-disabled={currentPage === totalPages}
-                  className={
-                    currentPage === totalPages
-                      ? "pointer-events-none opacity-50"
-                      : ""
-                  }
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        )}
-
-        {/* مربع حوار تفاصيل الحجز */}
-        <Dialog
-          open={isDetailsDialogOpen}
-          onOpenChange={setIsDetailsDialogOpen}>
-          <DialogContent className="max-w-3xl">
-            <DialogHeader>
-              <DialogTitle>تفاصيل الحجز</DialogTitle>
-              <DialogDescription>معلومات مفصلة عن الحجز</DialogDescription>
-            </DialogHeader>
-
-            {selectedBooking && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <h3 className="font-semibold text-gray-600 mb-2">
-                    معلومات الحجز
-                  </h3>
-                  <div className="bg-gray-50 p-4 rounded-md">
-                    <div className="mb-3">
-                      <span className="text-sm font-medium text-gray-500">
-                        رقم الحجز:
-                      </span>
-                      <p>{selectedBooking.id}</p>
-                    </div>
-                    <div className="mb-3">
-                      <span className="text-sm font-medium text-gray-500">
-                        تاريخ الحجز:
-                      </span>
-                      <p>
-                        {new Date(selectedBooking.date).toLocaleDateString(
-                          "ar-EG"
-                        )}
-                      </p>
-                    </div>
-                    <div className="mb-3">
-                      <span className="text-sm font-medium text-gray-500">
-                        وقت الحجز:
-                      </span>
-                      <p dir="ltr">
-                        {selectedBooking.startTime} - {selectedBooking.endTime}
-                      </p>
-                    </div>
-                    <div className="mb-3">
-                      <span className="text-sm font-medium text-gray-500">
-                        المادة الدراسية:
-                      </span>
-                      <p>{selectedBooking.subject}</p>
-                    </div>
-                    <div className="mb-3">
-                      <span className="text-sm font-medium text-gray-500">
-                        حالة الحجز:
-                      </span>
-                      <div className="mt-1">
-                        {getStatusBadge(selectedBooking.status)}
-                      </div>
-                    </div>
-                    <div>
-                      <span className="text-sm font-medium text-gray-500">
-                        تاريخ الإنشاء:
-                      </span>
-                      <p>
-                        {new Date(selectedBooking.createdAt).toLocaleString(
-                          "ar-EG"
-                        )}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <div className="mb-4">
-                    <h3 className="font-semibold text-gray-600 mb-2">
-                      معلومات المدرس
-                    </h3>
-                    {teacherMap[selectedBooking.teacherId] ? (
-                      <div className="bg-gray-50 p-4 rounded-md">
-                        <div className="flex items-center gap-3 mb-3">
-                          <Avatar>
-                            <AvatarImage
-                              src={
-                                teacherMap[selectedBooking.teacherId].avatar ||
-                                "/placeholder.svg"
-                              }
-                              alt={teacherMap[selectedBooking.teacherId].name}
-                            />
-                            <AvatarFallback>
-                              {teacherMap[selectedBooking.teacherId].name[0]}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <p className="font-medium">
-                              {teacherMap[selectedBooking.teacherId].name}
-                            </p>
-                            <p className="text-sm text-gray-500">
-                              {teacherMap[selectedBooking.teacherId].email}
-                            </p>
-                          </div>
-                        </div>
-                        <div>
-                          <span className="text-sm font-medium text-gray-500">
-                            رقم الهاتف:
-                          </span>
-                          <p dir="ltr">
-                            {teacherMap[selectedBooking.teacherId].phone ||
-                              "غير متوفر"}
-                          </p>
-                        </div>
-                      </div>
-                    ) : (
-                      <p className="text-gray-500">معلومات المدرس غير متوفرة</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <h3 className="font-semibold text-gray-600 mb-2">
-                      معلومات الطالب
-                    </h3>
-                    {studentMap[selectedBooking.studentId] ? (
-                      <div className="bg-gray-50 p-4 rounded-md">
-                        <div className="flex items-center gap-3 mb-3">
-                          <Avatar>
-                            <AvatarImage
-                              src={
-                                studentMap[selectedBooking.studentId].avatar ||
-                                "/placeholder.svg"
-                              }
-                              alt={studentMap[selectedBooking.studentId].name}
-                            />
-                            <AvatarFallback>
-                              {studentMap[selectedBooking.studentId].name[0]}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <p className="font-medium">
-                              {studentMap[selectedBooking.studentId].name}
-                            </p>
-                            <p className="text-sm text-gray-500">
-                              {studentMap[selectedBooking.studentId].email}
-                            </p>
-                          </div>
-                        </div>
-                        <div>
-                          <span className="text-sm font-medium text-gray-500">
-                            رقم الهاتف:
-                          </span>
-                          <p dir="ltr">
-                            {studentMap[selectedBooking.studentId].phone ||
-                              "غير متوفر"}
-                          </p>
-                        </div>
-                      </div>
-                    ) : (
-                      <p className="text-gray-500">معلومات الطالب غير متوفرة</p>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            <DialogFooter className="gap-2">
-              {selectedBooking && selectedBooking.status === "pending" && (
-                <>
-                  <Button
-                    variant="default"
-                    onClick={() => {
-                      handleApproveBooking(selectedBooking);
-                      setIsDetailsDialogOpen(false);
-                    }}>
-                    <CheckCircle className="ml-1 h-4 w-4" />
-                    قبول الحجز
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    onClick={() => {
-                      handleRejectBooking(selectedBooking);
-                      setIsDetailsDialogOpen(false);
-                    }}>
-                    <XCircle className="ml-1 h-4 w-4" />
-                    رفض الحجز
-                  </Button>
-                </>
-              )}
-              <Button
-                variant="outline"
-                onClick={() => setIsDetailsDialogOpen(false)}>
-                إغلاق
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
       </div>
-    </>
+      
+      <BookingFilters 
+        statusFilter={statusFilter}
+        onStatusFilterChange={setStatusFilter}
+      />
+      
+      <Tabs defaultValue="all" className="w-full">
+        <TabsList className="w-full mb-6">
+          <TabsTrigger value="all" className="flex-1">جميع الحجوزات</TabsTrigger>
+          <TabsTrigger value="pending" className="flex-1">قيد الانتظار</TabsTrigger>
+          <TabsTrigger value="approved" className="flex-1">المقبولة</TabsTrigger>
+          <TabsTrigger value="completed" className="flex-1">المكتملة</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="all">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredBookings.map((booking) => (
+              <Card key={booking.id} className="border shadow-sm">
+                <CardHeader className="pb-2">
+                  <div className="flex justify-between items-start">
+                    <CardTitle className="text-lg">{booking.subject}</CardTitle>
+                    {getStatusBadge(booking.status)}
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    <p><strong>المدرس:</strong> {booking.teacherName}</p>
+                    <p><strong>الطالب:</strong> {booking.studentName}</p>
+                    <div className="flex items-center">
+                      <Calendar size={16} className="ml-1" />
+                      <span>{booking.date}</span>
+                    </div>
+                    <div className="flex items-center">
+                      <Clock size={16} className="ml-1" />
+                      <span>{booking.time}</span>
+                    </div>
+                    <p><strong>السعر:</strong> {booking.price} ريال</p>
+                    
+                    {booking.attended && (
+                      <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded-md">
+                        <p className="text-green-700 text-sm">حضر الطالب هذا الدرس</p>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <BookingActions 
+                    booking={booking}
+                    onApprove={handleApproveBooking}
+                    onReject={handleRejectBooking}
+                  />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </TabsContent>
+        
+        {/* باقي التبويبات تستخدم نفس العرض مع فلترة مختلفة */}
+        <TabsContent value="pending">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {bookings.filter(b => b.status === 'pending').map((booking) => (
+              <Card key={booking.id} className="border shadow-sm">
+                <CardHeader className="pb-2">
+                  <div className="flex justify-between items-start">
+                    <CardTitle className="text-lg">{booking.subject}</CardTitle>
+                    {getStatusBadge(booking.status)}
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    <p><strong>المدرس:</strong> {booking.teacherName}</p>
+                    <p><strong>الطالب:</strong> {booking.studentName}</p>
+                    <div className="flex items-center">
+                      <Calendar size={16} className="ml-1" />
+                      <span>{booking.date}</span>
+                    </div>
+                    <div className="flex items-center">
+                      <Clock size={16} className="ml-1" />
+                      <span>{booking.time}</span>
+                    </div>
+                    <p><strong>السعر:</strong> {booking.price} ريال</p>
+                    
+                    {booking.attended && (
+                      <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded-md">
+                        <p className="text-green-700 text-sm">حضر الطالب هذا الدرس</p>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <BookingActions 
+                    booking={booking}
+                    onApprove={handleApproveBooking}
+                    onReject={handleRejectBooking}
+                  />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="approved">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {bookings.filter(b => b.status === 'approved').map((booking) => (
+              <Card key={booking.id} className="border shadow-sm">
+                <CardHeader className="pb-2">
+                  <div className="flex justify-between items-start">
+                    <CardTitle className="text-lg">{booking.subject}</CardTitle>
+                    {getStatusBadge(booking.status)}
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    <p><strong>المدرس:</strong> {booking.teacherName}</p>
+                    <p><strong>الطالب:</strong> {booking.studentName}</p>
+                    <div className="flex items-center">
+                      <Calendar size={16} className="ml-1" />
+                      <span>{booking.date}</span>
+                    </div>
+                    <div className="flex items-center">
+                      <Clock size={16} className="ml-1" />
+                      <span>{booking.time}</span>
+                    </div>
+                    <p><strong>السعر:</strong> {booking.price} ريال</p>
+                    
+                    {booking.attended && (
+                      <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded-md">
+                        <p className="text-green-700 text-sm">حضر الطالب هذا الدرس</p>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <BookingActions 
+                    booking={booking}
+                    onApprove={handleApproveBooking}
+                    onReject={handleRejectBooking}
+                  />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="completed">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {bookings.filter(b => b.status === 'completed').map((booking) => (
+              <Card key={booking.id} className="border shadow-sm">
+                <CardHeader className="pb-2">
+                  <div className="flex justify-between items-start">
+                    <CardTitle className="text-lg">{booking.subject}</CardTitle>
+                    {getStatusBadge(booking.status)}
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    <p><strong>المدرس:</strong> {booking.teacherName}</p>
+                    <p><strong>الطالب:</strong> {booking.studentName}</p>
+                    <div className="flex items-center">
+                      <Calendar size={16} className="ml-1" />
+                      <span>{booking.date}</span>
+                    </div>
+                    <div className="flex items-center">
+                      <Clock size={16} className="ml-1" />
+                      <span>{booking.time}</span>
+                    </div>
+                    <p><strong>السعر:</strong> {booking.price} ريال</p>
+                    
+                    {booking.attended && (
+                      <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded-md">
+                        <p className="text-green-700 text-sm">حضر الطالب هذا الدرس</p>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <BookingActions 
+                    booking={booking}
+                    onApprove={handleApproveBooking}
+                    onReject={handleRejectBooking}
+                  />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </TabsContent>
+      </Tabs>
+      
+      {filteredBookings.length === 0 && (
+        <div className="text-center py-8">
+          <p className="text-gray-500">لا توجد حجوزات متاحة</p>
+        </div>
+      )}
+    </div>
   );
 };
 

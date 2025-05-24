@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -7,6 +6,7 @@ import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import NotificationManager from './NotificationManager';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -67,6 +67,8 @@ const Navbar = () => {
               
               {isAuthenticated ? (
                 <div className="flex items-center space-x-4 space-x-reverse mr-4">
+                  <NotificationManager />
+                  
                   {isAdmin && (
                     <Link to="/admin">
                       <Button variant="outline" size="sm">لوحة التحكم</Button>
@@ -107,12 +109,15 @@ const Navbar = () => {
           
           {/* Mobile Menu Button */}
           {isMobile && (
-            <button
-              onClick={toggleMenu}
-              className="p-2 rounded-md text-gray-700 focus:outline-none"
-            >
-              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
+            <div className="flex items-center space-x-2 space-x-reverse">
+              {isAuthenticated && <NotificationManager />}
+              <button
+                onClick={toggleMenu}
+                className="p-2 rounded-md text-gray-700 focus:outline-none"
+              >
+                {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+              </button>
+            </div>
           )}
         </div>
         
