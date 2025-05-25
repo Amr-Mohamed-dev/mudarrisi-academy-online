@@ -183,7 +183,7 @@ const Index = () => {
                 </Button>
               </motion.div>
             </div>
-          </div>
+          </section>
         </AnimatedSection>
       </main>
 
