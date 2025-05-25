@@ -1,44 +1,46 @@
-
-import React from 'react';
-import { motion } from 'framer-motion';
-import { Star, BookOpen } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
+import React from "react";
+import { motion } from "framer-motion";
+import { Star, BookOpen } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 const topTeachers = [
   {
     id: "2",
-    name: "فاطمة أحمد السيد",
-    subject: "اللغة العربية",
+    name: "شمس حسني",
+    subject: "كوري",
     rating: 4.9,
-    price: 120,
-    image: "https://images.unsplash.com/photo-1494790108755-2616b612b47c?w=150&h=150&fit=crop&crop=face",
+    price: 220,
+    image:
+      "https://images.unsplash.com/photo-1494790108755-2616b612b47c?w=150&h=150&fit=crop&crop=face",
     subjects: ["اللغة العربية", "التاريخ"],
-    studentsCount: 250
+    studentsCount: 250,
   },
   {
     id: "5",
-    name: "عمر خالد أحمد",
-    subject: "اللغة الإنجليزية",
+    name: "احمد هشام",
+    subject: "كنتكنووووود",
     rating: 4.9,
     price: 140,
-    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face",
+    image:
+      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face",
     subjects: ["اللغة الإنجليزية"],
-    studentsCount: 180
+    studentsCount: 180,
   },
   {
     id: "6",
-    name: "سارة محمود علي",
+    name: " ندي عماد ",
     subject: "الأحياء",
     rating: 4.8,
-    price: 170,
-    image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face",
+    price: 370,
+    image:
+      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face",
     subjects: ["الأحياء", "الكيمياء"],
-    studentsCount: 200
-  }
+    studentsCount: 200,
+  },
 ];
 
 const TopRatedTeachers = () => {
@@ -47,15 +49,13 @@ const TopRatedTeachers = () => {
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8, delay: 0.3 }}
-      className="bg-gradient-to-br from-blue-50 to-blue-100 py-16"
-    >
+      className="bg-gradient-to-br from-blue-50 to-blue-100 py-16">
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="text-center mb-12"
-        >
+          className="text-center mb-12">
           <h2 className="text-3xl font-bold text-blue-dark mb-4">
             المدرسين الأعلى تقييماً
           </h2>
@@ -71,25 +71,26 @@ const TopRatedTeachers = () => {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.7 + index * 0.1, duration: 0.5 }}
-              whileHover={{ y: -5, scale: 1.02 }}
-            >
+              whileHover={{ y: -5, scale: 1.02 }}>
               <Card className="hover:shadow-lg transition-all duration-300">
                 <CardHeader className="text-center pb-4">
                   <motion.div
                     whileHover={{ scale: 1.1 }}
-                    className="mx-auto mb-4"
-                  >
+                    className="mx-auto mb-4">
                     <Avatar className="h-20 w-20">
                       <AvatarImage src={teacher.image} alt={teacher.name} />
                       <AvatarFallback>
-                        {teacher.name.split(" ").map(n => n[0]).join("")}
+                        {teacher.name
+                          .split(" ")
+                          .map((n) => n[0])
+                          .join("")}
                       </AvatarFallback>
                     </Avatar>
                   </motion.div>
                   <CardTitle className="text-lg">{teacher.name}</CardTitle>
                   <p className="text-blue-600 font-medium">{teacher.subject}</p>
                 </CardHeader>
-                
+
                 <CardContent className="space-y-4">
                   <div className="flex items-center justify-center gap-1">
                     {Array.from({ length: 5 }).map((_, i) => (
@@ -118,8 +119,7 @@ const TopRatedTeachers = () => {
                       <Badge
                         key={i}
                         variant="secondary"
-                        className="text-xs bg-blue-light/10 text-blue-dark"
-                      >
+                        className="text-xs bg-blue-light/10 text-blue-dark">
                         {subject}
                       </Badge>
                     ))}
@@ -133,8 +133,7 @@ const TopRatedTeachers = () => {
 
                   <motion.div
                     whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
+                    whileTap={{ scale: 0.95 }}>
                     <Button className="w-full" asChild>
                       <Link to={`/teachers/${teacher.id}`}>
                         عرض الملف الشخصي
@@ -151,9 +150,11 @@ const TopRatedTeachers = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.2 }}
-          className="text-center mt-8"
-        >
-          <Button variant="outline" className="border-blue text-blue hover:bg-blue hover:text-white" asChild>
+          className="text-center mt-8">
+          <Button
+            variant="outline"
+            className="border-blue text-blue hover:bg-blue hover:text-white"
+            asChild>
             <Link to="/teachers">عرض جميع المدرسين</Link>
           </Button>
         </motion.div>

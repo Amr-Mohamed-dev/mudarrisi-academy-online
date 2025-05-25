@@ -23,7 +23,7 @@ const mockTeachers = [
     available: true,
   },
   {
-    id: "2", 
+    id: "2",
     name: "فاطمة أحمد السيد",
     subject: "اللغة العربية",
     rating: 4.9,
@@ -35,7 +35,7 @@ const mockTeachers = [
   {
     id: "3",
     name: "محمد عبد الرحمن",
-    subject: "الفيزياء", 
+    subject: "الفيزياء",
     rating: 4.7,
     price: 180,
     image: "",
@@ -71,20 +71,20 @@ const mockTeachers = [
     image: "",
     subjects: ["الأحياء", "الكيمياء"],
     available: true,
-  }
+  },
 ];
 
 // Mock data for subjects
 const subjects = [
   "جميع المواد",
   "الرياضيات",
-  "الفيزياء", 
+  "الفيزياء",
   "الكيمياء",
   "الأحياء",
   "اللغة العربية",
   "اللغة الإنجليزية",
   "التاريخ",
-  "الجغرافيا"
+  "الجغرافيا",
 ];
 
 const Teachers = () => {
@@ -94,16 +94,19 @@ const Teachers = () => {
 
   const filteredTeachers = useMemo(() => {
     return mockTeachers.filter((teacher) => {
-      const matchesSearch = teacher.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           teacher.subjects.some(subject => 
-                             subject.toLowerCase().includes(searchTerm.toLowerCase())
-                           );
-      
-      const matchesSubject = selectedSubject === "جميع المواد" || 
-                            teacher.subjects.includes(selectedSubject);
-      
-      const matchesPrice = teacher.price >= priceRange[0] && teacher.price <= priceRange[1];
-      
+      const matchesSearch =
+        teacher.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        teacher.subjects.some((subject) =>
+          subject.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+
+      const matchesSubject =
+        selectedSubject === "جميع المواد" ||
+        teacher.subjects.includes(selectedSubject);
+
+      const matchesPrice =
+        teacher.price >= priceRange[0] && teacher.price <= priceRange[1];
+
       return matchesSearch && matchesSubject && matchesPrice;
     });
   }, [searchTerm, selectedSubject, priceRange]);
@@ -113,37 +116,35 @@ const Teachers = () => {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1
-      }
-    }
+        staggerChildren: 0.1,
+      },
+    },
   };
 
   const itemVariants = {
     hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 }
+    visible: { opacity: 1, y: 0 },
   };
 
   return (
     <PageTransition className="flex flex-col min-h-screen">
       <Navbar />
-      
+
       <main className="container mx-auto px-4 py-8 flex-grow">
         <AnimatedSection delay={0.2}>
           <div className="text-center mb-8">
-            <motion.h1 
+            <motion.h1
               className="text-4xl font-bold text-blue-dark mb-4"
               initial={{ scale: 0.9 }}
               animate={{ scale: 1 }}
-              transition={{ duration: 0.5 }}
-            >
+              transition={{ duration: 0.5 }}>
               أفضل المدرسين
             </motion.h1>
-            <motion.p 
+            <motion.p
               className="text-gray-600 text-lg"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-            >
+              transition={{ delay: 0.3 }}>
               اختر من بين مجموعة متنوعة من المدرسين المؤهلين والمتخصصين
             </motion.p>
           </div>
@@ -151,15 +152,19 @@ const Teachers = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Filters Sidebar */}
-          <AnimatedSection delay={0.4} direction="right" className="lg:col-span-1">
-            <motion.div 
+          <AnimatedSection
+            delay={0.4}
+            direction="right"
+            className="lg:col-span-1">
+            <motion.div
               className="bg-white p-6 rounded-lg shadow-md space-y-6 sticky top-4"
               whileHover={{ scale: 1.02 }}
-              transition={{ duration: 0.2 }}
-            >
+              transition={{ duration: 0.2 }}>
               <div>
-                <h3 className="text-lg font-bold text-blue-dark mb-4">البحث والفلتر</h3>
-                
+                <h3 className="text-lg font-bold text-blue-dark mb-4">
+                  البحث والفلتر
+                </h3>
+
                 {/* Search */}
                 <div className="relative mb-4">
                   <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
@@ -171,7 +176,7 @@ const Teachers = () => {
                     className="pr-10"
                   />
                 </div>
-                
+
                 {/* Subject Filter */}
                 <div className="mb-4">
                   <SubjectFilter
@@ -180,7 +185,7 @@ const Teachers = () => {
                     onSubjectChange={setSelectedSubject}
                   />
                 </div>
-                
+
                 {/* Price Filter */}
                 <PriceFilter
                   minPrice={100}
@@ -195,50 +200,50 @@ const Teachers = () => {
           {/* Teachers Grid */}
           <div className="lg:col-span-3">
             <AnimatedSection delay={0.6}>
-              <motion.div 
+              <motion.div
                 className="mb-4 text-gray-600"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 0.8 }}
-              >
+                transition={{ delay: 0.8 }}>
                 تم العثور على {filteredTeachers.length} مدرس
               </motion.div>
             </AnimatedSection>
-            
+
             <motion.div
               variants={containerVariants}
               initial="hidden"
               animate="visible"
-              className="grid grid-cols-1 md:grid-cols-2 gap-6"
-            >
+              className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {filteredTeachers.map((teacher, index) => (
                 <motion.div
                   key={teacher.id}
                   variants={itemVariants}
                   transition={{ delay: 0.1 * index }}
-                  whileHover={{ y: -5 }}
-                >
+                  whileHover={{ y: -5 }}>
                   <TeacherCard {...teacher} />
                 </motion.div>
               ))}
             </motion.div>
-            
+
             {filteredTeachers.length === 0 && (
               <AnimatedSection delay={1} className="text-center py-12">
                 <motion.div
                   initial={{ scale: 0.8 }}
                   animate={{ scale: 1 }}
-                  transition={{ type: "spring", stiffness: 200 }}
-                >
-                  <p className="text-gray-500 text-lg mb-4">لم يتم العثور على مدرسين يطابقون البحث</p>
-                  <p className="text-gray-400">جرب تغيير معايير البحث أو الفلتر</p>
+                  transition={{ type: "spring", stiffness: 200 }}>
+                  <p className="text-gray-500 text-lg mb-4">
+                    لم يتم العثور على مدرسين يطابقون البحث
+                  </p>
+                  <p className="text-gray-400">
+                    جرب تغيير معايير البحث أو الفلتر
+                  </p>
                 </motion.div>
               </AnimatedSection>
             )}
           </div>
         </div>
       </main>
-      
+
       <Footer />
     </PageTransition>
   );
