@@ -1,5 +1,5 @@
-
 import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Search } from 'lucide-react';
@@ -7,6 +7,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import TeacherCard from '@/components/TeacherCard';
 import SubjectFilter from '@/components/SubjectFilter';
+import PriceFilter from '@/components/PriceFilter';
 import { User } from '@/contexts/AuthContext';
 
 interface Teacher {
@@ -28,6 +29,9 @@ const Teachers = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
   const [allSubjects, setAllSubjects] = useState<string[]>([]);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 500]);
+  const [minPrice, setMinPrice] = useState(0);
+  const [maxPrice, setMaxPrice] = useState(500);
   
   // استرجاع بيانات المدرسين من التخزين المحلي
   useEffect(() => {
@@ -85,8 +89,13 @@ const Teachers = () => {
       );
     }
     
+    // تطبيق تصفية السعر
+    filtered = filtered.filter(teacher =>
+      teacher.price >= priceRange[0] && teacher.price <= priceRange[1]
+    );
+    
     setFilteredTeachers(filtered);
-  }, [searchTerm, selectedSubjects, teachers]);
+  }, [searchTerm, selectedSubjects, priceRange, teachers]);
   
   // إضافة أو إزالة موضوع من المواضيع المحددة
   const toggleSubject = (subject: string) => {
@@ -96,6 +105,18 @@ const Teachers = () => {
         : [...prev, subject]
     );
   };
+  
+  // تحديث نطاق الأسعار عند تغيير البيانات
+  useEffect(() => {
+    if (teachers.length > 0) {
+      const prices = teachers.map(t => t.price);
+      const min = Math.min(...prices);
+      const max = Math.max(...prices);
+      setMinPrice(min);
+      setMaxPrice(max);
+      setPriceRange([min, max]);
+    }
+  }, [teachers]);
   
   // إذا لم يكن هناك بيانات، عرض بيانات وهمية
   useEffect(() => {
@@ -164,25 +185,56 @@ const Teachers = () => {
     }
   }, [teachers]);
   
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.3
+      }
+    }
+  };
+  
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
       
       <main className="container mx-auto px-4 py-8 flex-grow">
         <div className="max-w-screen-xl mx-auto">
-          <div className="mb-8">
+          <motion.div 
+            className="mb-8"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
             <h1 className="text-3xl font-bold mb-2">المدرسين المتميزين</h1>
             <p className="text-gray-600">
               ابحث عن أفضل المدرسين في مختلف المواد واحجز دروسك الآن
             </p>
-          </div>
+          </motion.div>
           
           <div className="flex flex-col md:flex-row gap-6 mb-8">
-            <div className="md:w-1/4">
+            <motion.div 
+              className="md:w-1/4"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
               <div className="bg-white shadow-md rounded-lg p-4">
                 <h2 className="font-bold text-lg mb-4">تصفية البحث</h2>
                 
-                <div className="mb-4">
+                <div className="mb-6">
                   <label className="block text-gray-700 mb-2">المواد</label>
                   <SubjectFilter 
                     subjects={allSubjects}
@@ -191,14 +243,35 @@ const Teachers = () => {
                   />
                 </div>
                 
-                <Button variant="outline" className="w-full" onClick={() => setSelectedSubjects([])}>
+                <div className="mb-6">
+                  <PriceFilter
+                    minPrice={minPrice}
+                    maxPrice={maxPrice}
+                    selectedRange={priceRange}
+                    onChange={setPriceRange}
+                  />
+                </div>
+                
+                <Button 
+                  variant="outline" 
+                  className="w-full" 
+                  onClick={() => {
+                    setSelectedSubjects([]);
+                    setPriceRange([minPrice, maxPrice]);
+                  }}
+                >
                   إعادة ضبط التصفية
                 </Button>
               </div>
-            </div>
+            </motion.div>
             
             <div className="md:w-3/4">
-              <div className="mb-6">
+              <motion.div 
+                className="mb-6"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+              >
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                   <Input
@@ -208,28 +281,41 @@ const Teachers = () => {
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
                 </div>
-              </div>
+              </motion.div>
               
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <motion.div 
+                className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+              >
                 {filteredTeachers.length > 0 ? (
                   filteredTeachers.map((teacher) => (
-                    <TeacherCard key={teacher.id} {...teacher} />
+                    <motion.div key={teacher.id} variants={itemVariants}>
+                      <TeacherCard {...teacher} />
+                    </motion.div>
                   ))
                 ) : (
-                  <div className="col-span-full text-center py-12">
+                  <motion.div 
+                    className="col-span-full text-center py-12"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.5 }}
+                  >
                     <p className="text-xl text-gray-500">لم يتم العثور على مدرسين مطابقين لمعايير البحث</p>
                     <Button 
                       variant="link" 
                       onClick={() => {
                         setSearchTerm('');
                         setSelectedSubjects([]);
+                        setPriceRange([minPrice, maxPrice]);
                       }}
                     >
                       إعادة ضبط البحث
                     </Button>
-                  </div>
+                  </motion.div>
                 )}
-              </div>
+              </motion.div>
             </div>
           </div>
         </div>

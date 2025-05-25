@@ -1,6 +1,8 @@
+
 import React from "react";
 import { Link } from "react-router-dom";
 import { Star } from "lucide-react";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -17,6 +19,16 @@ export interface TeacherProps {
   available: boolean;
 }
 
+// صور تجريبية للمدرسين
+const teacherImages = [
+  "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
+  "https://images.unsplash.com/photo-1494790108755-2616b612b47c?w=150&h=150&fit=crop&crop=face",
+  "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
+  "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
+  "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face",
+  "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face"
+];
+
 const TeacherCard = ({
   id,
   name,
@@ -27,42 +39,89 @@ const TeacherCard = ({
   subjects,
   available,
 }: TeacherProps) => {
+  // اختيار صورة عشوائية بناءً على الاسم
+  const getTeacherImage = () => {
+    if (image && image !== '/placeholder.svg') return image;
+    const index = parseInt(id) % teacherImages.length;
+    return teacherImages[index];
+  };
+
   return (
-    <div className="card hover:border-blue-light border-2 border-transparent shadow-md rounded-lg p-3">
+    <motion.div 
+      className="card hover:border-blue-light border-2 border-transparent shadow-md rounded-lg p-3"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      whileHover={{ 
+        scale: 1.02,
+        boxShadow: "0 10px 25px rgba(0,0,0,0.1)"
+      }}
+    >
       <div className="flex flex-col h-full">
         <div className="flex items-start mb-4 gap-1">
-          <Avatar className="h-16 w-16">
-            <AvatarImage src={image} alt={name} />
-            <AvatarFallback>
-              {name
-                .split(" ")
-                .map((part) => part[0])
-                .join("")}
-            </AvatarFallback>
-          </Avatar>
+          <motion.div
+            whileHover={{ scale: 1.1 }}
+            transition={{ duration: 0.2 }}
+          >
+            <Avatar className="h-16 w-16">
+              <AvatarImage src={getTeacherImage()} alt={name} />
+              <AvatarFallback>
+                {name
+                  .split(" ")
+                  .map((part) => part[0])
+                  .join("")}
+              </AvatarFallback>
+            </Avatar>
+          </motion.div>
           <div className="mr-4 flex-1">
-            <h3 className="text-xl font-bold">{name}</h3>
+            <motion.h3 
+              className="text-xl font-bold"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.1 }}
+            >
+              {name}
+            </motion.h3>
             <p className="text-gray-600 text-sm">{subject}</p>
-            <div className="flex items-center mt-1">
+            <motion.div 
+              className="flex items-center mt-1"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+            >
               {Array.from({ length: 5 }).map((_, i) => (
-                <Star
+                <motion.div
                   key={i}
-                  size={16}
-                  className={cn(
-                    "fill-current",
-                    i < Math.floor(rating) ? "text-amber-400" : "text-gray-300"
-                  )}
-                />
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 0.3 + i * 0.1, type: "spring" }}
+                >
+                  <Star
+                    size={16}
+                    className={cn(
+                      "fill-current",
+                      i < Math.floor(rating) ? "text-amber-400" : "text-gray-300"
+                    )}
+                  />
+                </motion.div>
               ))}
               <span className="text-sm text-gray-600 mr-1">({rating})</span>
-            </div>
+            </motion.div>
           </div>
-          <div className="text-left">
+          <motion.div 
+            className="text-left"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2 }}
+          >
             <div className="flex flex-col items-end">
               <span className="text-sm text-gray-500">السعر بالساعة</span>
-              <span className="text-lg font-bold text-blue-600">
+              <motion.span 
+                className="text-lg font-bold text-blue-600"
+                whileHover={{ scale: 1.1 }}
+              >
                 {price} ريال
-              </span>
+              </motion.span>
               <Badge
                 variant={available ? "default" : "outline"}
                 className={cn(
@@ -74,30 +133,51 @@ const TeacherCard = ({
                 {available ? "متاح الآن" : "غير متاح حاليًا"}
               </Badge>
             </div>
-          </div>
+          </motion.div>
         </div>
 
-        <div className="mb-4 flex flex-wrap gap-2">
+        <motion.div 
+          className="mb-4 flex flex-wrap gap-2"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+        >
           {subjects.map((subj, i) => (
-            <Badge
+            <motion.div
               key={i}
-              variant="secondary"
-              className="bg-blue-light/10 text-blue-dark hover:bg-blue-light/20">
-              {subj}
-            </Badge>
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.4 + i * 0.1 }}
+              whileHover={{ scale: 1.05 }}
+            >
+              <Badge
+                variant="secondary"
+                className="bg-blue-light/10 text-blue-dark hover:bg-blue-light/20">
+                {subj}
+              </Badge>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
-        <div className="mt-auto pt-4 flex gap-2">
-          <Button variant="default" className="flex-1" asChild>
-            <Link to={`/teachers/${id}`}>عرض الملف الشخصي</Link>
-          </Button>
-          <Button variant="outline" className="flex-1" asChild>
-            <Link to={`/booking/${id}`}>حجز موعد</Link>
-          </Button>
-        </div>
+        <motion.div 
+          className="mt-auto pt-4 flex gap-2"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+        >
+          <motion.div className="flex-1" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+            <Button variant="default" className="w-full" asChild>
+              <Link to={`/teachers/${id}`}>عرض الملف الشخصي</Link>
+            </Button>
+          </motion.div>
+          <motion.div className="flex-1" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+            <Button variant="outline" className="w-full" asChild>
+              <Link to={`/booking/${id}`}>حجز موعد</Link>
+            </Button>
+          </motion.div>
+        </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
