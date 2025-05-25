@@ -200,9 +200,9 @@ const Teachers = () => {
             <div className="md:w-3/4">
               <div className="mb-6">
                 <div className="relative">
-                  <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                   <Input
-                    className="pr-10 pl-4"
+                    className="px-10 pl-4"
                     placeholder="ابحث عن مدرس أو مادة..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}

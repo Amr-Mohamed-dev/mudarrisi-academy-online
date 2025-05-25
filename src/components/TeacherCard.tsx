@@ -1,11 +1,10 @@
-
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { Star } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { cn } from '@/lib/utils';
+import React from "react";
+import { Link } from "react-router-dom";
+import { Star } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { cn } from "@/lib/utils";
 
 export interface TeacherProps {
   id: string;
@@ -18,14 +17,28 @@ export interface TeacherProps {
   available: boolean;
 }
 
-const TeacherCard = ({ id, name, subject, rating, price, image, subjects, available }: TeacherProps) => {
+const TeacherCard = ({
+  id,
+  name,
+  subject,
+  rating,
+  price,
+  image,
+  subjects,
+  available,
+}: TeacherProps) => {
   return (
-    <div className="card hover:border-blue-light border-2 border-transparent shadow-md rounded-lg p-5">
+    <div className="card hover:border-blue-light border-2 border-transparent shadow-md rounded-lg p-3">
       <div className="flex flex-col h-full">
-        <div className="flex items-start mb-4">
+        <div className="flex items-start mb-4 gap-1">
           <Avatar className="h-16 w-16">
             <AvatarImage src={image} alt={name} />
-            <AvatarFallback>{name.split(' ').map(part => part[0]).join('')}</AvatarFallback>
+            <AvatarFallback>
+              {name
+                .split(" ")
+                .map((part) => part[0])
+                .join("")}
+            </AvatarFallback>
           </Avatar>
           <div className="mr-4 flex-1">
             <h3 className="text-xl font-bold">{name}</h3>
@@ -47,25 +60,34 @@ const TeacherCard = ({ id, name, subject, rating, price, image, subjects, availa
           <div className="text-left">
             <div className="flex flex-col items-end">
               <span className="text-sm text-gray-500">السعر بالساعة</span>
-              <span className="text-lg font-bold text-blue-600">{price} ريال</span>
-              <Badge variant={available ? "default" : "outline"} className={cn(
-                "mt-2",
-                available ? "bg-green-500 hover:bg-green-600" : "text-gray-500"
-              )}>
+              <span className="text-lg font-bold text-blue-600">
+                {price} ريال
+              </span>
+              <Badge
+                variant={available ? "default" : "outline"}
+                className={cn(
+                  "mt-2",
+                  available
+                    ? "bg-green-500 hover:bg-green-600"
+                    : "text-red-500 bg-red-100 hover:bg-red-200"
+                )}>
                 {available ? "متاح الآن" : "غير متاح حاليًا"}
               </Badge>
             </div>
           </div>
         </div>
-        
+
         <div className="mb-4 flex flex-wrap gap-2">
           {subjects.map((subj, i) => (
-            <Badge key={i} variant="secondary" className="bg-blue-light/10 text-blue-dark hover:bg-blue-light/20">
+            <Badge
+              key={i}
+              variant="secondary"
+              className="bg-blue-light/10 text-blue-dark hover:bg-blue-light/20">
               {subj}
             </Badge>
           ))}
         </div>
-        
+
         <div className="mt-auto pt-4 flex gap-2">
           <Button variant="default" className="flex-1" asChild>
             <Link to={`/teachers/${id}`}>عرض الملف الشخصي</Link>
