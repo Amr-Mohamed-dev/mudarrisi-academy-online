@@ -1,54 +1,40 @@
 
 import React from 'react';
 import { Check } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
 interface SubjectFilterProps {
   subjects: string[];
-  selectedSubjects: string[];
-  onChange: (subject: string) => void;
+  selectedSubject: string;
+  onSubjectChange: (subject: string) => void;
 }
 
-const SubjectFilter = ({ subjects, selectedSubjects, onChange }: SubjectFilterProps) => {
+const SubjectFilter = ({ subjects, selectedSubject, onSubjectChange }: SubjectFilterProps) => {
   return (
-    <div className="flex flex-wrap gap-2">
-      {subjects.map((subject) => (
-        <Badge
-          key={subject}
-          variant={selectedSubjects.includes(subject) ? "default" : "outline"}
-          className={`cursor-pointer ${
-            selectedSubjects.includes(subject)
-              ? "bg-blue text-white"
-              : "text-gray-700 hover:text-blue"
-          }`}
-          onClick={() => onChange(subject)}
-        >
-          {selectedSubjects.includes(subject) && (
-            <Check className="ml-1 h-3 w-3" />
-          )}
-          {subject}
-        </Badge>
-      ))}
+    <div>
+      <h4 className="text-sm font-medium text-gray-700 mb-3">المواد الدراسية</h4>
+      <div className="space-y-2">
+        {subjects.map((subject) => (
+          <div
+            key={subject}
+            className={`cursor-pointer p-2 rounded-md transition-colors ${
+              selectedSubject === subject
+                ? "bg-blue text-white"
+                : "bg-gray-50 hover:bg-gray-100 text-gray-700"
+            }`}
+            onClick={() => onSubjectChange(subject)}
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-sm">{subject}</span>
+              {selectedSubject === subject && (
+                <Check className="h-4 w-4" />
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
-
-const Star = ({ size = 16, className = "" }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width={size}
-    height={size}
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={className}
-  >
-    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-  </svg>
-);
 
 export default SubjectFilter;
