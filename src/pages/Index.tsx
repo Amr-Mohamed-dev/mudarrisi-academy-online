@@ -2,20 +2,30 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Star, Users, BookOpen, Award, ChevronLeft } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PageTransition from "@/components/PageTransition";
 import AnimatedSection from "@/components/AnimatedSection";
+import TopRatedTeachers from "@/components/TopRatedTeachers";
+import { useAuth } from "@/contexts/AuthContext";
+import { useCountUp } from "@/hooks/useCountUp";
 
 const Index = () => {
+  const { isAuthenticated, user } = useAuth();
+
+  // استخدام hook العد التصاعدي للإحصائيات
+  const teachersCount = useCountUp(500, 2000, 1000);
+  const subjectsCount = useCountUp(50, 2000, 1200);
+  const rating = useCountUp(48, 2000, 1400); // 4.8 * 10 للعرض
+  const studentsCount = useCountUp(10000, 2500, 1600);
+
   const stats = [
-    { icon: Users, label: "مدرس متخصص", value: "500+" },
-    { icon: BookOpen, label: "مادة دراسية", value: "50+" },
-    { icon: Star, label: "تقييم الطلاب", value: "4.8" },
-    { icon: Award, label: "نجح معنا", value: "10000+" },
+    { icon: Users, label: "مدرس متخصص", value: `${teachersCount}+`, rawValue: teachersCount },
+    { icon: BookOpen, label: "مادة دراسية", value: `${subjectsCount}+`, rawValue: subjectsCount },
+    { icon: Star, label: "تقييم الطلاب", value: `${(rating / 10).toFixed(1)}`, rawValue: rating },
+    { icon: Award, label: "نجح معنا", value: `${studentsCount.toLocaleString()}+`, rawValue: studentsCount },
   ];
 
   const subjects = [
@@ -72,7 +82,7 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Stats Section */}
+        {/* Stats Section with Count Up Animation */}
         <AnimatedSection delay={0.8}>
           <section className="py-16 bg-white">
             <div className="container mx-auto px-4">
@@ -104,6 +114,11 @@ const Index = () => {
             </div>
           </section>
         </AnimatedSection>
+
+        {/* Top Rated Teachers Section - عرض فقط للمستخدمين المسجلين */}
+        {isAuthenticated && user && (
+          <TopRatedTeachers />
+        )}
 
         {/* Subjects Section */}
         <section className="py-16 bg-gray-50">
@@ -182,7 +197,7 @@ const Index = () => {
                 </Button>
               </motion.div>
             </div>
-          </div>
+          </section>
         </AnimatedSection>
       </main>
 
