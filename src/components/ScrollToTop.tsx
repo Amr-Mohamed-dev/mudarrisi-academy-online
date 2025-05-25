@@ -1,10 +1,21 @@
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ChevronUp } from "lucide-react";
+import { useState } from "react";
 
 const ScrollToTop = () => {
+  const { pathname } = useLocation();
   const [isVisible, setIsVisible] = useState(false);
+
+  // Scroll to top whenever the route changes
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  }, [pathname]);
 
   // Show button when page is scrolled down
   const toggleVisibility = () => {
