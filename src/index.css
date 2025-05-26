@@ -92,7 +92,7 @@
   }
 
   body {
-    @apply bg-background text-foreground font-cairo;
+    @apply bg-background text-foreground font-cairo transition-colors duration-300;
     direction: rtl;
   }
 
@@ -111,10 +111,20 @@
   }
   
   .section-title {
-    @apply text-3xl font-bold mb-6 text-blue-dark;
+    @apply text-3xl font-bold mb-6 text-blue-dark dark:text-blue-light;
   }
   
   .card {
-    @apply bg-white rounded-lg shadow-md p-6 transition-all hover:shadow-lg;
+    @apply bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 transition-all hover:shadow-lg border border-gray-200 dark:border-gray-700;
   }
+  
+  /* Additional dark mode utilities */
+  .dark-transition {
+    @apply transition-colors duration-300;
+  }
+}
+
+/* Smooth transitions for dark mode */
+* {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
