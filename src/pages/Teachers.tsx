@@ -1,12 +1,10 @@
-import React, { useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import TeacherCard from "@/components/TeacherCard";
 import SubjectFilter from "@/components/SubjectFilter";
 import PriceFilter from "@/components/PriceFilter";
-import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
 import PageTransition from "@/components/PageTransition";
 import AnimatedSection from "@/components/AnimatedSection";
 
@@ -166,7 +164,7 @@ const Teachers = () => {
                 </h3>
 
                 {/* Search */}
-                <div className="relative mb-4">
+                {/* <div className="relative mb-4">
                   <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                   <Input
                     type="text"
@@ -175,7 +173,7 @@ const Teachers = () => {
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="pr-10"
                   />
-                </div>
+                </div> */}
 
                 {/* Subject Filter */}
                 <div className="mb-4">

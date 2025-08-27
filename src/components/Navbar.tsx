@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -35,11 +34,13 @@ const Navbar = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center">
-            <span className="text-2xl font-bold text-blue dark:text-blue-light">منصة المدرسين</span>
+            <span className="text-2xl font-bold text-blue dark:text-blue-light">
+              منصة المدرسين
+            </span>
           </Link>
 
           {/* Search Bar - Hide on mobile, move to dropdown */}
-          {!isMobile && (
+          {/* {!isMobile && (
             <div className="relative mx-4 flex-1 max-w-md justify-between items-center ">
               <div className="absolute inset-y-0 left-0 flex items-center pr-3 pointer-events-none text-gray-400 dark:text-gray-500">
                 <Search className="h-4 w-4" />
@@ -50,12 +51,14 @@ const Navbar = () => {
                 className="w-full py-2 px-10 pl-4 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
               />
             </div>
-          )}
+          )} */}
 
           {/* Desktop Navigation Links */}
           {!isMobile && (
             <div className="flex items-center space-x-4 space-x-reverse">
-              <Link to="/" className="text-gray-700 dark:text-gray-300 hover:text-blue dark:hover:text-blue-light px-3 py-2 transition-colors">
+              <Link
+                to="/"
+                className="text-gray-700 dark:text-gray-300 hover:text-blue dark:hover:text-blue-light px-3 py-2 transition-colors">
                 الرئيسية
               </Link>
               <Link
@@ -80,7 +83,9 @@ const Navbar = () => {
                 size="icon"
                 onClick={toggleDarkMode}
                 className="rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
-                aria-label={isDarkMode ? "تفعيل الوضع الفاتح" : "تفعيل الوضع المظلم"}>
+                aria-label={
+                  isDarkMode ? "تفعيل الوضع الفاتح" : "تفعيل الوضع المظلم"
+                }>
                 {isDarkMode ? (
                   <Sun className="h-5 w-5 text-yellow-500" />
                 ) : (
@@ -145,21 +150,23 @@ const Navbar = () => {
           {isMobile && (
             <div className="flex items-center space-x-2 space-x-reverse">
               {isAuthenticated && <NotificationManager />}
-              
+
               {/* Mobile Dark Mode Toggle */}
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={toggleDarkMode}
                 className="rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
-                aria-label={isDarkMode ? "تفعيل الوضع الفاتح" : "تفعيل الوضع المظلم"}>
+                aria-label={
+                  isDarkMode ? "تفعيل الوضع الفاتح" : "تفعيل الوضع المظلم"
+                }>
                 {isDarkMode ? (
                   <Sun className="h-5 w-5 text-yellow-500" />
                 ) : (
                   <Moon className="h-5 w-5 text-gray-600" />
                 )}
               </Button>
-              
+
               <button
                 onClick={toggleMenu}
                 className="p-2 rounded-md text-gray-700 dark:text-gray-300 focus:outline-none">
@@ -180,7 +187,7 @@ const Navbar = () => {
           {isMenuOpen && (
             <div className="px-4 py-6 space-y-4 animate-fade-in">
               {/* Mobile Search */}
-              <div className="relative mb-6">
+              {/* <div className="relative mb-6">
                 <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400 dark:text-gray-500">
                   <Search className="h-4 w-4" />
                 </div>
@@ -189,7 +196,7 @@ const Navbar = () => {
                   placeholder="ابحث عن مدرس أو مادة..."
                   className="w-full py-2 pr-10 pl-4 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
                 />
-              </div>
+              </div> */}
 
               <div className="flex flex-col space-y-2">
                 <Link

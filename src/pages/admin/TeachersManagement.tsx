@@ -31,7 +31,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Search, UserX, UserCheck, Eye, CheckCircle, ArrowRight } from "lucide-react";
+import { UserX, UserCheck, Eye, CheckCircle, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { User } from "@/contexts/AuthContext";
 
@@ -276,19 +276,18 @@ const TeachersManagement = () => {
     <>
       <div className="container mx-auto py-6">
         <div className="flex justify-between items-center mb-6">
-          <div className="flex items-center">
-            <Button 
-              variant="outline" 
-              onClick={() => navigate('/admin')} 
-              className="ml-4"
-            >
-              <ArrowRight className="h-4 w-4 ml-2" />
-              لوحة التحكم
-            </Button>
+          <div className="flex items-center justify-between w-full">
             <h1 className="text-2xl font-bold">إدارة المدرسين</h1>
+            <Button
+              variant="outline"
+              onClick={() => navigate("/admin")}
+              className="mr-4">
+              لوحة التحكم
+              <ArrowLeft className="h-4 w-4 mr-2" />
+            </Button>
           </div>
 
-          <div className="relative">
+          {/* <div className="relative">
             <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400">
               <Search className="h-4 w-4" />
             </div>
@@ -299,7 +298,7 @@ const TeachersManagement = () => {
               onChange={handleSearch}
               className="w-64 py-2 pr-10 pl-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue"
             />
-          </div>
+          </div> */}
         </div>
 
         <Card className="mb-6">
@@ -589,9 +588,7 @@ const TeachersManagement = () => {
                   }
                 />
               </PaginationItem>
-
               {renderPagination()}
-
               <PaginationItem>
                 <PaginationNext
                   onClick={() =>
@@ -605,10 +602,12 @@ const TeachersManagement = () => {
                   }
                 />
               </PaginationItem>
+              dasd
             </PaginationContent>
           </Pagination>
         )}
       </div>
+      <div></div>
     </>
   );
 };

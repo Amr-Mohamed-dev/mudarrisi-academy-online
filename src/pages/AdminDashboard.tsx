@@ -2,12 +2,10 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import {
   User,
-  Book,
   Calendar,
   Settings,
   MessageSquare,
   Home,
-  Search,
   Menu,
   X,
   Users,
@@ -146,7 +144,7 @@ const AdminDashboard = () => {
               </Link>
             </div>
 
-            <div className="flex items-center">
+            {/* <div className="flex items-center">
               <Button 
                 variant="outline" 
                 size="sm" 
@@ -177,7 +175,7 @@ const AdminDashboard = () => {
                   <AvatarFallback>{user?.name?.[0] || "م"}</AvatarFallback>
                 </Avatar>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </header>
@@ -338,8 +336,6 @@ const AdminDashboard = () => {
         {/* Main Content */}
         <main className="flex-1 p-6">
           <div className="container mx-auto">
-            <h1 className="text-2xl font-bold mb-6">لوحة التحكم</h1>
-
             {/* Stats Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
               <Card>
