@@ -217,6 +217,20 @@ const AdminDashboard = () => {
                     </Badge>
                   </Link>
                   <Link
+                    to="/admin/create-teacher"
+                    className={`flex items-center px-4 py-2 rounded-md font-medium mr-4 ${
+                      isActive("/admin/create-teacher")
+                        ? "text-gray-900 bg-blue/10"
+                        : "text-gray-600 hover:bg-gray-100 hover:text-blue"
+                    }`}>
+                    <User
+                      className={`ml-3 h-5 w-5 ${
+                        isActive("/admin/create-teacher") ? "text-blue" : ""
+                      }`}
+                    />
+                    <span>إنشاء مدرس</span>
+                  </Link>
+                  <Link
                     to="/admin/students"
                     className={`flex items-center px-4 py-2 rounded-md font-medium ${
                       isActive("/admin/students")

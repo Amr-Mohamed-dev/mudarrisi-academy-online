@@ -13,6 +13,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import TeachersManagement from "./pages/admin/TeachersManagement";
 import StudentsManagement from "./pages/admin/StudentsManagement";
 import BookingsManagement from "./pages/admin/BookingsManagement";
+import CreateTeacher from "./pages/admin/CreateTeacher";
 import Teachers from "./pages/Teachers";
 import Subjects from "./pages/Subjects";
 import About from "./pages/About";
@@ -44,6 +45,7 @@ const App = () => (
               <Route path="/auth" element={<Auth />} />
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/admin/teachers" element={<TeachersManagement />} />
+              <Route path="/admin/create-teacher" element={<CreateTeacher />} />
               <Route path="/admin/students" element={<StudentsManagement />} />
               <Route path="/admin/bookings" element={<BookingsManagement />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
