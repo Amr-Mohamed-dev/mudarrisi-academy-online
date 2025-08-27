@@ -169,6 +169,10 @@ const CreateTeacher = () => {
             <ArrowRight className="h-4 w-4 ml-2" />
             العودة للمدرسين
           </Button>
+          <Button variant="outline" onClick={() => navigate('/admin')} className="ml-4">
+            <ArrowRight className="h-4 w-4 ml-2" />
+            لوحة التحكم
+          </Button>
           <h1 className="text-2xl font-bold">إنشاء مدرس جديد</h1>
         </div>
       </div>

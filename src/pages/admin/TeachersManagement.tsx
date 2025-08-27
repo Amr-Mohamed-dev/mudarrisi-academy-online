@@ -31,7 +31,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Search, UserX, UserCheck, Eye, CheckCircle } from "lucide-react";
+import { Search, UserX, UserCheck, Eye, CheckCircle, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { User } from "@/contexts/AuthContext";
 
@@ -276,7 +276,17 @@ const TeachersManagement = () => {
     <>
       <div className="container mx-auto py-6">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">إدارة المدرسين</h1>
+          <div className="flex items-center">
+            <Button 
+              variant="outline" 
+              onClick={() => navigate('/admin')} 
+              className="ml-4"
+            >
+              <ArrowRight className="h-4 w-4 ml-2" />
+              لوحة التحكم
+            </Button>
+            <h1 className="text-2xl font-bold">إدارة المدرسين</h1>
+          </div>
 
           <div className="relative">
             <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400">

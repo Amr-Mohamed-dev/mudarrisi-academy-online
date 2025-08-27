@@ -147,6 +147,16 @@ const AdminDashboard = () => {
             </div>
 
             <div className="flex items-center">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => navigate('/')}
+                className="text-white border-white hover:bg-white hover:text-blue ml-4"
+              >
+                <Home className="h-4 w-4 ml-2" />
+                الصفحة الرئيسية
+              </Button>
+              
               <div className="relative mx-2">
                 <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                   <Search className="h-4 w-4" />
