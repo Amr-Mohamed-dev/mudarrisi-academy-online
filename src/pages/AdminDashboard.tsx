@@ -126,7 +126,7 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-100">
+    <div className="flex flex-col min-h-screen bg-background text-foreground">
       {/* Admin Navbar */}
       <header className="bg-blue text-white shadow-md sticky top-0 z-50">
         <div className="container mx-auto px-4">
@@ -183,13 +183,13 @@ const AdminDashboard = () => {
       <div className="flex flex-1">
         {/* Sidebar - Now using localStorage to persist state across page navigation */}
         <aside
-          className={`bg-white shadow-md fixed inset-y-0 right-0 pt-16 z-40 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-auto lg:z-auto w-64 ${
+          className={`bg-card text-card-foreground border shadow-md fixed inset-y-0 right-0 pt-16 z-40 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-auto lg:z-auto w-64 ${
             sidebarOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"
           }`}>
           <div className="h-full overflow-y-auto p-4">
             <nav className="space-y-8">
               <div>
-                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
                   القائمة الرئيسية
                 </h3>
                 <div className="space-y-1">
@@ -197,8 +197,8 @@ const AdminDashboard = () => {
                     to="/admin"
                     className={`flex items-center px-4 py-2 rounded-md font-medium ${
                       isActive("/admin")
-                        ? "text-gray-900 bg-blue/10"
-                        : "text-gray-600 hover:bg-gray-100 hover:text-blue"
+                        ? "text-gray-900 dark:text-gray-100 bg-blue/10"
+                        : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-blue"
                     }`}>
                     <Home
                       className={`ml-3 h-5 w-5 ${
@@ -211,8 +211,8 @@ const AdminDashboard = () => {
                     to="/admin/teachers"
                     className={`flex items-center px-4 py-2 rounded-md font-medium ${
                       isActive("/admin/teachers")
-                        ? "text-gray-900 bg-blue/10"
-                        : "text-gray-600 hover:bg-gray-100 hover:text-blue"
+                        ? "text-gray-900 dark:text-gray-100 bg-blue/10"
+                        : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-blue"
                     }`}>
                     <User
                       className={`ml-3 h-5 w-5 ${
@@ -228,8 +228,8 @@ const AdminDashboard = () => {
                     to="/admin/create-teacher"
                     className={`flex items-center px-4 py-2 rounded-md font-medium mr-4 ${
                       isActive("/admin/create-teacher")
-                        ? "text-gray-900 bg-blue/10"
-                        : "text-gray-600 hover:bg-gray-100 hover:text-blue"
+                        ? "text-gray-900 dark:text-gray-100 bg-blue/10"
+                        : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-blue"
                     }`}>
                     <User
                       className={`ml-3 h-5 w-5 ${
@@ -242,8 +242,8 @@ const AdminDashboard = () => {
                     to="/admin/students"
                     className={`flex items-center px-4 py-2 rounded-md font-medium ${
                       isActive("/admin/students")
-                        ? "text-gray-900 bg-blue/10"
-                        : "text-gray-600 hover:bg-gray-100 hover:text-blue"
+                        ? "text-gray-900 dark:text-gray-100 bg-blue/10"
+                        : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-blue"
                     }`}>
                     <Users
                       className={`ml-3 h-5 w-5 ${
@@ -259,8 +259,8 @@ const AdminDashboard = () => {
                     to="/admin/bookings"
                     className={`flex items-center px-4 py-2 rounded-md font-medium ${
                       isActive("/admin/bookings")
-                        ? "text-gray-900 bg-blue/10"
-                        : "text-gray-600 hover:bg-gray-100 hover:text-blue"
+                        ? "text-gray-900 dark:text-gray-100 bg-blue/10"
+                        : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-blue"
                     }`}>
                     <Calendar
                       className={`ml-3 h-5 w-5 ${
@@ -278,7 +278,7 @@ const AdminDashboard = () => {
               </div>
 
               <div>
-                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
                   إدارة المحتوى
                 </h3>
                 <div className="space-y-1">
@@ -286,8 +286,8 @@ const AdminDashboard = () => {
                     to="/admin/messages"
                     className={`flex items-center px-4 py-2 rounded-md font-medium ${
                       isActive("/admin/messages")
-                        ? "text-gray-900 bg-blue/10"
-                        : "text-gray-600 hover:bg-gray-100 hover:text-blue"
+                        ? "text-gray-900 dark:text-gray-100 bg-blue/10"
+                        : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-blue"
                     }`}>
                     <MessageSquare
                       className={`ml-3 h-5 w-5 ${
@@ -303,8 +303,8 @@ const AdminDashboard = () => {
                     to="/admin/reviews"
                     className={`flex items-center px-4 py-2 rounded-md font-medium ${
                       isActive("/admin/reviews")
-                        ? "text-gray-900 bg-blue/10"
-                        : "text-gray-600 hover:bg-gray-100 hover:text-blue"
+                        ? "text-gray-900 dark:text-gray-100 bg-blue/10"
+                        : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-blue"
                     }`}>
                     <MessageSquare
                       className={`ml-3 h-5 w-5 ${
@@ -457,8 +457,8 @@ const AdminDashboard = () => {
                   <CardTitle>تحليلات الزيارات</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="h-[250px] flex items-center justify-center border border-dashed border-gray-300 rounded-md">
-                    <p className="text-gray-500">
+                  <div className="h-[250px] flex items-center justify-center border border-dashed border-gray-300 dark:border-gray-700 rounded-md">
+                    <p className="text-gray-500 dark:text-gray-400">
                       هنا يتم عرض رسم بياني للزيارات
                     </p>
                   </div>
@@ -468,7 +468,7 @@ const AdminDashboard = () => {
 
             {/* Popular Subjects & Teacher Overview */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card>
+              <Card className="bg-card text-card-foreground border">
                 <CardHeader>
                   <CardTitle>المواد الأكثر طلبًا</CardTitle>
                 </CardHeader>
@@ -484,7 +484,7 @@ const AdminDashboard = () => {
                       <div key={i} className="space-y-1">
                         <div className="flex justify-between items-center">
                           <span className="font-medium">{subject.name}</span>
-                          <span className="text-sm text-gray-500">
+                          <span className="text-sm text-gray-500 dark:text-gray-400">
                             {subject.percentage}%
                           </span>
                         </div>
@@ -495,7 +495,7 @@ const AdminDashboard = () => {
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="bg-card text-card-foreground border">
                 <CardHeader>
                   <CardTitle>المدرسون المميزون</CardTitle>
                 </CardHeader>
@@ -544,7 +544,7 @@ const AdminDashboard = () => {
                           </Avatar>
                           <div>
                             <p className="font-medium">{teacher.name}</p>
-                            <p className="text-sm text-gray-500">
+                            <p className="text-sm text-gray-500 dark:text-gray-400">
                               {teacher.subject}
                             </p>
                           </div>
@@ -558,7 +558,7 @@ const AdminDashboard = () => {
                               <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
                             </svg>
                           </div>
-                          <p className="text-xs text-gray-500">
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
                             {teacher.students} طالب
                           </p>
                         </div>

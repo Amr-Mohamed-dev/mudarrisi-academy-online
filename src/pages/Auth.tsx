@@ -15,7 +15,8 @@ import {
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { toast } from "sonner";
-import { useAuth, EducationalStage } from "@/contexts/AuthContext";
+import { EducationalStage } from "@/contexts/AuthContext";
+import { authServices } from "@/services";
 
 const Auth = () => {
   const [searchParams] = useSearchParams();
@@ -23,14 +24,15 @@ const Auth = () => {
     searchParams.get("type") === "register" ? "register" : "login";
   const [activeTab, setActiveTab] = useState(defaultTab);
   const navigate = useNavigate();
-  const { login, register, isAuthenticated } = useAuth();
+
+  const { login } = authServices();
 
   // إعادة التوجيه إذا كان المستخدم مسجل الدخول بالفعل
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate("/");
-    }
-  }, [isAuthenticated, navigate]);
+  // useEffect(() => {
+  //   if (isAuthenticated) {
+  //     navigate("/");
+  //   }
+  // }, [isAuthenticated, navigate]);
 
   // Login form state
   const [loginEmail, setLoginEmail] = useState("");
@@ -46,15 +48,25 @@ const Auth = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [userType, setUserType] = useState("student");
-  const [educationalStage, setEducationalStage] = useState<EducationalStage | "">("");
+  const [educationalStage, setEducationalStage] = useState<
+    EducationalStage | ""
+  >("");
   const [isRegisterLoading, setIsRegisterLoading] = useState(false);
 
   // المراحل الدراسية المتاحة
   const educationalStages: EducationalStage[] = [
-    "أولى ابتدائي", "ثانية ابتدائي", "ثالثة ابتدائي", 
-    "رابعة ابتدائي", "خامسة ابتدائي", "سادسة ابتدائي",
-    "أولى إعدادي", "ثانية إعدادي", "ثالثة إعدادي",
-    "أولى ثانوي", "ثانية ثانوي", "ثالثة ثانوي"
+    "أولى ابتدائي",
+    "ثانية ابتدائي",
+    "ثالثة ابتدائي",
+    "رابعة ابتدائي",
+    "خامسة ابتدائي",
+    "سادسة ابتدائي",
+    "أولى إعدادي",
+    "ثانية إعدادي",
+    "ثالثة إعدادي",
+    "أولى ثانوي",
+    "ثانية ثانوي",
+    "ثالثة ثانوي",
   ];
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -66,14 +78,18 @@ const Auth = () => {
     }
 
     setIsLoginLoading(true);
+    console.log("before succ ");
     const success = await login(loginEmail, loginPassword);
+    console.log("after succ ");
     setIsLoginLoading(false);
 
     if (success) {
       toast.success("تم تسجيل الدخول بنجاح");
       navigate("/");
     } else {
-      toast.error("البريد الإلكتروني أو كلمة المرور غير صحيحة أو الحساب غير نشط");
+      toast.error(
+        "البريد الإلكتروني أو كلمة المرور غير صحيحة أو الحساب غير نشط"
+      );
     }
   };
 
@@ -95,7 +111,7 @@ const Auth = () => {
       toast.error("يرجى الموافقة على الشروط والأحكام");
       return;
     }
-    
+
     // التحقق من اختيار المرحلة الدراسية للطلاب
     if (userType === "student" && !educationalStage) {
       toast.error("يرجى تحديد المرحلة الدراسية");
@@ -108,36 +124,26 @@ const Auth = () => {
       email,
       phone,
       role: userType as "student" | "teacher",
-      educationalStage: userType === "student" ? educationalStage as EducationalStage : undefined,
+      educationalStage:
+        userType === "student"
+          ? (educationalStage as EducationalStage)
+          : undefined,
     };
 
-    const success = await register(userData, password);
     setIsRegisterLoading(false);
-
-    if (success) {
-      if (userType === "teacher") {
-        toast.success("تم إنشاء الحساب بنجاح! بانتظار موافقة المدير.");
-        setActiveTab("login");
-      } else {
-        toast.success("تم إنشاء الحساب بنجاح!");
-        navigate("/");
-      }
-    } else {
-      toast.error("البريد الإلكتروني مستخدم بالفعل أو حدث خطأ");
-    }
   };
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-background text-foreground">
       <Navbar />
 
-      <div className="flex-1 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gray-50">
+      <div className="flex-1 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-900/40">
         <div className="max-w-md w-full">
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-extrabold text-blue-dark">
+            <h2 className="text-3xl font-extrabold text-blue-dark dark:text-blue-light">
               {activeTab === "login" ? "تسجيل الدخول" : "إنشاء حساب جديد"}
             </h2>
-            <p className="mt-2 text-sm text-gray-600">
+            <p className="mt-2 text-sm text-gray-700 dark:text-gray-300">
               {activeTab === "login" ? (
                 <>
                   لا تملك حساباً بعد؟{" "}
@@ -160,7 +166,7 @@ const Auth = () => {
             </p>
           </div>
 
-          <div className="bg-white shadow rounded-lg">
+          <div className="bg-card text-card-foreground border shadow rounded-lg">
             <Tabs
               value={activeTab}
               onValueChange={setActiveTab}
@@ -300,10 +306,14 @@ const Auth = () => {
 
                   {userType === "student" && (
                     <div className="space-y-2">
-                      <Label htmlFor="educational-stage">المرحلة الدراسية</Label>
+                      <Label htmlFor="educational-stage">
+                        المرحلة الدراسية
+                      </Label>
                       <Select
                         value={educationalStage}
-                        onValueChange={(value: EducationalStage | "") => setEducationalStage(value)}
+                        onValueChange={(value: EducationalStage | "") =>
+                          setEducationalStage(value)
+                        }
                         disabled={isRegisterLoading}>
                         <SelectTrigger id="educational-stage">
                           <SelectValue placeholder="اختر المرحلة الدراسية" />
@@ -311,7 +321,9 @@ const Auth = () => {
                         <SelectContent>
                           <div className="grid grid-cols-2 gap-2">
                             <div>
-                              <h4 className="font-bold mb-1 px-2">المرحلة الابتدائية</h4>
+                              <h4 className="font-bold mb-1 px-2">
+                                المرحلة الابتدائية
+                              </h4>
                               {educationalStages.slice(0, 6).map((stage) => (
                                 <SelectItem key={stage} value={stage}>
                                   {stage}
@@ -319,13 +331,17 @@ const Auth = () => {
                               ))}
                             </div>
                             <div>
-                              <h4 className="font-bold mb-1 px-2">المرحلة الإعدادية</h4>
+                              <h4 className="font-bold mb-1 px-2">
+                                المرحلة الإعدادية
+                              </h4>
                               {educationalStages.slice(6, 9).map((stage) => (
                                 <SelectItem key={stage} value={stage}>
                                   {stage}
                                 </SelectItem>
                               ))}
-                              <h4 className="font-bold mb-1 mt-2 px-2">المرحلة الثانوية</h4>
+                              <h4 className="font-bold mb-1 mt-2 px-2">
+                                المرحلة الثانوية
+                              </h4>
                               {educationalStages.slice(9, 12).map((stage) => (
                                 <SelectItem key={stage} value={stage}>
                                   {stage}
@@ -401,7 +417,9 @@ const Auth = () => {
 
                   {userType === "teacher" && (
                     <div className="mt-4 text-center text-sm text-amber">
-                      <p>ملاحظة: حسابات المدرسين تتطلب موافقة الإدارة قبل التفعيل</p>
+                      <p>
+                        ملاحظة: حسابات المدرسين تتطلب موافقة الإدارة قبل التفعيل
+                      </p>
                     </div>
                   )}
                 </form>

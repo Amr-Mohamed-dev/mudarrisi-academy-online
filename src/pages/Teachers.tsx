@@ -125,21 +125,21 @@ const Teachers = () => {
   };
 
   return (
-    <PageTransition className="flex flex-col min-h-screen">
+    <PageTransition className="flex flex-col min-h-screen bg-background text-foreground">
       <Navbar />
 
       <main className="container mx-auto px-4 py-8 flex-grow">
         <AnimatedSection delay={0.2}>
           <div className="text-center mb-8">
             <motion.h1
-              className="text-4xl font-bold text-blue-dark mb-4"
+              className="text-4xl font-bold text-blue-dark dark:text-blue-light mb-4"
               initial={{ scale: 0.9 }}
               animate={{ scale: 1 }}
               transition={{ duration: 0.5 }}>
               أفضل المدرسين
             </motion.h1>
             <motion.p
-              className="text-gray-600 text-lg"
+              className="text-gray-700 dark:text-gray-300 text-lg"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}>
@@ -155,11 +155,11 @@ const Teachers = () => {
             direction="right"
             className="lg:col-span-1">
             <motion.div
-              className="bg-white p-6 rounded-lg shadow-md space-y-6 sticky top-4"
+              className="bg-card text-card-foreground p-6 rounded-lg shadow-md border space-y-6 sticky top-4"
               whileHover={{ scale: 1.02 }}
               transition={{ duration: 0.2 }}>
               <div>
-                <h3 className="text-lg font-bold text-blue-dark mb-4">
+                <h3 className="text-lg font-bold text-blue-dark dark:text-blue-light mb-4">
                   البحث والفلتر
                 </h3>
 
@@ -199,7 +199,7 @@ const Teachers = () => {
           <div className="lg:col-span-3">
             <AnimatedSection delay={0.6}>
               <motion.div
-                className="mb-4 text-gray-600"
+                className="mb-4 text-gray-700 dark:text-gray-300"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.8 }}>
@@ -229,10 +229,10 @@ const Teachers = () => {
                   initial={{ scale: 0.8 }}
                   animate={{ scale: 1 }}
                   transition={{ type: "spring", stiffness: 200 }}>
-                  <p className="text-gray-500 text-lg mb-4">
+                  <p className="text-gray-500 dark:text-gray-400 text-lg mb-4">
                     لم يتم العثور على مدرسين يطابقون البحث
                   </p>
-                  <p className="text-gray-400">
+                  <p className="text-gray-400 dark:text-gray-500">
                     جرب تغيير معايير البحث أو الفلتر
                   </p>
                 </motion.div>

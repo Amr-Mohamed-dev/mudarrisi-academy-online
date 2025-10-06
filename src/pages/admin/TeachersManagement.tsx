@@ -602,7 +602,6 @@ const TeachersManagement = () => {
                   }
                 />
               </PaginationItem>
-              dasd
             </PaginationContent>
           </Pagination>
         )}

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { MessageSquare, Calendar, ArrowRight } from "lucide-react";
@@ -156,7 +155,7 @@ const TeacherProfile = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-background text-foreground">
       <Navbar />
 
       <div className="container mx-auto px-4 py-8">
@@ -184,7 +183,7 @@ const TeacherProfile = () => {
 
             <Tabs
               defaultValue="about"
-              className="bg-white rounded-lg shadow-md">
+              className="bg-card text-card-foreground rounded-lg shadow-md border">
               <TabsList className="w-full border-b">
                 <TabsTrigger value="about" className="flex-1 py-3">
                   نبذة عن المدرس
@@ -200,7 +199,7 @@ const TeacherProfile = () => {
               <TabsContent value="about" className="p-6 focus:outline-none">
                 <div className="mb-8">
                   <h3 className="text-xl font-bold mb-4">نبذة</h3>
-                  <div className="whitespace-pre-line text-gray-700">
+                  <div className="whitespace-pre-line text-gray-700 dark:text-gray-300">
                     {teacher.about}
                   </div>
                 </div>
@@ -233,14 +232,16 @@ const TeacherProfile = () => {
           {/* Sidebar */}
           <div>
             <div className="sticky top-24">
-              <div className="bg-white rounded-lg shadow-md mb-6">
+              <div className="bg-card text-card-foreground border rounded-lg shadow-md mb-6">
                 <div className="p-6 border-b">
                   <h3 className="text-xl font-bold mb-2">احجز موعدًا</h3>
-                  <p className="text-gray-600">اختر الوقت المناسب لك</p>
-                  <p className="font-bold text-lg text-blue-600 mt-2">
+                  <p className="text-gray-600 dark:text-gray-300">
+                    اختر الوقت المناسب لك
+                  </p>
+                  <p className="font-bold text-lg text-blue-600 dark:text-blue-light mt-2">
                     {teacher.price} ريال / ساعة
                   </p>
-                  <p className="text-yellow-600 text-sm mt-1">
+                  <p className="text-yellow-600 dark:text-yellow-500 text-sm mt-1">
                     * جميع الحجوزات تخضع لموافقة إدارة المنصة
                   </p>
                 </div>
@@ -257,7 +258,7 @@ const TeacherProfile = () => {
                 </div>
               </div>
 
-              <div className="bg-white rounded-lg shadow-md p-6">
+              <div className="bg-card text-card-foreground border rounded-lg shadow-md p-6">
                 <h3 className="text-xl font-bold mb-4">تواصل مع المدرس</h3>
                 <Button
                   className="w-full flex items-center justify-center mb-3"

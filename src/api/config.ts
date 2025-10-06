@@ -4,7 +4,7 @@
 // Base URL للـ API - يجب تغييرها حسب عنوان الخادم الخاص بك
 export const API_BASE_URL = process.env.NODE_ENV === 'production' 
   ? 'https://your-api-domain.com/api' 
-  : 'http://localhost:3001/api';
+  : 'http://localhost:5000/api';
 
 // Headers افتراضية لجميع الطلبات
 export const DEFAULT_HEADERS = {

@@ -1,4 +1,3 @@
-
 import React, {
   createContext,
   useContext,
@@ -11,7 +10,7 @@ import React, {
 export type UserRole = "student" | "teacher" | "admin";
 
 // تعريف المراحل الدراسية للطلاب
-export type EducationalStage = 
+export type EducationalStage =
   | "أولى ابتدائي"
   | "ثانية ابتدائي"
   | "ثالثة ابتدائي"
@@ -73,43 +72,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   const [isLoading, setIsLoading] = useState(true);
 
   // التحقق من حالة تسجيل الدخول عند تحميل التطبيق
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      try {
-        setUser(JSON.parse(storedUser));
-      } catch (error) {
-        console.error("خطأ في تحميل بيانات المستخدم:", error);
-        localStorage.removeItem("user");
-      }
-    }
-    setIsLoading(false);
-
-    // إنشاء حساب مسؤول افتراضي إذا لم يكن موجودًا
-    const users = JSON.parse(localStorage.getItem("users") || "[]");
-    const adminExists = users.some((u: { email: string }) => u.email === ADMIN_EMAIL);
-
-    if (!adminExists) {
-      const adminUser = {
-        id: "admin_" + Date.now(),
-        name: "مسؤول النظام",
-        email: ADMIN_EMAIL,
-        role: "admin",
-        isActive: true,
-        isApproved: true,
-        createdAt: new Date().toISOString(),
-        password: ADMIN_PASSWORD, // في الواقع يجب تشفير كلمات المرور
-      };
-
-      localStorage.setItem("users", JSON.stringify([...users, adminUser]));
-      console.log("تم إنشاء حساب المسؤول الافتراضي");
-    }
-
-    // إنشاء مصفوفة للحجوزات إذا لم تكن موجودة
-    if (!localStorage.getItem("bookings")) {
-      localStorage.setItem("bookings", JSON.stringify([]));
-    }
-  }, []);
 
   // وظيفة تسجيل الدخول
   const login = async (email: string, password: string): Promise<boolean> => {
@@ -118,13 +80,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     try {
       // محاكاة تأخير الاتصال بالخادم
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      
+
       // التحقق من بيانات المستخدم
       const users = JSON.parse(localStorage.getItem("users") || "[]");
-      
+
       // للمدير - التحقق من الإيميل والباسورد الثابتين
       if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
-        const adminUser = users.find((u: { email: string }) => u.email === ADMIN_EMAIL);
+        const adminUser = users.find(
+          (u: { email: string }) => u.email === ADMIN_EMAIL
+        );
         if (adminUser) {
           const { password: _, ...userWithoutPassword } = adminUser;
           setUser(userWithoutPassword);
@@ -133,7 +97,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
           return true;
         }
       }
-      
+
       // للمستخدمين الآخرين
       const foundUser = users.find(
         (u: { email: string; password: string }) =>
@@ -146,7 +110,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
           setIsLoading(false);
           return false; // المستخدم تم إيقافه
         }
-        
+
         // التحقق من الموافقة للمدرسين
         if (foundUser.role === "teacher" && foundUser.isApproved === false) {
           setIsLoading(false);
