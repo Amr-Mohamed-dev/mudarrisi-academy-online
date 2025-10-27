@@ -9,18 +9,17 @@ import { useAuthServices } from "@/services";
 import ProfileImage from "../ui/ProfileImage";
 import ProfileBox from "./ProfileBox";
 
-const links = [
-    {
-        href: PATHS.site.home.href,
-        label: "find a service",
-    },
-    {
-        href: PATHS.site.sellService.href,
-        label: "selling a service",
-    },
-];
-
 const Navbar = () => {
+    const links = [
+        {
+            href: PATHS.site.home.href,
+            label: "find a service",
+        },
+        {
+            href: PATHS.site.sellService?.href,
+            label: "selling a service",
+        },
+    ];
     const navigate = useNavigate();
     const { user, isAuthenticated } = authStore();
     const { logout } = useAuthServices();
