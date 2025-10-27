@@ -18,7 +18,6 @@ import Teachers from "./pages/Teachers";
 import Subjects from "./pages/Subjects";
 import About from "./pages/About";
 import NotFound from "./pages/NotFound";
-import AuthProvider from "./contexts/AuthContext";
 import ThemeProvider from "./contexts/ThemeContext";
 import ScrollToTop from "./components/ScrollToTop";
 import TeacherRatings from "./pages/TeacherRatings";
@@ -27,35 +26,33 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <ThemeProvider>
-        <BrowserRouter>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/teachers" element={<Teachers />} />
-              <Route path="/teachers/:id" element={<TeacherProfile />} />
-              <Route path="/student/profile" element={<StudentProfile />} />
-              <Route path="/booking/:id" element={<BookingPage />} />
-              <Route path="/teacher/ratings" element={<TeacherRatings />} />
-              <Route path="/subjects" element={<Subjects />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/admin" element={<AdminDashboard />} />
-              <Route path="/admin/teachers" element={<TeachersManagement />} />
-              <Route path="/admin/create-teacher" element={<CreateTeacher />} />
-              <Route path="/admin/students" element={<StudentsManagement />} />
-              <Route path="/admin/bookings" element={<BookingsManagement />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </TooltipProvider>
-          <ScrollToTop />
-        </BrowserRouter>
-      </ThemeProvider>
-    </AuthProvider>
+    <ThemeProvider>
+      <BrowserRouter>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/teachers" element={<Teachers />} />
+            <Route path="/teachers/:id" element={<TeacherProfile />} />
+            <Route path="/student/profile" element={<StudentProfile />} />
+            <Route path="/booking/:id" element={<BookingPage />} />
+            <Route path="/teacher/ratings" element={<TeacherRatings />} />
+            <Route path="/subjects" element={<Subjects />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin/teachers" element={<TeachersManagement />} />
+            <Route path="/admin/create-teacher" element={<CreateTeacher />} />
+            <Route path="/admin/students" element={<StudentsManagement />} />
+            <Route path="/admin/bookings" element={<BookingsManagement />} />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </TooltipProvider>
+        <ScrollToTop />
+      </BrowserRouter>
+    </ThemeProvider>
   </QueryClientProvider>
 );
 

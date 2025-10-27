@@ -33,7 +33,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { UserX, UserCheck, Eye, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
-import { User } from "@/contexts/AuthContext";
+import { User } from "@/types/user.types";
 
 const StudentsManagement = () => {
   const navigate = useNavigate();

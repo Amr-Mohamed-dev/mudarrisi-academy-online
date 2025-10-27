@@ -8,11 +8,12 @@ import Footer from "@/components/Footer";
 import PageTransition from "@/components/PageTransition";
 import AnimatedSection from "@/components/AnimatedSection";
 import TopRatedTeachers from "@/components/TopRatedTeachers";
-import { useAuth } from "@/contexts/AuthContext";
 import { useCountUp } from "@/hooks/useCountUp";
 
 const Index = () => {
-  const { isAuthenticated, user } = useAuth();
+  // Temporary - will be replaced with actual auth when backend is ready
+  const isAuthenticated = false;
+  const user = null;
 
   // استخدام hook العد التصاعدي للإحصائيات
   const teachersCount = useCountUp(500, 2000, 1000);

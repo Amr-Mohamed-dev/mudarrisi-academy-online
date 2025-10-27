@@ -1,6 +1,5 @@
 
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -27,7 +26,8 @@ interface Booking {
 }
 
 const TeacherRatings = () => {
-  const { user, isAuthenticated } = useAuth();
+  const user = null; // TODO: Replace with actual auth
+  const isAuthenticated = false; // TODO: Replace with actual auth
   const navigate = useNavigate();
   const { toast } = useToast();
   const [bookings, setBookings] = useState<Booking[]>([]);

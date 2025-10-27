@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useSearchParams, Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,8 +15,21 @@ import {
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { toast } from "sonner";
-import { EducationalStage } from "@/contexts/AuthContext";
-import { authServices } from "@/services";
+
+// المراحل الدراسية
+type EducationalStage =
+  | "أولى ابتدائي"
+  | "ثانية ابتدائي"
+  | "ثالثة ابتدائي"
+  | "رابعة ابتدائي"
+  | "خامسة ابتدائي"
+  | "سادسة ابتدائي"
+  | "أولى إعدادي"
+  | "ثانية إعدادي"
+  | "ثالثة إعدادي"
+  | "أولى ثانوي"
+  | "ثانية ثانوي"
+  | "ثالثة ثانوي";
 
 const Auth = () => {
   const [searchParams] = useSearchParams();
@@ -24,15 +37,6 @@ const Auth = () => {
     searchParams.get("type") === "register" ? "register" : "login";
   const [activeTab, setActiveTab] = useState(defaultTab);
   const navigate = useNavigate();
-
-  const { login } = authServices();
-
-  // إعادة التوجيه إذا كان المستخدم مسجل الدخول بالفعل
-  // useEffect(() => {
-  //   if (isAuthenticated) {
-  //     navigate("/");
-  //   }
-  // }, [isAuthenticated, navigate]);
 
   // Login form state
   const [loginEmail, setLoginEmail] = useState("");
@@ -78,19 +82,12 @@ const Auth = () => {
     }
 
     setIsLoginLoading(true);
-    console.log("before succ ");
-    const success = await login(loginEmail, loginPassword);
-    console.log("after succ ");
+    
+    // TODO: Replace with actual API call
+    // const success = await login(loginEmail, loginPassword);
+    
     setIsLoginLoading(false);
-
-    if (success) {
-      toast.success("تم تسجيل الدخول بنجاح");
-      navigate("/");
-    } else {
-      toast.error(
-        "البريد الإلكتروني أو كلمة المرور غير صحيحة أو الحساب غير نشط"
-      );
-    }
+    toast.info("سيتم ربط تسجيل الدخول مع الباك اند قريباً");
   };
 
   const handleRegister = async (e: React.FormEvent) => {
@@ -119,18 +116,18 @@ const Auth = () => {
     }
 
     setIsRegisterLoading(true);
-    const userData = {
-      name,
-      email,
-      phone,
-      role: userType as "student" | "teacher",
-      educationalStage:
-        userType === "student"
-          ? (educationalStage as EducationalStage)
-          : undefined,
-    };
+    
+    // TODO: Replace with actual API call
+    // const userData = {
+    //   name,
+    //   email,
+    //   phone,
+    //   role: userType as "student" | "teacher",
+    //   educationalStage: userType === "student" ? (educationalStage as EducationalStage) : undefined,
+    // };
 
     setIsRegisterLoading(false);
+    toast.info("سيتم ربط التسجيل مع الباك اند قريباً");
   };
 
   return (

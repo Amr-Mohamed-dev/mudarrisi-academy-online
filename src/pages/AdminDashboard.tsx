@@ -17,7 +17,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useAuth } from "@/contexts/AuthContext";
 import Footer from "@/components/Footer";
 
 const AdminDashboard = () => {
@@ -27,7 +26,7 @@ const AdminDashboard = () => {
     return savedState !== null ? JSON.parse(savedState) : true;
   });
   const isMobile = useIsMobile();
-  const { user } = useAuth();
+  const user = null; // TODO: Replace with actual auth
   const navigate = useNavigate();
   const location = useLocation();
 

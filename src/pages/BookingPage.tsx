@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -17,7 +16,7 @@ import { useToast } from "@/hooks/use-toast";
 const BookingPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const user = null; // TODO: Replace with actual auth
   const { toast } = useToast();
   const [teacher, setTeacher] = useState<any>(null);
   const [loading, setLoading] = useState(true);

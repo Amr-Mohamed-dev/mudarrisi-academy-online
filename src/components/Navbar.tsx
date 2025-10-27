@@ -6,27 +6,27 @@ import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useTheme } from "@/contexts/ThemeContext";
 import { toast } from "sonner";
-import NotificationManager from "./NotificationManager";
-import { useAuth } from "@/contexts/AuthContext";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const isMobile = useIsMobile();
   const { isDarkMode, toggleDarkMode } = useTheme();
   const navigate = useNavigate();
-  const { user, isAuthenticated, logout } = useAuth();
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   const handleLogout = () => {
-    logout();
+    // TODO: Implement logout logic
     toast.success("تم تسجيل الخروج بنجاح");
     navigate("/");
     setIsMenuOpen(false);
   };
 
-  const isAdmin = user?.role === "admin";
-  const isTeacher = user?.role === "teacher";
+  // Temporary auth state - replace with actual auth when backend is ready
+  const isAuthenticated = false;
+  const user = null;
+  const isAdmin = false;
+  const isTeacher = false;
 
   return (
     <nav className="bg-white dark:bg-gray-900 shadow-md sticky top-0 z-50 w-full border-b border-gray-200 dark:border-gray-700">
@@ -38,20 +38,6 @@ const Navbar = () => {
               منصة المدرسين
             </span>
           </Link>
-
-          {/* Search Bar - Hide on mobile, move to dropdown */}
-          {/* {!isMobile && (
-            <div className="relative mx-4 flex-1 max-w-md justify-between items-center ">
-              <div className="absolute inset-y-0 left-0 flex items-center pr-3 pointer-events-none text-gray-400 dark:text-gray-500">
-                <Search className="h-4 w-4" />
-              </div>
-              <input
-                type="text"
-                placeholder="ابحث عن مدرس أو مادة..."
-                className="w-full py-2 px-10 pl-4 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
-              />
-            </div>
-          )} */}
 
           {/* Desktop Navigation Links */}
           {!isMobile && (
@@ -95,8 +81,6 @@ const Navbar = () => {
 
               {isAuthenticated ? (
                 <div className="flex items-center space-x-4 space-x-reverse mr-4">
-                  <NotificationManager />
-
                   {isAdmin && (
                     <Link to="/admin">
                       <Button variant="outline" size="sm">
@@ -119,7 +103,7 @@ const Navbar = () => {
 
                   <Link
                     to={
-                      isTeacher ? "/teachers/" + user.id : "/student/profile"
+                      isTeacher ? "/teachers/" + user?.id : "/student/profile"
                     }>
                     <Button
                       variant="ghost"
@@ -149,8 +133,6 @@ const Navbar = () => {
           {/* Mobile Menu Button */}
           {isMobile && (
             <div className="flex items-center space-x-2 space-x-reverse">
-              {isAuthenticated && <NotificationManager />}
-
               {/* Mobile Dark Mode Toggle */}
               <Button
                 variant="ghost"
@@ -186,18 +168,6 @@ const Navbar = () => {
           )}>
           {isMenuOpen && (
             <div className="px-4 py-6 space-y-4 animate-fade-in">
-              {/* Mobile Search */}
-              {/* <div className="relative mb-6">
-                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400 dark:text-gray-500">
-                  <Search className="h-4 w-4" />
-                </div>
-                <input
-                  type="text"
-                  placeholder="ابحث عن مدرس أو مادة..."
-                  className="w-full py-2 pr-10 pl-4 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
-                />
-              </div> */}
-
               <div className="flex flex-col space-y-2">
                 <Link
                   to="/"
@@ -232,7 +202,7 @@ const Navbar = () => {
               {isAuthenticated ? (
                 <div className="pt-4 flex flex-col space-y-3">
                   <Link
-                    to={isTeacher ? "/teachers/" + user.id : "/student/profile"}
+                    to={isTeacher ? "/teachers/" + user?.id : "/student/profile"}
                     className="w-full">
                     <Button variant="outline" className="w-full justify-start">
                       <User className="h-4 w-4 ml-2" /> الملف الشخصي

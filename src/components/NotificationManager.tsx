@@ -1,8 +1,6 @@
-
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Bell, Check, Trash2 } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -17,20 +15,22 @@ interface Notification {
 }
 
 const NotificationManager = () => {
-  const { user } = useAuth();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   
+  // Temporary - will be replaced with actual user ID from auth
+  const userId = null;
+  
   useEffect(() => {
-    if (user) {
+    if (userId) {
       loadNotifications();
     }
-  }, [user]);
+  }, [userId]);
   
   const loadNotifications = () => {
     const allNotifications = JSON.parse(localStorage.getItem('notifications') || '[]');
     const userNotifications = allNotifications
-      .filter((notification: Notification) => notification.userId === user?.id)
+      .filter((notification: Notification) => notification.userId === userId)
       .sort((a: Notification, b: Notification) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     
     setNotifications(userNotifications);
@@ -61,7 +61,7 @@ const NotificationManager = () => {
   const markAllAsRead = () => {
     const allNotifications = JSON.parse(localStorage.getItem('notifications') || '[]');
     const updatedNotifications = allNotifications.map((notification: Notification) => {
-      if (notification.userId === user?.id) {
+      if (notification.userId === userId) {
         return { ...notification, read: true };
       }
       return notification;
