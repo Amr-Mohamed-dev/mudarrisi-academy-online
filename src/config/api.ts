@@ -1,77 +1,214 @@
-import axios from 'axios';
-import { getToken, removeToken } from '../utils';
+import axios, {
+    AxiosResponse,
+    AxiosError,
+    InternalAxiosRequestConfig,
+} from "axios";
+import { getToken, removeToken } from "@/utils";
+import { BASE_URL, PATHS, PROJECT_NAME, USER_KEY } from "../constants";
 
 // Function to handle token removal and store reset
 let isAlreadyFetchingAccessToken = false;
-// Define a proper type for subscribers
-type SubscriberCallback = () => void;
-let subscribers: SubscriberCallback[] = [];
+// Define response structure for consistent error handling
+export interface ApiResponseWrapper<T = any> {
+    data: T | null;
+    error: {
+        message: string;
+        status?: number;
+        details?: any;
+    } | null;
+}
 
-// Backend API base URL - matching server structure
-const baseURL = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'}/api/v1`;
+const logout = () => {
+    localStorage.removeItem(USER_KEY);
+    removeToken();
+    window.location.href = PATHS.auth.login.href;
+};
 
-const api = axios.create({
-  baseURL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  timeout: 10000, // 10 second timeout
+// Create the axios instance
+const axiosInstance = axios.create({
+    baseURL: BASE_URL,
+    headers: {
+        "Content-Type": "application/json",
+    },
 });
 
-api.interceptors.request.use((config) => {
-  const token = getToken();
-  if (token) config.headers.Authorization = `Bearer ${token}`;
+// Add request interceptor
+axiosInstance.interceptors.request.use((config) => {
+    const token = getToken();
+    if (token) config.headers.Authorization = `Bearer ${token}`;
 
-  if (config.data instanceof FormData) {
-    delete config.headers['Content-Type']; // Browser sets it
-  }
+    if (config.data instanceof FormData) {
+        delete config.headers["Content-Type"]; // Browser sets it
+    }
 
-  config.headers['X-Request-ID'] = `${config.method}-${config.url}-${Date.now()}`;
+    config.headers["X-Request-ID"] = `${config.method}-${
+        config.url
+    }-${Date.now()}`;
 
-  return config;
+    return config;
 });
 
-api.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
+// Add response interceptor to handle token-related errors
+axiosInstance.interceptors.response.use(
+    (response) => response,
+    async (error: AxiosError) => {
+        const originalRequest = error.config;
 
-    // Check for network connectivity issues first
-    const isNetworkError = !error.response && (error.code === 'NETWORK_ERROR' || error.message === 'Network Error');
-    const isTimeoutError = error.code === 'ECONNABORTED' || error.message.includes('timeout');
-    const isConnectionRefused = error.code === 'ERR_NETWORK' || error.message.includes('ERR_NETWORK');
+        // Add custom _retry property to the config type
+        interface ExtendedRequestConfig extends InternalAxiosRequestConfig {
+            _retry?: boolean;
+        }
 
-    if (isNetworkError || isTimeoutError || isConnectionRefused) {
-      console.warn('Network/connectivity issue in api interceptor:', error);
-      // Let the useAxios interceptor handle the redirect - just pass through
-      return Promise.reject(error);
+        const extendedRequest = originalRequest as
+            | ExtendedRequestConfig
+            | undefined;
+
+        // If the error is due to an invalid/expired token (401 Unauthorized)
+        if (
+            (error.response?.status === 401 &&
+                extendedRequest &&
+                !extendedRequest._retry) ||
+            (error.response?.data &&
+                typeof error.response.data === "object" &&
+                "message" in error.response.data &&
+                (error.response.data.message === "Unauthenticated." ||
+                    error.response.data.message === "Unauthorized."))
+        ) {
+            // Only handle the token error once to prevent infinite loops
+            if (!isAlreadyFetchingAccessToken) {
+                isAlreadyFetchingAccessToken = true;
+
+                // Clear the token
+                removeToken();
+
+                // Set auth state in localStorage to trigger logout
+                localStorage.setItem(PROJECT_NAME + "-auth", "logged_out");
+            }
+        }
+
+        return Promise.reject(error);
     }
-
-    // If the error is due to an invalid/expired token (401 Unauthorized)
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      // Only handle the token error once to prevent infinite loops
-      if (!isAlreadyFetchingAccessToken) {
-        isAlreadyFetchingAccessToken = true;
-
-        // Clear the token
-        removeToken();
-
-        // Set auth state in localStorage to trigger logout
-        localStorage.setItem('teachers-auth', 'logged_out');
-
-        // Reset the flag after a delay
-        setTimeout(() => {
-          isAlreadyFetchingAccessToken = false;
-          subscribers = [];
-
-          // Redirect to login page
-          window.location.href = '/auth/login';
-        }, 1000);
-      }
-    }
-
-    return Promise.reject(error);
-  }
 );
+
+// Wrapper functions with better error handling
+const api = {
+    async get<T>(url: string, config = {}): Promise<ApiResponseWrapper<T>> {
+        try {
+            const response: AxiosResponse<T> = await axiosInstance.get(
+                url,
+                config
+            );
+            return { data: response.data, error: null };
+        } catch (error: any) {
+            return handleApiError<T>(error);
+        }
+    },
+
+    async post<T>(
+        url: string,
+        data = {},
+        config = {}
+    ): Promise<ApiResponseWrapper<T>> {
+        try {
+            const response: AxiosResponse<T> = await axiosInstance.post(
+                url,
+                data,
+                config
+            );
+            return { data: response.data, error: null };
+        } catch (error: any) {
+            return handleApiError<T>(error);
+        }
+    },
+
+    async put<T>(
+        url: string,
+        data = {},
+        config = {}
+    ): Promise<ApiResponseWrapper<T>> {
+        try {
+            const response: AxiosResponse<T> = await axiosInstance.put(
+                url,
+                data,
+                config
+            );
+            return { data: response.data, error: null };
+        } catch (error: any) {
+            return handleApiError<T>(error);
+        }
+    },
+
+    async patch<T>(
+        url: string,
+        data = {},
+        config = {}
+    ): Promise<ApiResponseWrapper<T>> {
+        try {
+            const response: AxiosResponse<T> = await axiosInstance.patch(
+                url,
+                data,
+                config
+            );
+            return { data: response.data, error: null };
+        } catch (error: any) {
+            return handleApiError<T>(error);
+        }
+    },
+
+    async delete<T>(url: string, config = {}): Promise<ApiResponseWrapper<T>> {
+        try {
+            const response: AxiosResponse<T> = await axiosInstance.delete(
+                url,
+                config
+            );
+            return { data: response.data, error: null };
+        } catch (error: any) {
+            return handleApiError<T>(error);
+        }
+    },
+
+    // Expose the axios instance for advanced use cases
+    axiosInstance,
+};
+
+// Helper function to handle API errors consistently
+function handleApiError<T>(error: any): ApiResponseWrapper<T> {
+    if (error.response) {
+        if (error.response.data?.message === "Unauthorized") {
+            window.location.href = PATHS.unAuthorized.href;
+        }
+
+        if (
+            error.response.data?.message === "Unauthenticated." ||
+            error.response.data?.message === "Your account is not active"
+        ) {
+            logout();
+        }
+
+        return {
+            data: null,
+            error: {
+                message: error.response.data?.message || "Request failed",
+                status: error.response.status,
+                details: error.response.data,
+            },
+        };
+    } else if (error.request) {
+        return {
+            data: null,
+            error: {
+                message: "No response received from server",
+                details: error.request,
+            },
+        };
+    } else {
+        return {
+            data: null,
+            error: {
+                message: error.message || "An unexpected error occurred",
+            },
+        };
+    }
+}
 
 export default api;

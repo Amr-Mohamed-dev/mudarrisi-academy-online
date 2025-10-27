@@ -1,69 +1,72 @@
-import Cookies from 'js-cookie';
+import Cookies from "js-cookie";
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
+import { FieldValues, FormState } from "react-hook-form";
+import { AUTH_COOKIE_EXPIRES_DAYS, AUTH_COOKIE_NAME } from "@/constants";
+import { NavigateFunction } from "react-router-dom";
 
+// Tailwind
+export function cn(...inputs: ClassValue[]) {
+    return twMerge(clsx(inputs));
+}
 
-
-const AUTH_COOKIE_NAME = import.meta.env.VITE_AUTH_COOKIE_NAME || 'teachers_auth_token';
-const AUTH_COOKIE_EXPIRES_DAYS = parseInt(import.meta.env.VITE_AUTH_COOKIE_EXPIRES_DAYS || '7', 10);
-
-/**
- * Get authentication token from cookies
- */
+// Cookies
 const getToken = () => Cookies.get(AUTH_COOKIE_NAME);
-
-/**
- * Check if user is authenticated by verifying token existence
- */
+const token = getToken();
 const isAuthenticated = () => Boolean(Cookies.get(AUTH_COOKIE_NAME));
+const removeToken = () => Cookies.remove(AUTH_COOKIE_NAME);
+const setCookie = (key: string, value: string) =>
+    Cookies.set(key, value, {
+        expires: AUTH_COOKIE_EXPIRES_DAYS,
+        secure: import.meta.env.PROD,
+        sameSite: "strict",
+        path: "/",
+    });
 
-/**
- * Remove authentication token from cookies
- * Attempts multiple removal strategies to ensure the cookie is fully cleared
- * across different paths and domains
- */
-const removeToken = () => {
-  // Standard removal
-  Cookies.remove(AUTH_COOKIE_NAME);
-
-  // Remove with explicit path options
-  Cookies.remove(AUTH_COOKIE_NAME, { path: '/' });
-
-  // Remove with domain options (for cross-subdomain cookies)
-  const domain = window.location.hostname;
-  if (domain !== 'localhost' && domain !== '127.0.0.1') {
-    // Try removing with domain
-    Cookies.remove(AUTH_COOKIE_NAME, { domain });
-
-    // Try removing with root domain for subdomains
-    const rootDomain = domain.split('.').slice(-2).join('.');
-    if (rootDomain !== domain) {
-      Cookies.remove(AUTH_COOKIE_NAME, { domain: rootDomain });
-    }
-  }
-
-  // Overwrite with empty value before expiring (extra security)
-  Cookies.set(AUTH_COOKIE_NAME, '', { expires: new Date(0) });
-
+export const formatPhone = (phoneNumber: string) => {
+    return phoneNumber.startsWith("20")
+        ? phoneNumber
+        : phoneNumber.startsWith("0")
+        ? `2${phoneNumber}`
+        : `20${phoneNumber}`;
 };
 
-/**
- * Set authentication token in cookies
- */
-const setCookie = (key: string, value: string) =>
-  Cookies.set(key, value, {
-    expires: AUTH_COOKIE_EXPIRES_DAYS,
-    secure: import.meta.env.PROD,
-    sameSite: 'strict',
-    path: '/',
-  });
-const token = getToken();
+// FormData
+const logFormData = (apiFormData: FormData, message?: string) => {
+    console.log(message + ":" || "FormData contents:");
+    for (const pair of apiFormData.entries()) {
+        console.log(
+            pair[0] +
+                ": " +
+                (pair[1] instanceof File
+                    ? `File: ${(pair[1] as File).name}, ${
+                          (pair[1] as File).size
+                      } bytes`
+                    : pair[1])
+        );
+    }
+};
+
+// React Hook Form
+const dirtyFields = <T extends FieldValues>(formState: FormState<T>) =>
+    Object.keys(formState.dirtyFields || {});
+
+function safeNavigate(
+    navigate: NavigateFunction,
+    to?: string,
+    options?: { replace?: boolean }
+) {
+    if (!to) return; // gracefully skip if undefined
+    navigate(to, options);
+}
 
 export {
-
-  getToken,
-  isAuthenticated,
-  removeToken,
-  setCookie,
-  token,
-  AUTH_COOKIE_NAME,
-
+    getToken,
+    isAuthenticated,
+    removeToken,
+    setCookie,
+    token,
+    logFormData,
+    dirtyFields,
+    safeNavigate,
 };

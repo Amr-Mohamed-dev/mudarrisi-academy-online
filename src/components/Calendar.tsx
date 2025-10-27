@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { format, startOfWeek, addDays, isSameDay, isPast, addWeeks, isToday } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 import { arDZ } from "date-fns/locale";
 
 interface CalendarProps {
