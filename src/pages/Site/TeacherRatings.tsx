@@ -72,7 +72,7 @@ const TeacherRatingsPage = () => {
     };
 
     return (
-        <div className="flex flex-col min-h-screen">
+        <div className="flex flex-col min-h-screen pt-10">
             <main className="container mx-auto px-4 py-8 flex-grow">
                 <Button
                     variant="outline"
