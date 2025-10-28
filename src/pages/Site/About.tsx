@@ -3,6 +3,7 @@ import { Check, Award, Users } from "lucide-react";
 import PageTransition from "@/components/PageTransition";
 import AnimatedSection from "@/components/AnimatedSection";
 import Navbar from "./components/navbar";
+import Footer from "@/components/Footer";
 
 const AboutPage = () => {
     const features = [
