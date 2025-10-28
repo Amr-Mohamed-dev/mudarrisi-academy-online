@@ -13,7 +13,6 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import Navbar from "@/pages/Site/components/navbar";
-import Footer from "@/components/Footer";
 import { useAuthServices } from "@/services";
 import { useToast } from "@/hooks/useToast";
 
@@ -562,8 +561,6 @@ const AuthPage = () => {
                     </div>
                 </div>
             </div>
-
-            <Footer />
         </div>
     );
 };

@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Star, Users, BookOpen, Award, ChevronLeft } from "lucide-react";
 import Navbar from "./components/navbar";
-import Footer from "@/components/Footer";
 import PageTransition from "@/components/PageTransition";
 import AnimatedSection from "@/components/AnimatedSection";
 import TopRatedTeachers from "@/components/TopRatedTeachers";

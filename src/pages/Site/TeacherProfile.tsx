@@ -307,10 +307,6 @@ const TeacherDetailsPage = () => {
                     </div>
                 </div>
             </div>
-
-            <div className="mt-auto">
-                <Footer />
-            </div>
         </div>
     );
 };

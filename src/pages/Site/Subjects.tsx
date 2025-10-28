@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Book, User } from "lucide-react";
-import Footer from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
@@ -312,8 +311,6 @@ const SubjectsPage = () => {
                     </div>
                 </div>
             </main>
-
-            <Footer />
         </div>
     );
 };

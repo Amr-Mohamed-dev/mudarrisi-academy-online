@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-import Footer from "@/components/Footer";
 import { Check, Award, Users } from "lucide-react";
 import PageTransition from "@/components/PageTransition";
 import AnimatedSection from "@/components/AnimatedSection";

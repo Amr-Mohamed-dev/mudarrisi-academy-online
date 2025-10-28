@@ -13,11 +13,19 @@ const Navbar = () => {
     const links = [
         {
             href: PATHS.site.home.href,
-            label: "find a service",
+            label: "الرئيسية",
         },
         {
-            href: PATHS.site.sellService?.href,
-            label: "selling a service",
+            href: PATHS.site.teachers.href,
+            label: "المدرسين",
+        },
+        {
+            href: PATHS.site.subjects.href,
+            label: "المواد",
+        },
+        {
+            href: PATHS.site.about.href,
+            label: "من نحن",
         },
     ];
     const navigate = useNavigate();
@@ -42,7 +50,7 @@ const Navbar = () => {
         if (isAuthenticated) {
             await logout();
         } else {
-            navigate(PATHS.auth.login.href);
+            navigate(PATHS.auth.auth.href);
         }
     };
 

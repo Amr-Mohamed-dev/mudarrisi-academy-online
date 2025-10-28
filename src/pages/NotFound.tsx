@@ -1,9 +1,8 @@
 import { useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Home } from "lucide-react";
-import Footer from "@/components/Footer";
 import PageTransition from "@/components/PageTransition";
 import AnimatedSection from "@/components/AnimatedSection";
 
@@ -165,8 +164,6 @@ const NotFoundPage = () => {
                     </div>
                 </AnimatedSection>
             </div>
-
-            <Footer />
         </PageTransition>
     );
 };

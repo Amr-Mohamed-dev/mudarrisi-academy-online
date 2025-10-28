@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { MessageSquare, Calendar, ArrowRight, Star } from "lucide-react";
-import Footer from "@/components/Footer";
 import ProfileHeader from "@/components/profile/ProfileHeader";
 import {
     Card,
@@ -419,8 +418,6 @@ const StudentProfilePage = () => {
                     )}
                 </DialogContent>
             </Dialog>
-
-            <Footer />
         </div>
     );
 };

@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Navbar from "./components/navbar";
-import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import {
     Card,
@@ -101,7 +100,6 @@ const BookingPage = () => {
                 <div className="container mx-auto px-4 py-8 flex-grow">
                     <p className="text-center">جاري التحميل...</p>
                 </div>
-                <Footer />
             </div>
         );
     }
@@ -178,8 +176,6 @@ const BookingPage = () => {
                     </Card>
                 </div>
             </div>
-
-            <Footer />
         </div>
     );
 };

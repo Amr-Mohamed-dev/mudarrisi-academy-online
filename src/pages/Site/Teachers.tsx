@@ -1,6 +1,5 @@
 import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import Footer from "@/components/Footer";
 import TeacherCard from "@/components/TeacherCard";
 import SubjectFilter from "@/components/SubjectFilter";
 import PriceFilter from "@/components/PriceFilter";
@@ -254,8 +253,6 @@ const TeachersPage = () => {
                     </div>
                 </div>
             </main>
-
-            <Footer />
         </PageTransition>
     );
 };

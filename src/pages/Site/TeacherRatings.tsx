@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Star } from "lucide-react";
 import {
@@ -257,8 +256,6 @@ const TeacherRatingsPage = () => {
                     )}
                 </DialogContent>
             </Dialog>
-
-            <Footer />
         </div>
     );
 };
