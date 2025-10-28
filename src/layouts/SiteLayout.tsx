@@ -9,11 +9,8 @@ function SiteLayout() {
     useTitle(window.location.pathname === "/" ? "Home" : currentBackName);
     const navigate = useNavigate();
 
-    const shouldShowNav =
-        window.location.pathname === "/" ||
-        window.location.pathname.includes("/matches") ||
-        window.location.pathname.includes("/services") ||
-        window.location.pathname === "/leads";
+    // Show navbar on all pages except auth pages
+    const shouldShowNav = !window.location.pathname.startsWith("/auth");
 
     return (
         <main className="antialiased w-full mx-auto h-screen flex flex-col justify-start items-center dark:bg-black-500">
