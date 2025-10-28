@@ -1,4 +1,3 @@
-import AuthPage from "@/pages/Auth/Auth";
 import BookingsManagement from "@/pages/Dashboard/admin/BookingsManagement";
 import CreateTeacher from "@/pages/Dashboard/admin/CreateTeacher";
 import StudentsManagement from "@/pages/Dashboard/admin/StudentsManagement";
@@ -19,13 +18,6 @@ import { Paths } from "@/types";
 const dashboardBasePath = "/dashboard";
 
 export const PATHS: Paths = {
-    auth: {
-        auth: {
-            name: "auth",
-            href: `/auth`,
-            component: <AuthPage />,
-        },
-    },
     dashboard: {
         admin: {
             title: "admin",

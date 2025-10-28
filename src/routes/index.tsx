@@ -9,7 +9,6 @@ import { JSX } from "react";
 import { RouteLinkDynamic, RouteSection } from "@/types";
 
 function AppRoutes() {
-    const authPages = Object.entries(PATHS.auth).map(([_, value]) => value);
     const dashboardPages = Object.entries(PATHS.dashboard).map(
         ([_, value]) => value
     );
@@ -47,18 +46,6 @@ function AppRoutes() {
     return (
         <Routes>
             <Route element={<MainLayout />}>
-                {/* Auth Routes */}
-
-                {authPages.map((page) => {
-                    return (
-                        <Route
-                            key={page.name}
-                            path={page.href}
-                            element={page.component}
-                        />
-                    );
-                })}
-
                 {/* Dashboard Routes */}
                 <Route element={<DashboardLayout />}>
                     {dashboardPages.flatMap((section) =>

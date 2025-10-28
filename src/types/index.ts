@@ -1,6 +1,5 @@
 import { ReactNode } from "react";
 
-export * from "./auth.types";
 export * from "./toast.types";
 export * from "./user.types";
 export * from "./notifications.types";
@@ -52,7 +51,6 @@ export type GeneralPathConfig = { [key: string]: RouteLinkStatic<any> };
 
 export type Paths = {
     dashboard: PathConfig;
-    auth: GeneralPathConfig;
     site: GeneralPathConfig;
     unAuthorized: RouteLinkStatic<any>;
     notFound: RouteLinkStatic<any>;
