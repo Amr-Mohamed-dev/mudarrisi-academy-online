@@ -8,11 +8,8 @@ import PageTransition from "@/components/PageTransition";
 import AnimatedSection from "@/components/AnimatedSection";
 import TopRatedTeachers from "@/components/TopRatedTeachers";
 import { useCountUp } from "@/hooks/useCountUp";
-import { authStore } from "@/store";
 
 const HomePage = () => {
-    const { isAuthenticated, user } = authStore();
-
     // استخدام hook العد التصاعدي للإحصائيات
     const teachersCount = useCountUp(500, 2000, 1000);
     const subjectsCount = useCountUp(50, 2000, 1200);
@@ -164,8 +161,8 @@ const HomePage = () => {
                     </section>
                 </AnimatedSection>
 
-                {/* Top Rated Teachers Section - عرض فقط للمستخدمين المسجلين */}
-                {isAuthenticated && user && <TopRatedTeachers />}
+                {/* Top Rated Teachers Section */}
+                <TopRatedTeachers />
 
                 {/* Subjects Section */}
                 <section className="py-16 bg-gray-50 dark:bg-gray-900/40 dark-transition">

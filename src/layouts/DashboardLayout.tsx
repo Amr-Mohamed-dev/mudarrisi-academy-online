@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import Loading from "@/components/ui/Loading";
-import { authStore } from "@/store";
 import { Outlet } from "react-router-dom";
 import { useTitle } from "@/hooks/useTitle";
 import SideBar from "@/pages/Dashboard/components/SideBar";
@@ -9,7 +8,6 @@ import Navbar from "@/pages/Dashboard/components/navbar";
 export const DashboardLayout = () => {
     const currentPathName = window.location.pathname.split("/")[2];
     useTitle(currentPathName);
-    const { isLoading } = authStore();
 
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -38,8 +36,6 @@ export const DashboardLayout = () => {
         // Clean up event listener on component unmount
         return () => window.removeEventListener("resize", handleResize);
     }, []);
-
-    if (isLoading) return <Loading />;
 
     return (
         <div className="antialiased flex justify-between items-center dark:bg-black-500">

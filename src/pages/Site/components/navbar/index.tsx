@@ -1,13 +1,9 @@
 import { useEffect, useState } from "react";
 import { ChevronDown, Dot, Moon, Sun } from "lucide-react";
-import { authStore } from "@/store";
 import ThemeBox from "./ThemeBox";
 import { themeStore } from "@/store";
 import { Link, useNavigate } from "react-router-dom";
 import { PATHS } from "@/constants";
-import { useAuthServices } from "@/services";
-import ProfileImage from "../ui/ProfileImage";
-import ProfileBox from "./ProfileBox";
 
 const Navbar = () => {
     const links = [
@@ -29,29 +25,16 @@ const Navbar = () => {
         },
     ];
     const navigate = useNavigate();
-    const { user, isAuthenticated } = authStore();
-    const { logout } = useAuthServices();
     const { theme } = themeStore();
     const [activeLink, setActiveLink] = useState("/");
     const [isThemeOpen, setIsThemeOpen] = useState(false);
-    const [isProfileOpen, setIsProfileOpen] = useState(false);
 
     const toggleThemeMenu = () => {
         setIsThemeOpen(!isThemeOpen);
-        setIsProfileOpen(false);
     };
 
-    const toggleProfileMenu = () => {
-        setIsProfileOpen(!isProfileOpen);
-        setIsThemeOpen(false);
-    };
-
-    const handleLoginButton = async () => {
-        if (isAuthenticated) {
-            await logout();
-        } else {
-            navigate(PATHS.auth.auth.href);
-        }
+    const handleLoginButton = () => {
+        navigate(PATHS.auth.auth.href);
     };
 
     // Close dropdowns when clicking outside
@@ -62,17 +45,13 @@ const Navbar = () => {
             if (!target.closest("#theme-button") && isThemeOpen) {
                 setIsThemeOpen(false);
             }
-
-            if (!target.closest("#user-menu-button") && isProfileOpen) {
-                setIsProfileOpen(false);
-            }
         };
 
         document.addEventListener("mousedown", handleClickOutside);
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
-    }, [isThemeOpen, isProfileOpen]);
+    }, [isThemeOpen]);
 
     useEffect(() => {
         setActiveLink(window.location.pathname);
@@ -85,24 +64,9 @@ const Navbar = () => {
     return (
         <div className="w-full absolute top-0 pt-3 z-50 px-50">
             <div className="w-full flex justify-between">
-                {/* Left side - Greeting */}
+                {/* Left side - Logo */}
                 <div className="flex justify-start items-center w-1/3">
-                    {/* Profile */}
-                    {isAuthenticated && (
-                        <button
-                            type="button"
-                            className="relative flex items-center gap-2"
-                            onClick={toggleProfileMenu}
-                        >
-                            <ProfileImage src={user?.image} />
-
-                            <h1 className="text-xl font-medium dark:text-secondary-200">
-                                Hi ,{user?.name || "there"}!
-                            </h1>
-                            {/* Dropdown profile */}
-                            {isProfileOpen && <ProfileBox />}
-                        </button>
-                    )}
+                    {/* Add logo or branding here if needed */}
                 </div>
 
                 {/* Right side - Notifications and Profile */}
@@ -168,7 +132,7 @@ const Navbar = () => {
                             onClick={handleLoginButton}
                             className="text-gray-600 dark:text-secondary-200 hover:opacity-80 rounded-lg cursor-pointer transition-all duration-300 ease-in-out"
                         >
-                            {isAuthenticated ? "Logout" : "Login"}
+                            Login
                         </button>
                     </div>
                 </div>

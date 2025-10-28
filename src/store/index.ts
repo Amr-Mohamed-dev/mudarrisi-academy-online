@@ -1,2 +1,1 @@
-export * from "./auth.store";
-export * from "./theme.store";
+export { themeStore, applyTheme, type ThemeItem } from "./theme.store";
