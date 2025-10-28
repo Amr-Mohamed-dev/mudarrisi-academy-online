@@ -14,7 +14,6 @@ import {
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import AttendanceConfirmation from "@/components/AttendanceConfirmation";
 import RatingForm from "@/components/RatingForm";
-import { authStore } from "@/store";
 import { useToast } from "@/hooks/useToast";
 import Navbar from "../Dashboard/components/navbar";
 
@@ -34,7 +33,6 @@ interface Booking {
 }
 
 const StudentProfilePage = () => {
-    const { user, isAuthenticated } = authStore();
     const navigate = useNavigate();
     const { addToast } = useToast();
     const [bookings, setBookings] = useState<Booking[]>([]);
@@ -45,21 +43,16 @@ const StudentProfilePage = () => {
     const [isRatingDialogOpen, setIsRatingDialogOpen] = useState(false);
 
     useEffect(() => {
-        if (!isAuthenticated) {
-            navigate("/auth");
-            return;
-        }
-
         // Load bookings from localStorage
         loadBookings();
-    }, [isAuthenticated, user, navigate]);
+    }, []);
 
     const loadBookings = () => {
         const allBookings = JSON.parse(
             localStorage.getItem("bookings") || "[]"
         );
         const studentBookings = allBookings.filter(
-            (booking: Booking) => booking.studentId === user?.id
+            (booking: Booking) => booking.studentId === "student_1"
         );
         setBookings(studentBookings);
     };
@@ -160,10 +153,6 @@ const StudentProfilePage = () => {
                 return "bg-gray-100 text-gray-800";
         }
     };
-
-    if (!isAuthenticated || !user) {
-        return null; // Redirecting in useEffect
-    }
 
     return (
         <div className="flex flex-col min-h-screen bg-background text-foreground">

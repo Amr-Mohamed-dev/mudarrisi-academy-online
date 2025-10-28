@@ -4,7 +4,6 @@ import { PATHS } from "@/constants";
 import MainLogo from "@/assets/images/main-logo.png";
 import MainLogoLight from "@/assets/images/main-logo-light.png";
 import { themeStore } from "@/store";
-import AuthorizedComponent from "@/components/AuthorizedComponent";
 
 type Props = {
     isSidebarOpen: boolean;
@@ -71,47 +70,42 @@ const SideBar = ({ isSidebarOpen, onToggleSidebar }: Props) => {
                         {pages?.map((route) => {
                             const path = route.links.main.href;
                             return (
-                                <AuthorizedComponent
-                                    key={path}
-                                    role={route.links.main.roles || []}
-                                >
-                                    <li>
-                                        <Link
-                                            to={path}
-                                            className={`flex items-center justify-between py-2 ps-4 rounded-md hover:bg-primary-50 dark:hover:bg-primary-700`}
-                                        >
-                                            <div className="flex items-center gap-2">
-                                                {route?.icon && route?.icon({
-                                                    color: isActive(path)
-                                                        ? "#1576a9"
-                                                        : "#625d57 ",
-                                                    height: 24,
-                                                    width: 24,
-                                                })}
+                                <li key={path}>
+                                    <Link
+                                        to={path}
+                                        className={`flex items-center justify-between py-2 ps-4 rounded-md hover:bg-primary-50 dark:hover:bg-primary-700`}
+                                    >
+                                        <div className="flex items-center gap-2">
+                                            {route?.icon && route?.icon({
+                                                color: isActive(path)
+                                                    ? "#1576a9"
+                                                    : "#625d57 ",
+                                                height: 24,
+                                                width: 24,
+                                            })}
 
-                                                <span
-                                                    className={`text-left
+                                            <span
+                                                className={`text-left
                                         ${
                                             isActive(path)
                                                 ? "font-bold text-primary-500"
                                                 : "text-secondary-800 dark:text-secondary-500 hover:text-gray-700"
                                         }  transition-all duration-200 ease-in-out`}
-                                                >
-                                                    {route.title}
-                                                </span>
-                                            </div>
+                                            >
+                                                {route.title}
+                                            </span>
+                                        </div>
 
-                                            {/* Active dot */}
-                                            <div
-                                                className={`w-0.5 h-4 rounded-full ${
-                                                    isActive(path)
-                                                        ? "bg-primary-500"
-                                                        : "bg-transparent"
-                                                } transition-all duration-200 ease-in-out`}
-                                            />
-                                        </Link>
-                                    </li>
-                                </AuthorizedComponent>
+                                        {/* Active dot */}
+                                        <div
+                                            className={`w-0.5 h-4 rounded-full ${
+                                                isActive(path)
+                                                    ? "bg-primary-500"
+                                                    : "bg-transparent"
+                                            } transition-all duration-200 ease-in-out`}
+                                        />
+                                    </Link>
+                                </li>
                             );
                         })}
                     </ul>

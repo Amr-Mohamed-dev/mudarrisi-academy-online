@@ -11,22 +11,15 @@ import {
 } from "@/components/ui/card";
 import { ArrowRight, Bell } from "lucide-react";
 import { useToast } from "@/hooks/useToast";
-import { authStore } from "@/store";
 
 const BookingPage = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
-    const { user } = authStore();
     const { addToast } = useToast();
     const [teacher, setTeacher] = useState<any>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        if (!user) {
-            navigate("/auth");
-            return;
-        }
-
         // Get teacher data
         const users = JSON.parse(localStorage.getItem("users") || "[]");
         const foundTeacher = users.find(
@@ -45,7 +38,7 @@ const BookingPage = () => {
         }
 
         setLoading(false);
-    }, [id, navigate, user]);
+    }, [id, navigate]);
 
     const handleBooking = () => {
         // Create new booking
@@ -55,28 +48,27 @@ const BookingPage = () => {
             id: `booking_${Date.now()}`,
             teacherId: teacher.id,
             teacherName: teacher.name,
-            studentId: user?.id,
-            studentName: user?.name,
+            studentId: "student_1",
+            studentName: "Student",
             date: new Date().toLocaleDateString("ar-SA"),
             time: "10:00 صباحًا",
             startTime: "10:00 صباحًا",
             endTime: "11:00 صباحًا",
             subject: "الرياضيات",
-            status: "pending", // حالة الحجز معلقة حتى يوافق المدير
+            status: "pending",
             createdAt: new Date().toISOString(),
-            price: teacher.price || 150, // إضافة سعر المدرس للحجز
+            price: teacher.price || 150,
         };
 
         bookings.push(newBooking);
         localStorage.setItem("bookings", JSON.stringify(bookings));
 
-        // إنشاء إشعار للطالب بإنشاء الحجز
         const notifications = JSON.parse(
             localStorage.getItem("notifications") || "[]"
         );
         const newNotification = {
             id: `notification_${Date.now()}`,
-            userId: user?.id,
+            userId: "student_1",
             title: "تم إنشاء حجز جديد",
             message: `تم إرسال طلب حجز مع المدرس ${teacher.name}. سيتم إعلامك عند الموافقة أو رفض الطلب.`,
             read: false,

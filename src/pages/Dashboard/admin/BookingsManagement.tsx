@@ -7,7 +7,6 @@ import { Calendar, Clock, ArrowLeft } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import BookingFilters from "@/components/admin/BookingFilters";
 import BookingActions from "@/components/admin/BookingActions";
-import { authStore } from "@/store";
 import { useToast } from "@/hooks/useToast";
 
 interface Booking {
@@ -26,7 +25,6 @@ interface Booking {
 }
 
 const BookingsManagement = () => {
-    const { user, isAuthenticated } = authStore();
     const navigate = useNavigate();
     const { addToast } = useToast();
     const [bookings, setBookings] = useState<Booking[]>([]);
@@ -35,7 +33,7 @@ const BookingsManagement = () => {
 
     useEffect(() => {
         loadBookings();
-    }, [isAuthenticated, user, navigate]);
+    }, []);
 
     useEffect(() => {
         filterBookings();

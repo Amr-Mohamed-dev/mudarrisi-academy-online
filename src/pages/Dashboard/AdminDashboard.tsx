@@ -18,7 +18,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { useIsMobile } from "@/hooks/use-mobile";
 import Footer from "@/components/Footer";
-import { authStore } from "@/store";
 
 const AdminDashboard = () => {
     // Store sidebar state in localStorage to persist across page navigation
@@ -27,7 +26,6 @@ const AdminDashboard = () => {
         return savedState !== null ? JSON.parse(savedState) : true;
     });
     const isMobile = useIsMobile();
-    const { user } = authStore();
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -171,10 +169,10 @@ const AdminDashboard = () => {
               <div className="ml-4">
                 <Avatar className="h-8 w-8 bg-blue-light">
                   <AvatarImage
-                    src={user?.avatar || "/placeholder.svg"}
+                    src="/placeholder.svg"
                     alt="المدير"
                   />
-                  <AvatarFallback>{user?.name?.[0] || "م"}</AvatarFallback>
+                  <AvatarFallback>م</AvatarFallback>
                 </Avatar>
               </div>
             </div> */}

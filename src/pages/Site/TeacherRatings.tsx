@@ -12,7 +12,6 @@ import {
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import RatingForm from "@/components/RatingForm";
 import { TabsContent, TabsList, TabsTrigger, Tabs } from "@/components/ui/tabs";
-import { authStore } from "@/store";
 import { useToast } from "@/hooks/useToast";
 
 interface Booking {
@@ -30,7 +29,6 @@ interface Booking {
 }
 
 const TeacherRatingsPage = () => {
-    const { user, isAuthenticated } = authStore();
     const navigate = useNavigate();
     const [bookings, setBookings] = useState<Booking[]>([]);
     const [selectedBooking, setSelectedBooking] = useState<Booking | null>(
@@ -39,13 +37,8 @@ const TeacherRatingsPage = () => {
     const [isRatingDialogOpen, setIsRatingDialogOpen] = useState(false);
 
     useEffect(() => {
-        if (!isAuthenticated) {
-            navigate("/auth");
-            return;
-        }
-
         loadBookings();
-    }, [isAuthenticated, user, navigate]);
+    }, []);
 
     const loadBookings = () => {
         const allBookings = JSON.parse(
@@ -53,7 +46,7 @@ const TeacherRatingsPage = () => {
         );
         const teacherBookings = allBookings.filter(
             (booking: Booking) =>
-                booking.teacherId === user?.id &&
+                booking.teacherId === "teacher_1" &&
                 booking.status === "completed" &&
                 booking.attended === true
         );
