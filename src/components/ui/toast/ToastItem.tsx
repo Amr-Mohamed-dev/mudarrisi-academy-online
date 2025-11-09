@@ -232,7 +232,7 @@ export const ToastItem: React.FC<ToastProps & { position?: string }> = ({
                             <h3
                                 className={`${
                                     message ? "text-[16px]" : "text-sm"
-                                } font-bold text-left text-black-500 dark:text-secondary-500 truncate`}
+                                } font-bold text-right text-black-500 dark:text-secondary-500 truncate`}
                             >
                                 {title}
                             </h3>
@@ -241,7 +241,7 @@ export const ToastItem: React.FC<ToastProps & { position?: string }> = ({
                             <div>
                                 <p
                                     ref={messageRef}
-                                    className={`text-sm text-left text-black-200 dark:text-secondary-500 ${
+                                    className={`text-sm text-right text-black-200 dark:text-secondary-500 ${
                                         isTruncated ? "line-clamp-2" : ""
                                     }`}
                                     onClick={toggleTruncation}

@@ -1,6 +1,7 @@
 import { useTitle } from "@/hooks/useTitle";
+import { Outlet } from "react-router-dom";
 
-function AuthLayout({ children }: { children: React.ReactNode }) {
+function AuthLayout() {
     const currentPathName = window.location.pathname.split("/")[1];
     useTitle(currentPathName);
 
@@ -9,7 +10,7 @@ function AuthLayout({ children }: { children: React.ReactNode }) {
             <div
                 className={`relative h-full w-full flex flex-col gap-20 px-20 py-10 overflow-y-auto`}
             >
-                {children}
+                <Outlet />
             </div>
         </div>
     );

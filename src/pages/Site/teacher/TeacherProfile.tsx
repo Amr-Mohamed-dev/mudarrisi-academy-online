@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { MessageSquare, Calendar, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import Footer from "@/components/Footer";
 import CalendarComponent from "@/components/Calendar";
 import ProfileHeader from "@/components/profile/ProfileHeader";
 import EducationExperience from "@/components/profile/EducationExperience";

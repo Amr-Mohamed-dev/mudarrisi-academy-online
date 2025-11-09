@@ -4,7 +4,7 @@ import axios, {
     InternalAxiosRequestConfig,
 } from "axios";
 import { getToken, removeToken } from "@/utils";
-import { BASE_URL, PATHS, PROJECT_NAME, USER_KEY } from "../constants";
+import { BASE_URL, SITE_MAP, PROJECT_NAME, USER_KEY } from "../constants";
 
 // Function to handle token removal and store reset
 let isAlreadyFetchingAccessToken = false;
@@ -21,13 +21,15 @@ export interface ApiResponseWrapper<T = any> {
 const logout = () => {
     localStorage.removeItem(USER_KEY);
     removeToken();
-    window.location.href = PATHS.auth.login.href;
+    window.location.href = SITE_MAP.auth.login.href;
 };
 
 // Create the axios instance
 const axiosInstance = axios.create({
     baseURL: BASE_URL,
+    withCredentials: true,
     headers: {
+        Accept: "application/json",
         "Content-Type": "application/json",
     },
 });
@@ -175,7 +177,7 @@ const api = {
 function handleApiError<T>(error: any): ApiResponseWrapper<T> {
     if (error.response) {
         if (error.response.data?.message === "Unauthorized") {
-            window.location.href = PATHS.unAuthorized.href;
+            window.location.href = SITE_MAP.unAuthorized.href;
         }
 
         if (

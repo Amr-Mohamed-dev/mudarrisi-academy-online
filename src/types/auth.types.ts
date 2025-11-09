@@ -12,12 +12,16 @@ export type AuthState = {
     setUser: (user: User | null) => void;
 };
 export type LoginData = {
-    email: string;
+    phone: string;
     password: string;
 };
+export type LoginResponse = {
+    token: string;
+    user: User;
+};
 export type RegisterData = {
-    name: string;
     email: string;
     password: string;
-    passwordConfirmation: string;
+    name: string;
+    phone: string;
 };

@@ -15,7 +15,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import AttendanceConfirmation from "@/components/AttendanceConfirmation";
 import RatingForm from "@/components/RatingForm";
 import { useToast } from "@/hooks/useToast";
-import Navbar from "../Dashboard/components/navbar";
+import { authStore } from "@/store/auth.store";
 
 interface Booking {
     id: string;
@@ -33,6 +33,7 @@ interface Booking {
 }
 
 const StudentProfilePage = () => {
+    const { user, isAuthenticated } = authStore();
     const navigate = useNavigate();
     const { addToast } = useToast();
     const [bookings, setBookings] = useState<Booking[]>([]);
@@ -154,20 +155,20 @@ const StudentProfilePage = () => {
         }
     };
 
-    return (
-        <div className="flex flex-col min-h-screen bg-background text-foreground pt-10">
-            <main className="container mx-auto px-4 py-8 flex-grow">
-                <Button
-                    variant="outline"
-                    className="mb-6"
-                    onClick={() => window.history.back()}
-                >
-                    <ArrowRight className="ml-2 h-4 w-4" /> العودة
-                </Button>
+    if (!user || !isAuthenticated) {
+        navigate("/login");
+        return;
+    }
 
+    return (
+        <div
+            className="flex flex-col min-h-screen bg-background text-foreground pt-10"
+            dir="rtl"
+        >
+            <main className="container mx-auto px-4 py-8 flex-grow">
                 <ProfileHeader
                     name={user.name}
-                    image={user.image}
+                    image={user.profileImage}
                     location="المملكة العربية السعودية"
                 />
 
@@ -341,7 +342,7 @@ const StudentProfilePage = () => {
                                 value="settings"
                                 className="p-6 focus:outline-none"
                             >
-                                <div className="space-y-4">
+                                <div className="space-y-4" dir="rtl">
                                     <h3 className="text-xl font-bold mb-4">
                                         إعدادات الحساب
                                     </h3>

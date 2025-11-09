@@ -115,7 +115,7 @@ const TeacherCard = ({
                         </motion.div>
                     </div>
                     <motion.div
-                        className="text-left"
+                        className="text-right"
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.2 }}

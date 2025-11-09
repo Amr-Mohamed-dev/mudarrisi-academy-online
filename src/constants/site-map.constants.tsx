@@ -1,3 +1,4 @@
+import AuthPage from "@/pages/auth";
 import BookingsManagement from "@/pages/Dashboard/admin/BookingsManagement";
 import CreateTeacher from "@/pages/Dashboard/admin/CreateTeacher";
 import StudentsManagement from "@/pages/Dashboard/admin/StudentsManagement";
@@ -5,49 +6,57 @@ import TeachersManagement from "@/pages/Dashboard/admin/TeachersManagement";
 import AdminDashboard from "@/pages/Dashboard/AdminDashboard";
 import NotFoundPage from "@/pages/NotFound";
 import AboutPage from "@/pages/Site/About";
-import BookingPage from "@/pages/Site/BookingPage";
+import BookingPage from "@/pages/Site/student/BookingPage";
 import HomePage from "@/pages/Site/Home";
-import StudentProfilePage from "@/pages/Site/StudentProfile";
+import StudentProfilePage from "@/pages/Site/student/StudentProfile";
 import SubjectsPage from "@/pages/Site/Subjects";
-import TeacherDetailsPage from "@/pages/Site/TeacherProfile";
-import TeacherRatingsPage from "@/pages/Site/TeacherRatings";
-import TeachersPage from "@/pages/Site/Teachers";
+import TeacherDetailsPage from "@/pages/Site/teacher/TeacherProfile";
+import TeacherRatingsPage from "@/pages/Site/teacher/TeacherRatings";
+import TeachersPage from "@/pages/Site/teacher/Teachers";
 import UnauthorizedPage from "@/pages/UnauthorizedPage";
 import { Paths } from "@/types";
+import { SITE_NAME } from "./env-variables.constants";
 
 const dashboardBasePath = "/dashboard";
 
-export const PATHS: Paths = {
+export const SITE_MAP: Paths = {
+    siteName: SITE_NAME,
+    auth: {
+        login: {
+            name: "التسجيل",
+            href: "/login",
+            component: <AuthPage />,
+        },
+    },
     dashboard: {
         admin: {
-            title: "admin",
             links: {
                 main: {
-                    name: "admin",
+                    name: "الرئيسية",
                     href: `${dashboardBasePath}/admin`,
                     build: () => "",
                     component: <AdminDashboard />,
                 },
                 teachers: {
-                    name: "teachers",
+                    name: "المدرسين",
                     href: `${dashboardBasePath}/admin/teachers`,
                     build: () => "",
                     component: <TeachersManagement />,
                 },
                 createTeacher: {
-                    name: "createTeacher",
+                    name: "إنشاء مدرس",
                     href: `${dashboardBasePath}/admin/create-teacher`,
                     build: () => "",
                     component: <CreateTeacher />,
                 },
                 students: {
-                    name: "students",
+                    name: "الطلاب",
                     href: `${dashboardBasePath}/admin/students`,
                     build: () => "",
                     component: <StudentsManagement />,
                 },
                 bookings: {
-                    name: "bookings",
+                    name: "الحجوزات",
                     href: `${dashboardBasePath}/admin/bookings`,
                     build: () => "",
                     component: <BookingsManagement />,
@@ -57,55 +66,55 @@ export const PATHS: Paths = {
     },
     site: {
         home: {
-            name: "home",
+            name: "الرئيسية",
             href: `/`,
             component: <HomePage />,
         },
         teachers: {
-            name: "teachers",
+            name: "المدرسين",
             href: `/teachers`,
             component: <TeachersPage />,
         },
         teacherDetails: {
-            name: "teacherDetails",
+            name: "تفاصيل المدرس",
             href: `/teachers/:id`,
             build: ({ id }: { id: string }) => `/teachers/${id}`,
             component: <TeacherDetailsPage />,
         },
         teacherRatings: {
-            name: "teacherRatings",
+            name: "تقييمات المدرس",
             href: `/teacher/ratings`,
             component: <TeacherRatingsPage />,
         },
         subjects: {
-            name: "subjects",
+            name: "المواد",
             href: `/subjects`,
             component: <SubjectsPage />,
         },
         studentProfile: {
-            name: "studentProfile",
+            name: "الملف الشخصي",
             href: `/student/profile`,
             component: <StudentProfilePage />,
         },
         booking: {
-            name: "booking",
+            name: "الحجز",
             href: `/booking/:id`,
             build: ({ id }: { id: string }) => `/booking/${id}`,
             component: <BookingPage />,
         },
         about: {
-            name: "about",
+            name: "من نحن",
             href: `/about`,
             component: <AboutPage />,
         },
     },
     unAuthorized: {
-        name: "unAuthorized",
+        name: "غير مصرح",
         href: "/unauthorized",
         component: <UnauthorizedPage />,
     },
     notFound: {
-        name: "notFound",
+        name: "غير موجود",
         href: "*",
         component: <NotFoundPage />,
     },

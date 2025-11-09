@@ -11,13 +11,10 @@ export default defineConfig(({ mode }) => {
     console.log(`[VITE] API Target: ${apiTarget}`);
 
     return {
-        plugins: [
-            react(),
-            mode === 'development' && componentTagger(),
-        ].filter(Boolean),
+        plugins: [react(), mode === "development" && componentTagger()].filter(
+            Boolean
+        ),
         server: {
-            host: "::",
-            port: 8080,
             proxy: {
                 "/api": {
                     target: apiTarget,

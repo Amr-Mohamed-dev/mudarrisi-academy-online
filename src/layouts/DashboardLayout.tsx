@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import Loading from "@/components/ui/Loading";
 import { Outlet } from "react-router-dom";
 import { useTitle } from "@/hooks/useTitle";
 import SideBar from "@/pages/Dashboard/components/SideBar";

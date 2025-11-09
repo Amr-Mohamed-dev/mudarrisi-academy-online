@@ -1,18 +1,15 @@
-export type Role = {
-    id: string;
-    name: string;
-    caption: string;
-    createdAt: string;
-    updatedAt: string;
-};
-
 export type User = {
     id: string;
+    telegramChatId: string;
     name: string;
+    phone: string;
+    code: string;
     email: string;
-    token: string;
-    image?: string;
-    role?: Role;
-    permissions?: string[];
+    bio: string;
+    profileImage: string;
+    role?: "student" | "teacher" | "admin";
+    isActive: boolean;
+    isVerified: boolean;
     createdAt?: Date;
+    updatedAt?: Date;
 };

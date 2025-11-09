@@ -17,7 +17,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { useIsMobile } from "@/hooks/use-mobile";
-import Footer from "@/components/Footer";
 
 const AdminDashboard = () => {
     // Store sidebar state in localStorage to persist across page navigation
@@ -641,7 +640,7 @@ const AdminDashboard = () => {
                                                         </p>
                                                     </div>
                                                 </div>
-                                                <div className="text-left">
+                                                <div className="text-right">
                                                     <div className="flex items-center">
                                                         <p className="font-medium ml-1">
                                                             {teacher.rating}
@@ -666,8 +665,6 @@ const AdminDashboard = () => {
                     </div>
                 </main>
             </div>
-
-            <Footer />
         </div>
     );
 };
