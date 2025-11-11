@@ -15,7 +15,7 @@ const ToastContext = createContext<ToastContextValue | undefined>(undefined);
 // Create the provider component
 export const ToastProvider: React.FC<ToastProviderProps> = ({
     children,
-    position = "top-right",
+    position = "top-left",
     maxToasts = 5,
     spacing = 4,
 }) => {

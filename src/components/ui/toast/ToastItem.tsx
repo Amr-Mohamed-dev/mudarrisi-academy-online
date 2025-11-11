@@ -256,7 +256,7 @@ export const ToastItem: React.FC<ToastProps & { position?: string }> = ({
                     <button
                         type="button"
                         onClick={handleClose}
-                        className="absolute top-3 right-3 text-black hover:text-gray-600 dark:text-secondary-500 focus:outline-none"
+                        className="absolute top-3 left-3 text-black hover:text-gray-600 dark:text-secondary-500 focus:outline-none"
                         aria-label="Close notification"
                     >
                         <svg
