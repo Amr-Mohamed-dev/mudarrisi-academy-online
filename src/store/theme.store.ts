@@ -8,6 +8,8 @@ export type ThemeItem = "light" | "dark" | "system";
 interface ThemeStore {
     theme: ThemeItem;
     setTheme: (theme: ThemeItem) => void;
+    toggleTheme: () => void;
+    isDarkMode: boolean;
 }
 
 export function applyTheme(theme: ThemeItem) {
@@ -27,9 +29,16 @@ export const themeStore = create<ThemeStore>()(
     persist(
         (set) => ({
             theme: "system",
+            isDarkMode: false,
             setTheme: (theme) => {
                 set({ theme });
                 applyTheme(theme); // apply immediately on change
+                set({ isDarkMode: theme === "dark" });
+            },
+            toggleTheme: () => {
+                const { theme } = themeStore.getState();
+                set({ theme: theme === "system" ? "light" : "system" });
+                set({ isDarkMode: theme === "dark" });
             },
         }),
         { name: PROJECT_NAME + "-theme" }

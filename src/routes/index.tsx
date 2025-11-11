@@ -1,5 +1,5 @@
 import { Route, Routes } from "react-router-dom";
-import { PATHS } from "../constants";
+import { SITE_MAP } from "../constants";
 
 // Layouts
 import MainLayout from "@/layouts/MainLayout";
@@ -7,12 +7,14 @@ import { DashboardLayout } from "@/layouts/DashboardLayout";
 import SiteLayout from "@/layouts/SiteLayout";
 import { JSX } from "react";
 import { RouteLinkDynamic, RouteSection } from "@/types";
+import AuthLayout from "@/layouts/AuthLayout";
 
 function AppRoutes() {
-    const dashboardPages = Object.entries(PATHS.dashboard).map(
+    const dashboardPages = Object.entries(SITE_MAP.dashboard).map(
         ([_, value]) => value
     );
-    const sitePages = Object.entries(PATHS.site).map(([_, value]) => value);
+    const sitePages = Object.entries(SITE_MAP.site).map(([_, value]) => value);
+    const authPages = Object.entries(SITE_MAP.auth).map(([_, value]) => value);
 
     // Recursive renderer for dashboard + nested subRoutes
     const renderRouteSection = (section: RouteSection): JSX.Element[] => {
@@ -46,6 +48,19 @@ function AppRoutes() {
     return (
         <Routes>
             <Route element={<MainLayout />}>
+                {/* Auth Routes */}
+                <Route element={<AuthLayout />}>
+                    {authPages.map((page) => {
+                        return (
+                            <Route
+                                key={page.name}
+                                path={page.href}
+                                element={page.component}
+                            />
+                        );
+                    })}
+                </Route>
+
                 {/* Dashboard Routes */}
                 <Route element={<DashboardLayout />}>
                     {dashboardPages.flatMap((section) =>
@@ -68,8 +83,8 @@ function AppRoutes() {
 
                 {/* Catch-All for Undefined Routes */}
                 <Route
-                    path={PATHS.notFound.href}
-                    element={PATHS.notFound.component}
+                    path={SITE_MAP.notFound.href}
+                    element={SITE_MAP.notFound.component}
                 />
             </Route>
         </Routes>

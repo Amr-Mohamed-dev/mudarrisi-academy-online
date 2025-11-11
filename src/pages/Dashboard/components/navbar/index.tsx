@@ -7,7 +7,7 @@ import ImgWithSpinner from "@/components/ui/image";
 import ThemeBox from "./ThemeBox";
 import { themeStore } from "@/store";
 import { useNavigate } from "react-router-dom";
-import { PATHS } from "@/constants";
+import { SITE_MAP } from "@/constants";
 
 type Props = {
     onToggleSidebar: () => void;
@@ -41,7 +41,7 @@ const Navbar = ({ onToggleSidebar }: Props) => {
     };
 
     const handleLoginButton = () => {
-        navigate(PATHS.auth.login.href);
+        navigate(SITE_MAP.auth.login.href);
     };
 
     useEffect(() => {

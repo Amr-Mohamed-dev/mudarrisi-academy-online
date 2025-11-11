@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { PATHS } from "@/constants";
+import { SITE_MAP } from "@/constants";
 import { useNavigate } from "react-router-dom";
 
 function UnauthorizedPage() {
@@ -33,7 +33,7 @@ function UnauthorizedPage() {
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center dark:text-white">
                     <Button
-                        onClick={() => navigate(PATHS.site.home.href)}
+                        onClick={() => navigate(SITE_MAP.site.home.href)}
                         variant="outline"
                         className="w-full sm:w-auto"
                     >

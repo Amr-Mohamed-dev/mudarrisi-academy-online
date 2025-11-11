@@ -1,7 +1,7 @@
 import { ArrowLeft } from "lucide-react";
 import { Outlet, useNavigate } from "react-router";
 import { useTitle } from "@/hooks/useTitle";
-import Footer from "@/components/Footer";
+import Footer from "@/pages/Site/components/footer";
 import Navbar from "@/pages/Site/components/navbar";
 
 function SiteLayout() {

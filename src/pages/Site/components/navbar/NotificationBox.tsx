@@ -38,20 +38,20 @@ function NotificationBox({ notifications }: NotificationBoxProps) {
                             }`}
                         >
                             <div className="flex justify-between items-center mb-1">
-                                <h3 className="text-xs text-black-500 dark:text-secondary-500 text-left max-w-[200px] truncate font-bold m-0">
+                                <h3 className="text-xs text-black-500 dark:text-secondary-500 text-right max-w-[200px] truncate font-bold m-0">
                                     {notification.title}
                                 </h3>
                                 <span className="text-black-200 dark:text-secondary-500 text-[10px] font-normal">
                                     {notification.time}
                                 </span>
                             </div>
-                            <p className="text-black-200 dark:text-secondary-500 text-xs text-left m-0 pr-16 max-w-lg truncate">
+                            <p className="text-black-200 dark:text-secondary-500 text-xs text-right m-0 pr-16 max-w-lg truncate">
                                 {notification.message}
                             </p>
                         </div>
                     ))
                 ) : (
-                    <div className="text-black-500 dark:text-secondary-500 text-xs text-left m-0 pr-16 max-w-lg truncate">
+                    <div className="text-black-500 dark:text-secondary-500 text-xs text-right m-0 pr-16 max-w-lg truncate">
                         No notifications
                     </div>
                 )}

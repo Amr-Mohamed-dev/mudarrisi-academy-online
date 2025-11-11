@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { X } from "lucide-react";
-import { PATHS } from "@/constants";
+import { SITE_MAP } from "@/constants";
 import MainLogo from "@/assets/images/main-logo.png";
 import MainLogoLight from "@/assets/images/main-logo-light.png";
 import { themeStore } from "@/store";
@@ -16,7 +16,7 @@ const SideBar = ({ isSidebarOpen, onToggleSidebar }: Props) => {
 
     const handleLogoClick = (e: React.MouseEvent) => {
         e.preventDefault();
-        window.location.href = PATHS.site.home.href;
+        window.location.href = SITE_MAP.site.home.href;
     };
 
     const isActive = (path: string) => {
@@ -26,7 +26,7 @@ const SideBar = ({ isSidebarOpen, onToggleSidebar }: Props) => {
         );
     };
 
-    const pages = Object.entries(PATHS.dashboard).map(([_, value]) => value);
+    const pages = Object.entries(SITE_MAP.dashboard).map(([_, value]) => value);
 
     return (
         <>
@@ -76,16 +76,17 @@ const SideBar = ({ isSidebarOpen, onToggleSidebar }: Props) => {
                                         className={`flex items-center justify-between py-2 ps-4 rounded-md hover:bg-primary-50 dark:hover:bg-primary-700`}
                                     >
                                         <div className="flex items-center gap-2">
-                                            {route?.icon && route?.icon({
-                                                color: isActive(path)
-                                                    ? "#1576a9"
-                                                    : "#625d57 ",
-                                                height: 24,
-                                                width: 24,
-                                            })}
+                                            {route?.icon &&
+                                                route?.icon({
+                                                    color: isActive(path)
+                                                        ? "#1576a9"
+                                                        : "#625d57 ",
+                                                    height: 24,
+                                                    width: 24,
+                                                })}
 
                                             <span
-                                                className={`text-left
+                                                className={`text-right
                                         ${
                                             isActive(path)
                                                 ? "font-bold text-primary-500"

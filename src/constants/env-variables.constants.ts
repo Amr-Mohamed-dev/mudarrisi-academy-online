@@ -1,4 +1,5 @@
 export const PROJECT_NAME = import.meta.env.VITE_PROJECT_NAME || "teachers";
+export const SITE_NAME = import.meta.env.VITE_SITE_NAME || "teachers";
 export const AUTH_COOKIE_NAME =
     import.meta.env.VITE_AUTH_COOKIE_NAME || `${PROJECT_NAME}_auth_token`;
 export const AUTH_COOKIE_EXPIRES_DAYS = parseInt(

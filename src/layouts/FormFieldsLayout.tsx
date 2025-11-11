@@ -42,18 +42,18 @@ function FormFieldsLayout({
     return (
         <>
             {title && (
-                <h1 className="text-xl text-left font-bold px-5 dark:text-secondary-500">
+                <h1 className="text-xl text-right font-bold px-5 dark:text-secondary-500">
                     {title}
                 </h1>
             )}
             {subtitle && (
-                <h2 className="text-left font-bold px-5 dark:text-secondary-500">
+                <h2 className="text-right font-bold px-5 dark:text-secondary-500">
                     {subtitle}
                 </h2>
             )}
 
             <div className=" flex flex-col gap-2 my-5">
-                <h3 className="text-left font-bold px-7 text-primary-500 capitalize">
+                <h3 className="text-right font-bold px-7 text-primary-500 capitalize">
                     {greenTitle}
                 </h3>
                 <div
