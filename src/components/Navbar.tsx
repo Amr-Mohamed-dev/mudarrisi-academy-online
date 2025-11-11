@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Menu, X, User, Search, LogOut, Star, Moon, Sun } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useTheme } from "@/contexts/ThemeContext";
 import { toast } from "sonner";
@@ -102,9 +102,12 @@ const Navbar = () => {
                   )}
 
                   <Link
-                    to={
-                      isTeacher ? "/teachers/" + user?.id : "/student/profile"
-                    }>
+                    to={"/teachers/"}
+
+                    // to={
+                    //   isTeacher ? "/teachers/" + user?.id : "/student/profile"
+                    // }
+                  >
                     <Button
                       variant="ghost"
                       size="icon"
@@ -202,7 +205,10 @@ const Navbar = () => {
               {isAuthenticated ? (
                 <div className="pt-4 flex flex-col space-y-3">
                   <Link
-                    to={isTeacher ? "/teachers/" + user?.id : "/student/profile"}
+                    to={"/teachers/"}
+                    // to={
+                    //   isTeacher ? "/teachers/" + user?.id : "/student/profile"
+                    // }
                     className="w-full">
                     <Button variant="outline" className="w-full justify-start">
                       <User className="h-4 w-4 ml-2" /> الملف الشخصي
