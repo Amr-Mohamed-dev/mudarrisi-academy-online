@@ -64,7 +64,11 @@ function LoginForm({ toast }: Props) {
     };
 
     return (
-        <form onSubmit={handleSubmit(handleLogin)} className="space-y-6">
+        <form
+            onSubmit={handleSubmit(handleLogin)}
+            className="space-y-6"
+            dir="rtl"
+        >
             <div className="space-y-2">
                 <Label htmlFor="phone">رقم الهاتف</Label>
                 <Input

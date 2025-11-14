@@ -72,8 +72,8 @@ function ProfileBox() {
                         الملف الشخصي
                     </button>
                 </li>
-                {user?.role === "admin" ||
-                    (user?.role === "teacher" && (
+                {user?.role === "ADMIN" ||
+                    (user?.role === "TEACHER" && (
                         <li>
                             <button
                                 type="button"

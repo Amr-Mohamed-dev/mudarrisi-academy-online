@@ -28,6 +28,7 @@ export const Input = <T extends FieldValues>({
                         className
                     )}
                     {...props}
+                    dir="rtl"
                 />
             )}
         />

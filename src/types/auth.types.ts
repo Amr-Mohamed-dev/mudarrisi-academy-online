@@ -1,4 +1,4 @@
-import { User } from "./user.types";
+import { User, UserRole } from "./user.types";
 
 export type AuthState = {
     user: User | null;
@@ -21,7 +21,9 @@ export type LoginResponse = {
 };
 export type RegisterData = {
     email: string;
+    phone: string;
     password: string;
     name: string;
-    phone: string;
+    role: UserRole;
+    bio: string;
 };

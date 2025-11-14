@@ -1,3 +1,5 @@
+export type UserRole = "ADMIN" | "TEACHER" | "STUDENT";
+
 export type User = {
     id: string;
     telegramChatId: string;
@@ -7,7 +9,7 @@ export type User = {
     email: string;
     bio: string;
     profileImage: string;
-    role?: "student" | "teacher" | "admin";
+    role?: UserRole;
     isActive: boolean;
     isVerified: boolean;
     createdAt?: Date;

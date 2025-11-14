@@ -15,10 +15,18 @@ export const AUTH_ENDPOINTS = {
         endpointsHelpers.login.normalMethods().post<LoginResponse>({
             data,
         }),
-    register: (data: RegisterData) =>
-        endpointsHelpers.register.normalMethods().post<User>({
-            data,
-        }),
+    register: {
+        student: (data: RegisterData) =>
+            endpointsHelpers.register.normalMethods().post<LoginResponse>({
+                data,
+                customPath: "/auth/register/student",
+            }),
+        teacher: (data: RegisterData) =>
+            endpointsHelpers.createTeacher.normalMethods().post<LoginResponse>({
+                data,
+                customPath: "/auth/register/teacher",
+            }),
+    },
     getProfile: () =>
         endpointsHelpers.profile.normalMethods().get<User>({
             authorized: true,

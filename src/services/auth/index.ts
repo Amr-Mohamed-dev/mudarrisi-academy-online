@@ -43,18 +43,37 @@ export const useAuthServices = () => {
             },
         });
     };
-    const useRegister = () => {
-        return useMutation<User, Error, RegisterData>({
+    const useRegisterStudent = () => {
+        return useMutation<LoginResponse, Error, RegisterData>({
             mutationFn: async (data) => {
-                return await AUTH_ENDPOINTS.register(data).catch((err) => {
-                    throw err;
-                });
+                return await AUTH_ENDPOINTS.register
+                    .student(data)
+                    .catch((err) => {
+                        throw err.details;
+                    });
             },
-            onSuccess: () => {
+            onSuccess: (data) => {
                 queryClient.invalidateQueries({ queryKey: ["auth"] });
-                setCookie(AUTH_COOKIE_NAME, "");
-                setUser(null);
-                setIsAuthenticated(false);
+                setCookie(AUTH_COOKIE_NAME, data.token);
+                setUser(data.user);
+                setIsAuthenticated(true);
+            },
+        });
+    };
+    const useRegisterTeacher = () => {
+        return useMutation<LoginResponse, Error, RegisterData>({
+            mutationFn: async (data) => {
+                return await AUTH_ENDPOINTS.register
+                    .teacher(data)
+                    .catch((err) => {
+                        throw err.details;
+                    });
+            },
+            onSuccess: (data) => {
+                queryClient.invalidateQueries({ queryKey: ["auth"] });
+                setCookie(AUTH_COOKIE_NAME, data.token);
+                setUser(data.user);
+                setIsAuthenticated(true);
             },
         });
     };
@@ -78,6 +97,9 @@ export const useAuthServices = () => {
         login: useLogin,
         logout: useLogout,
         getProfile: useGetProfile,
-        register: useRegister,
+        register: {
+            student: useRegisterStudent,
+            teacher: useRegisterTeacher,
+        },
     };
 };

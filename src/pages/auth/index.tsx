@@ -26,7 +26,10 @@ const AuthPage = () => {
     }, [isAuthenticated]);
 
     return (
-        <div className="flex flex-col min-h-screen bg-background text-foreground">
+        <div
+            className="flex flex-col min-h-screen bg-background text-foreground"
+            dir="rtl"
+        >
             <div className="flex-1 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-900/40">
                 <div className="max-w-md w-full">
                     <div className="text-center mb-8">

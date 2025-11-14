@@ -43,6 +43,7 @@ const schema = z.object({
         .string()
         .min(6, "يرجى إدخال كلمة مرور قوية")
         .max(50, "يرجى إدخال كلمة مرور قوية"),
+    bio: z.string().min(10, "يرجى إدخال ملخص قصير").optional(),
 });
 
 type Schema = z.infer<typeof schema>;
@@ -51,7 +52,7 @@ function RegisterForm({ toast }: Props) {
     const { register } = useAuthServices();
 
     const { mutateAsync: registerMutation, isPending: isPendingRegister } =
-        register();
+        register.student();
 
     const { control, handleSubmit } = useForm<Schema>({
         resolver: zodResolver(schema),
@@ -64,6 +65,8 @@ function RegisterForm({ toast }: Props) {
                 email: data.email,
                 phone: data.phone,
                 password: data.password,
+                role: "STUDENT",
+                bio: data.bio || "",
             },
             {
                 onSuccess: () => {
@@ -73,10 +76,10 @@ function RegisterForm({ toast }: Props) {
                         type: "success",
                     });
                 },
-                onError: (err) => {
+                onError: (err:any) => {
                     toast({
                         title: "فشل التسجيل",
-                        message: err.message,
+                        message: err.error,
                         type: "error",
                     });
                 },
@@ -85,7 +88,11 @@ function RegisterForm({ toast }: Props) {
     };
 
     return (
-        <form onSubmit={handleSubmit(handleRegister)} className="space-y-6">
+        <form
+            onSubmit={handleSubmit(handleRegister)}
+            className="space-y-6"
+            dir="rtl"
+        >
             <div className="space-y-2">
                 <Label htmlFor="name">الاسم الكامل</Label>
                 <Input
@@ -123,38 +130,6 @@ function RegisterForm({ toast }: Props) {
                     disabled={isPendingRegister}
                 />
             </div>
-
-            {/* <div className="space-y-2">
-                <Label>نوع الحساب</Label>
-                <div className="flex space-x-4 space-x-reverse">
-                    <div className="flex items-center">
-                        <input
-                            id="student"
-                            type="radio"
-                            name="user-type"
-                            value="student"
-                            checked={userType === "student"}
-                            onChange={() => setUserType("student")}
-                            className="ml-2 h-4 w-4 text-blue border-gray-300"
-                            disabled={isPendingRegister}
-                        />
-                        <Label htmlFor="student">طالب</Label>
-                    </div>
-                    <div className="flex items-center">
-                        <input
-                            id="teacher"
-                            type="radio"
-                            name="user-type"
-                            value="teacher"
-                            checked={userType === "teacher"}
-                            onChange={() => setUserType("teacher")}
-                            className="ml-2 h-4 w-4 text-blue border-gray-300"
-                            disabled={isPendingRegister}
-                        />
-                        <Label htmlFor="teacher">مدرس</Label>
-                    </div>
-                </div>
-            </div> */}
 
             {/* {userType === "student" && (
                 <div className="space-y-2">
@@ -242,6 +217,20 @@ function RegisterForm({ toast }: Props) {
                     id="confirm-password"
                     type="password"
                     placeholder="تأكيد كلمة المرور"
+                    required
+                    minLength={8}
+                    disabled={isPendingRegister}
+                />
+            </div>
+
+            <div className="space-y-2">
+                <Label htmlFor="bio">نبذة شخصية</Label>
+                <Input
+                    control={control}
+                    name="bio"
+                    id="bio"
+                    type="text"
+                    placeholder="نبذة شخصية"
                     required
                     minLength={8}
                     disabled={isPendingRegister}
