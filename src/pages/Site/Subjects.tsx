@@ -6,96 +6,38 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 
-interface Subject {
-  id: string;
-  name: string;
-  description: string;
-  teachersCount: number;
-  level: string;
-  categories: string[];
-}
+import { Subject } from "@/types/subjects.types";
+import { SITE_ENDPOINTS } from "@/config/endpoints";
 
 const SubjectsPage = () => {
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [filteredSubjects, setFilteredSubjects] = useState<Subject[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedLevel, setSelectedLevel] = useState<string>("all");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const dummySubjects: Subject[] = [
-      {
-        id: "1",
-        name: "الرياضيات",
-        description:
-          "تعلم أساسيات الرياضيات والجبر والهندسة وحساب التفاضل والتكامل",
-        teachersCount: 24,
-        level: "جميع المراحل",
-        categories: ["الجبر", "الهندسة", "التفاضل والتكامل"],
-      },
-      {
-        id: "2",
-        name: "الفيزياء",
-        description: "دروس في الميكانيكا والكهرومغناطيسية والفيزياء الحديثة",
-        teachersCount: 18,
-        level: "ثانوي وجامعي",
-        categories: ["الميكانيكا", "الكهرومغناطيسية", "الفيزياء الحديثة"],
-      },
-      {
-        id: "3",
-        name: "اللغة الإنجليزية",
-        description: "تعلم القراءة والكتابة والمحادثة في اللغة الإنجليزية",
-        teachersCount: 32,
-        level: "جميع المستويات",
-        categories: ["القواعد", "المحادثة", "القراءة", "الكتابة"],
-      },
-      {
-        id: "4",
-        name: "الكيمياء",
-        description: "دروس في الكيمياء العضوية وغير العضوية والتحليلية",
-        teachersCount: 15,
-        level: "ثانوي وجامعي",
-        categories: [
-          "الكيمياء العضوية",
-          "الكيمياء غير العضوية",
-          "الكيمياء التحليلية",
-        ],
-      },
-      {
-        id: "5",
-        name: "اللغة العربية",
-        description: "تعلم النحو والصرف والبلاغة والأدب العربي",
-        teachersCount: 29,
-        level: "جميع المراحل",
-        categories: ["النحو", "الصرف", "البلاغة", "الأدب"],
-      },
-      {
-        id: "6",
-        name: "علوم الحاسب",
-        description: "دروس في البرمجة وقواعد البيانات وتطوير الويب",
-        teachersCount: 20,
-        level: "ثانوي وجامعي",
-        categories: ["البرمجة", "قواعد البيانات", "تطوير الويب"],
-      },
-      {
-        id: "7",
-        name: "الأحياء",
-        description: "دروس في علم الأحياء والخلية والوراثة",
-        teachersCount: 14,
-        level: "ثانوي وجامعي",
-        categories: ["علم الخلية", "علم الوراثة", "علم الأحياء الدقيقة"],
-      },
-      {
-        id: "8",
-        name: "التاريخ",
-        description: "دروس في التاريخ القديم والوسيط والحديث",
-        teachersCount: 12,
-        level: "جميع المراحل",
-        categories: ["التاريخ القديم", "التاريخ الوسيط", "التاريخ الحديث"],
-      },
-    ];
+    const fetchSubjects = async () => {
+      try {
+        const res = await SITE_ENDPOINTS.subjects.getAll();
 
-    setSubjects(dummySubjects);
-    setFilteredSubjects(dummySubjects);
+        const data = res.data.map((subject: Subject) => ({
+          ...subject,
+          categories: subject.categories ?? [],
+          level: subject.level ?? "غير محدد",
+          teachersCount: subject.teachersCount ?? 0,
+        }));
+
+        setSubjects(data);
+        setFilteredSubjects(data);
+      } catch (error) {
+        console.error("Error fetching subjects:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSubjects();
   }, []);
 
   useEffect(() => {
@@ -127,6 +69,14 @@ const SubjectsPage = () => {
     { id: "university", name: "جامعي" },
   ];
 
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen text-xl">
+        جاري تحميل المواد...
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col min-h-screen pt-16">
       <main className="container mx-auto px-4 py-8 flex-grow">
@@ -137,7 +87,7 @@ const SubjectsPage = () => {
           transition={{ duration: 0.6 }}>
           <div className="mb-8 text-center">
             <motion.h1
-              className=" text-4xl font-bold text-blue-dark dark:text-blue-light mb-4 "
+              className="text-4xl font-bold text-blue-dark dark:text-blue-light mb-4"
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}>
@@ -160,16 +110,14 @@ const SubjectsPage = () => {
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5 }}>
-              <div className="bg-gray-300 dark:bg-gray-700 shadow-md  rounded-lg p-4">
-                <h2 className="font-bold text-lg text-gray-700 dark:text-gray-300  mb-4">تصفية البحث</h2>
+              <div className="bg-gray-300 dark:bg-gray-700 shadow-md rounded-lg p-4">
+                <h2 className="font-bold text-lg mb-4">تصفية البحث</h2>
 
                 <div className="mb-4">
-                  <label className="block text-gray-700 dark:text-gray-300 mb-2">
-                    المستوى التعليمي
-                  </label>
+                  <label className="block mb-2">المستوى التعليمي</label>
                   <div className="space-y-2">
                     {levels.map((level) => (
-                      <div key={level.id} className="flex items-center text-gray-700 dark:text-gray-300">
+                      <div key={level.id} className="flex items-center">
                         <input
                           type="radio"
                           id={level.id}
@@ -186,7 +134,7 @@ const SubjectsPage = () => {
 
                 <Button
                   variant="outline"
-                  className="w-full text-gray-700 dark:text-gray-300"
+                  className="w-full"
                   onClick={() => setSelectedLevel("all")}>
                   إعادة ضبط التصفية
                 </Button>
@@ -206,10 +154,7 @@ const SubjectsPage = () => {
                         initial={{ opacity: 0, y: 40 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 40 }}
-                        transition={{
-                          duration: 0.4,
-                          delay: index * 0.05,
-                        }}>
+                        transition={{ duration: 0.4, delay: index * 0.05 }}>
                         <Card className="hover:border-blue-light hover:shadow-md transition-all">
                           <CardHeader className="pb-2">
                             <CardTitle className="text-xl flex items-center">
@@ -217,6 +162,7 @@ const SubjectsPage = () => {
                               {subject.name}
                             </CardTitle>
                           </CardHeader>
+
                           <CardContent>
                             <p className="text-gray-600 mb-4 text-sm h-12 overflow-hidden">
                               {subject.description}
@@ -238,6 +184,7 @@ const SubjectsPage = () => {
                                 <User size={14} className="ml-1" />
                                 <span>{subject.teachersCount} مدرس</span>
                               </div>
+
                               <div className="text-sm text-gray-600">
                                 <span>{subject.level}</span>
                               </div>
@@ -260,14 +207,11 @@ const SubjectsPage = () => {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}>
                       <p className="text-xl text-gray-500">
-                        لم يتم العثور على مواد مطابقة لمعايير البحث
+                        لم يتم العثور على مواد مطابقة
                       </p>
                       <Button
                         variant="link"
-                        onClick={() => {
-                          setSearchTerm("");
-                          setSelectedLevel("all");
-                        }}>
+                        onClick={() => setSelectedLevel("all")}>
                         إعادة ضبط البحث
                       </Button>
                     </motion.div>
