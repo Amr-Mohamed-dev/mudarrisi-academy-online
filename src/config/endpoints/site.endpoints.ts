@@ -1,47 +1,30 @@
 import { createApiHelpers } from "../api.helpers";
-import {
-  SubjectResponse,
-  SubjectsResponse,
-  CreateSubjectData,
-  UpdateSubjectData,
-} from "@/types/subjects.types";
+import { LevelResponse, Subject } from "@/types";
 
 const endpointsHelpers = {
-  subjects: createApiHelpers("/subjects"),
+    subjects: createApiHelpers("/subjects"),
+    levels: createApiHelpers("/levels"),
 };
 
 export const SITE_ENDPOINTS = {
-  subjects: {
-    getAll: () =>
-      endpointsHelpers.subjects.normalMethods().get<SubjectsResponse>({
-        authorized: true,
-      }),
+    subjects: {
+        getAll: () =>
+            endpointsHelpers.subjects.normalMethods().get<Subject[]>({}),
 
-    getOne: (id: string) =>
-      endpointsHelpers.subjects.normalMethods().get<SubjectResponse>({
-        customPath: `/subjects/${id}`,
-        authorized: true,
-      }),
+        getOne: (id: string) =>
+            endpointsHelpers.subjects.normalMethods().get<Subject>({
+                customPath: `/subjects/${id}`,
+            }),
+    },
+    levels: {
+        getAll: () =>
+            endpointsHelpers.levels.normalMethods().get<LevelResponse[]>({}),
 
-    create: (data: CreateSubjectData) =>
-      endpointsHelpers.subjects.normalMethods().post<SubjectResponse>({
-        data,
-        authorized: true,
-      }),
-
-    update: (id: string, data: UpdateSubjectData) =>
-      endpointsHelpers.subjects.normalMethods().patch<SubjectResponse>({
-        customPath: `/subjects/${id}`,
-        data,
-        authorized: true,
-      }),
-
-    delete: (id: string) =>
-      endpointsHelpers.subjects.normalMethods().deleteMethod({
-        customPath: `/subjects/${id}`,
-        authorized: true,
-      }),
-  },
+        getOne: (id: string) =>
+            endpointsHelpers.levels.normalMethods().get<LevelResponse>({
+                customPath: `/levels/${id}`,
+            }),
+    },
 };
 
 export default SITE_ENDPOINTS;

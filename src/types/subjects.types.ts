@@ -1,34 +1,21 @@
+import { Course } from "./course.types";
+import { Grade } from "./level.types";
+
 export type Subject = {
-  id: string;
-  name: string;
-  description: string;
-  image?: string;
-
-  // تمت إضافتهم بناءً على صفحة UI
-  categories: string[];
-  level: string;
-  teachersCount: number;
-
-  createdAt?: Date;
-  updatedAt?: Date;
-};
-
-export type SubjectsResponse = {
-  success: boolean;
-  data: Subject[];
-};
-
-export type SubjectResponse = {
-  success: boolean;
-  data: Subject;
+    id: string;
+    name: string;
+    description: string;
+    courses: Course[];
+    _count: {
+        courses: number;
+    };
+    grades: Grade[];
+    teachersCount: number;
 };
 
 export type CreateSubjectData = {
-  name: string;
-  description: string;
-  image?: string;
-  categories: string[];
-  level: string;
+    name: string;
+    description: string;
 };
 
 export type UpdateSubjectData = Partial<CreateSubjectData>;

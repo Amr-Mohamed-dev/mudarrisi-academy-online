@@ -1,17 +1,23 @@
+import { Course } from "./course.types";
+import { Grade } from "./level.types";
+
 export type UserRole = "ADMIN" | "TEACHER" | "STUDENT";
 
 export type User = {
     id: string;
-    telegramChatId: string;
     name: string;
+    email: string;
+    role: UserRole;
+    gender: string;
     phone: string;
     code: string;
-    email: string;
     bio: string;
     profileImage: string;
-    role?: UserRole;
     isActive: boolean;
     isVerified: boolean;
-    createdAt?: Date;
-    updatedAt?: Date;
+    taughtCourses?: Course[];
+    enrolledCourses?: Course[];
+    grade?: Grade;
+    createdAt: string;
+    updatedAt: string;
 };
