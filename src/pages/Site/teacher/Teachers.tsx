@@ -155,7 +155,7 @@ const TeachersPage = () => {
               whileHover={{ scale: 1.02 }}
               transition={{ duration: 0.2 }}>
               <div>
-                <h3 className="text-lg font-bold text-blue-dark dark:text-blue-light mb-4">
+                <h3 className="text-lg font-bold  text-blue-dark dark:text-blue-light mb-4">
                   البحث والفلتر
                 </h3>
 
@@ -181,12 +181,12 @@ const TeachersPage = () => {
                 </div>
 
                 {/* Price Filter */}
-                <PriceFilter
+                {/* <PriceFilter
                   minPrice={100}
                   maxPrice={200}
                   selectedRange={priceRange}
                   onChange={setPriceRange}
-                />
+                /> */}
               </div>
             </motion.div>
           </AnimatedSection>
