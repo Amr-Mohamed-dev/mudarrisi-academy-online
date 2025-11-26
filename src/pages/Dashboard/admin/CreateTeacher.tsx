@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { UserPlus, Eye, EyeOff, ArrowLeft } from "lucide-react";
+import { UserPlus, ArrowLeft } from "lucide-react";
 import {
   Form,
   FormControl,
@@ -26,12 +26,13 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/useToast";
+import { usersService, notificationsService } from "@/services/dataService";
 
+// ✅ شلنا password من الـ schema
 const createTeacherSchema = z.object({
   name: z.string().min(2, "الاسم يجب أن يكون حرفين على الأقل"),
   email: z.string().email("بريد إلكتروني غير صحيح"),
   phone: z.string().min(10, "رقم الهاتف يجب أن يكون 10 أرقام على الأقل"),
-  password: z.string().min(6, "كلمة المرور يجب أن تكون 6 أحرف على الأقل"),
   subjects: z.array(z.string()).min(1, "يجب اختيار مادة واحدة على الأقل"),
   bio: z.string().optional(),
   hourlyRate: z.number().min(1, "السعر يجب أن يكون أكثر من 0"),
@@ -59,7 +60,6 @@ const subjects = [
 const CreateTeacher = () => {
   const navigate = useNavigate();
   const { addToast } = useToast();
-  const [showPassword, setShowPassword] = useState(false);
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -69,7 +69,6 @@ const CreateTeacher = () => {
       name: "",
       email: "",
       phone: "",
-      password: "",
       subjects: [],
       bio: "",
       hourlyRate: 50,
@@ -96,40 +95,10 @@ const CreateTeacher = () => {
     setIsLoading(true);
 
     try {
-      // إنشاء معرف فريد للمدرس
-      const teacherId = `teacher_${Date.now()}_${Math.random()
-        .toString(36)
-        .substr(2, 9)}`;
-
-      // إنشاء كائن المدرس الجديد
-      const newTeacher = {
-        id: teacherId,
-        name: data.name,
-        email: data.email,
-        phone: data.phone,
-        password: data.password, // في التطبيق الحقيقي يجب تشفير كلمة المرور
-        role: "teacher" as const,
-        avatar: "/placeholder.svg",
-        isActive: true,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        // بيانات إضافية للمدرس
-        subjects: data.subjects,
-        bio: data.bio || "",
-        hourlyRate: data.hourlyRate,
-        experience: data.experience || "",
-        education: data.education || "",
-        rating: 0,
-        totalRatings: 0,
-        completedLessons: 0,
-        isApproved: true, // الأدمن ينشئ المدرس مباشرة كمعتمد
-      };
-
-      // إضافة المدرس إلى قائمة المستخدمين
-      const users = JSON.parse(localStorage.getItem("users") || "[]");
-
       // التحقق من وجود بريد إلكتروني مسبق
-      const existingUser = users.find((user: any) => user.email === data.email);
+      const existingUsers = await usersService.getAll();
+      const existingUser = existingUsers.find((u) => u.email === data.email);
+
       if (existingUser) {
         addToast({
           title: "خطأ",
@@ -140,31 +109,33 @@ const CreateTeacher = () => {
         return;
       }
 
-      users.push(newTeacher);
-      localStorage.setItem("users", JSON.stringify(users));
+      // ✅ شلنا password من البيانات
+      const newTeacher = await usersService.create({
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        role: "TEACHER",
+        bio: data.bio || "",
+        isActive: true,
+        isVerified: false,
+        gender: "",
+        code: `TEACHER_${Date.now()}`,
+      });
 
       // إرسال إشعار ترحيب للمدرس
-      const notifications = JSON.parse(
-        localStorage.getItem("notifications") || "[]"
-      );
-      notifications.push({
-        id: `notification_${Date.now()}`,
-        userId: teacherId,
+      await notificationsService.create({
+        userId: newTeacher.id,
         title: "مرحباً بك كمدرس",
-        message: `تم إنشاء حسابك بنجاح. يمكنك الآن تسجيل الدخول وبدء تقديم الدروس.`,
-        type: "system",
+        message: `تم إنشاء حسابك بنجاح. يمكنك الآن تسجيل الدخول وبدء تقديم الدروس. سيتم إرسال كلمة مرور مؤقتة على بريدك الإلكتروني.`,
         read: false,
-        createdAt: new Date().toISOString(),
       });
-      localStorage.setItem("notifications", JSON.stringify(notifications));
 
       addToast({
         title: "تم إنشاء المدرس بنجاح",
-        message: `تم إنشاء حساب المدرس ${data.name} وإرسال بيانات الدخول.`,
+        message: `تم إنشاء حساب المدرس ${data.name}. سيتم إرسال كلمة مرور مؤقتة إلى بريده الإلكتروني.`,
         type: "success",
       });
 
-      // العودة إلى صفحة المدرسين
       navigate("/admin/teachers");
     } catch (error) {
       console.error("Error creating teacher:", error);
@@ -254,38 +225,6 @@ const CreateTeacher = () => {
                       <FormLabel>رقم الهاتف</FormLabel>
                       <FormControl>
                         <Input placeholder="05xxxxxxxx" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>كلمة المرور</FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <Input
-                            type={showPassword ? "text" : "password"}
-                            placeholder="كلمة المرور"
-                            {...field}
-                          />
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            className="absolute left-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                            onClick={() => setShowPassword(!showPassword)}>
-                            {showPassword ? (
-                              <EyeOff className="h-4 w-4" />
-                            ) : (
-                              <Eye className="h-4 w-4" />
-                            )}
-                          </Button>
-                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>

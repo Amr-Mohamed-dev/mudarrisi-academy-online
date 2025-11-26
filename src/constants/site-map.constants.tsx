@@ -17,7 +17,8 @@ import UnauthorizedPage from "@/pages/UnauthorizedPage";
 import { Paths } from "@/types";
 import { SITE_NAME } from "./env-variables.constants";
 
-const dashboardBasePath = "/dashboard";
+// ✅ تغيرنا من /dashboard إلى مباشرة
+const adminBasePath = "/admin";
 
 export const SITE_MAP: Paths = {
     siteName: SITE_NAME,
@@ -33,31 +34,31 @@ export const SITE_MAP: Paths = {
             links: {
                 main: {
                     name: "الرئيسية",
-                    href: `${dashboardBasePath}/admin`,
+                    href: `${adminBasePath}`,
                     build: () => "",
                     component: <AdminDashboard />,
                 },
                 teachers: {
                     name: "المدرسين",
-                    href: `${dashboardBasePath}/admin/teachers`,
+                    href: `${adminBasePath}/teachers`,
                     build: () => "",
                     component: <TeachersManagement />,
                 },
                 createTeacher: {
                     name: "إنشاء مدرس",
-                    href: `${dashboardBasePath}/admin/create-teacher`,
+                    href: `${adminBasePath}/create-teacher`,
                     build: () => "",
                     component: <CreateTeacher />,
                 },
                 students: {
                     name: "الطلاب",
-                    href: `${dashboardBasePath}/admin/students`,
+                    href: `${adminBasePath}/students`,
                     build: () => "",
                     component: <StudentsManagement />,
                 },
                 bookings: {
                     name: "الحجوزات",
-                    href: `${dashboardBasePath}/admin/bookings`,
+                    href: `${adminBasePath}/bookings`,
                     build: () => "",
                     component: <BookingsManagement />,
                 },

@@ -33,7 +33,7 @@ const SideBar = ({ isSidebarOpen, onToggleSidebar }: Props) => {
             <div
                 className={`side-bar ${
                     isSidebarOpen ? "open" : ""
-                } flex flex-col h-screen transition-all duration-300 ease-in-out bg-white dark:bg-black-300 border-r border-gray-200 dark:border-gray-700 overflow-y-auto`}
+                } flex flex-col h-screen transition-all duration-300 ease-in-out dark:bg-black-300 border-r border-gray-200 dark:border-gray-700 overflow-y-auto`}
             >
                 {/* Close Sidebar button */}
                 <button
@@ -64,7 +64,7 @@ const SideBar = ({ isSidebarOpen, onToggleSidebar }: Props) => {
                 </div>
 
                 {/* Links Section */}
-                <div className="py-5 w-full h-full bg-white dark:bg-black-300">
+                <div className="py-5 w-full h-full  dark:bg-black-300">
                     {/* Navigation Menu */}
                     <ul className="space-y-2 pb-10">
                         {pages?.map((route) => {

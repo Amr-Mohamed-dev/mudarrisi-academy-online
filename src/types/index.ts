@@ -7,10 +7,11 @@ export * from "./auth.types";
 export * from "./subjects.types";
 export * from "./course.types";
 export * from "./level.types";
+export * from "./booking.types";
 
 export type Icon = {
-    className?: string;
-    width?: number;
-    height?: number;
-    color?: string;
+  className?: string;
+  width?: number;
+  height?: number;
+  color?: string;
 };

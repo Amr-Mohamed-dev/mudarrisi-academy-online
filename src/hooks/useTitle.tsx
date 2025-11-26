@@ -2,7 +2,7 @@ import { SITE_MAP } from "@/constants";
 import React from "react";
 import { useLocation, matchPath } from "react-router-dom";
 
-export const useTitle = () => {
+export const useTitle = (currentPathName: string) => {
     const location = useLocation();
     const documentDefined = typeof document !== "undefined";
     const originalTitle = React.useRef(documentDefined ? document.title : null);
