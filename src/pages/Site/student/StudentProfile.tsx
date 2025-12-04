@@ -16,6 +16,7 @@ import AttendanceConfirmation from "@/components/AttendanceConfirmation";
 import RatingForm from "@/components/RatingForm";
 import { useToast } from "@/hooks/useToast";
 import { authStore } from "@/store/auth.store";
+import { useAuthServices } from "@/services/auth";
 
 interface Booking {
     id: string;
@@ -34,6 +35,8 @@ interface Booking {
 
 const StudentProfilePage = () => {
     const { user, isAuthenticated } = authStore();
+    const { fetchProfile } = useAuthServices();
+    const { data, isLoading, error } = fetchProfile();
     const navigate = useNavigate();
     const { addToast } = useToast();
     const [bookings, setBookings] = useState<Booking[]>([]);
@@ -42,11 +45,6 @@ const StudentProfilePage = () => {
     );
     const [isAttendanceDialogOpen, setIsAttendanceDialogOpen] = useState(false);
     const [isRatingDialogOpen, setIsRatingDialogOpen] = useState(false);
-
-    useEffect(() => {
-        // Load bookings from localStorage
-        loadBookings();
-    }, []);
 
     const loadBookings = () => {
         const allBookings = JSON.parse(

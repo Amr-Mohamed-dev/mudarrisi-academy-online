@@ -28,6 +28,8 @@ export const useAuthServices = () => {
             enabled: true,
         });
     };
+
+    
     const useLogin = () => {
         return useMutation<LoginResponse, Error, LoginData>({
             mutationFn: async (data) => {
@@ -96,7 +98,7 @@ export const useAuthServices = () => {
     return {
         login: useLogin,
         logout: useLogout,
-        getProfile: useGetProfile,
+        fetchProfile: useGetProfile,
         register: {
             student: useRegisterStudent,
             teacher: useRegisterTeacher,
